@@ -40,6 +40,8 @@ public class SwerveModule {
 
         angleMotor = new CANSparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
         driveMotor = new CANSparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
+        angleMotor.restoreFactoryDefaults();
+        driveMotor.restoreFactoryDefaults();
 
         // Config angle encoders
         absoluteEncoder = new CANCoder(moduleConstants.cancoderID);
@@ -63,6 +65,10 @@ public class SwerveModule {
         angleController.setD(Drivebase.MODULE_KD);
         angleController.setFF(Drivebase.MODULE_KF);
         angleController.setIZone(Drivebase.MODULE_IZ);
+        angleController.setPositionPIDWrappingEnabled(true);
+        angleController.setPositionPIDWrappingMaxInput(Math.PI);
+        angleController.setPositionPIDWrappingMinInput(-Math.PI);
+        angleMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
         // Config drive motor/controller
         driveController = driveMotor.getPIDController();
@@ -145,5 +151,9 @@ public class SwerveModule {
 
     public double getRelativeEncoder() {
         return angleEncoder.getPosition();
+    }
+
+    public void setMotorBrake(boolean brake) {
+        driveMotor.setIdleMode(brake ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
     }
 }

@@ -38,6 +38,9 @@ public final class Constants {
         public static final double MAX_ACCELERATION = 2;
     }
     public static final class Drivebase {
+        // Hold time on motor brakes when disabled
+        public static final double WHEEL_LOCK_TIME = 10; // seconds
+
         // Robot heading control gains
         public static final double HEADING_KP = 0.4; //0.5;
         public static final double HEADING_KI = 0;
@@ -60,6 +63,13 @@ public final class Constants {
         public static final double BACK_RIGHT_X = Units.inchesToMeters(-11);
         public static final double BACK_RIGHT_Y = Units.inchesToMeters(-11);
 
+        public static final Translation2d[] MODULE_LOCATIONS = {
+            new Translation2d(Drivebase.FRONT_LEFT_X, Drivebase.FRONT_LEFT_Y),
+            new Translation2d(Drivebase.FRONT_RIGHT_X, Drivebase.FRONT_RIGHT_Y),
+            new Translation2d(Drivebase.BACK_LEFT_X, Drivebase.BACK_LEFT_Y),
+            new Translation2d(Drivebase.BACK_RIGHT_X, Drivebase.BACK_RIGHT_Y)
+        };
+
         // Drivetrain limitations
         public static final double MAX_SPEED = Units.feetToMeters(14.5); // meters per second
         public static final double MAX_ANGULAR_VELOCITY = MAX_SPEED / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y); // rad/s
@@ -70,12 +80,7 @@ public final class Constants {
         public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
 
         // Swerve base kinematics object
-        public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
-            new Translation2d(Drivebase.FRONT_LEFT_X, Drivebase.FRONT_LEFT_Y),
-            new Translation2d(Drivebase.FRONT_RIGHT_X, Drivebase.FRONT_RIGHT_Y),
-            new Translation2d(Drivebase.BACK_LEFT_X, Drivebase.BACK_LEFT_Y),
-            new Translation2d(Drivebase.BACK_RIGHT_X, Drivebase.BACK_RIGHT_Y)
-      );
+        public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(MODULE_LOCATIONS);
 
         // Module PIDF gains
         public static final double MODULE_KP = 0.01;
