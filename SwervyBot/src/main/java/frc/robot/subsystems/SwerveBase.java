@@ -32,7 +32,7 @@ public class SwerveBase extends SubsystemBase {
 
   private double angle, lasttime;
 
-  private Timer timer;
+  private Timer timer, disabledTimer;
 
   private boolean wasGyroReset;
 
@@ -43,7 +43,7 @@ public class SwerveBase extends SubsystemBase {
    * This subsytem also handles odometry.
   */
   public SwerveBase() {
-    
+
     // Create an integrator for angle if the robot is being simulated to emulate an IMU
     // If the robot is real, instantiate the IMU instead.
     if (!Robot.isReal()) {
@@ -167,6 +167,22 @@ public class SwerveBase extends SubsystemBase {
       return (Drivebase.INVERT_GYRO) ? Rotation2d.fromDegrees(360 - ypr[0]) : Rotation2d.fromDegrees(ypr[0]);
     } else {
       return new Rotation2d(angle);
+    }
+  }
+
+  public void setMotorBrake(boolean brake) {
+    for (SwerveModule swerveModule : swerveModules) {
+      swerveModule.setMotorBrake(brake);
+    }
+  }
+
+  public void setDriveBrake() {
+    for (SwerveModule swerveModule : swerveModules) {
+      swerveModule.setDesiredState(
+        new SwerveModuleState(
+          0,
+          Drivebase.MODULE_LOCATIONS[swerveModule.moduleNumber].getAngle()),
+        true);
     }
   }
 
