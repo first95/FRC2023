@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.SwerveModuleConstants;
@@ -20,6 +21,14 @@ import frc.lib.util.SwerveModuleConstants;
 public final class Constants {
 
     public static final double ROBOT_MASS = 32 * 0.453592; // 32lbs * kg per pound
+    public static final double MANIPULATOR_MASS = 10 * 0.453592; // 10lbs * kg per pound
+    public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
+    public static final Translation3d CHASSIS_CG = new Translation3d(
+        0,
+        0,
+        Units.inchesToMeters(7));
+    public static final double ARM_Y_POS = 0; // centered on robot
+    public static final double GRAVITY = 9.81; // m/s/s
 
     public static final class Auton {
         public static final double X_KP = 0.7;

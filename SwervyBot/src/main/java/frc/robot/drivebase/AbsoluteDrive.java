@@ -7,8 +7,11 @@ package frc.robot.drivebase;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.Constants.Drivebase;
 import frc.robot.subsystems.SwerveBase;
 
@@ -91,6 +94,53 @@ public class AbsoluteDrive extends CommandBase {
     
     // Used for the position hold feature
     lastAngle = angle;
+  }
+
+  private double calcMaxAccel(Translation2d commandedVelocity) {
+    //remember to special-case sideways
+    double armHeight = SmartDashboard.getNumber("armHeight", 0);
+    double armExtension = SmartDashboard.getNumber("armExtension", 0);
+    double verticalMoment = 
+      (armHeight * Constants.MANIPULATOR_MASS)
+      + (Constants.CHASSIS_CG.getZ() * (Constants.CHASSIS_MASS));
+    Rotation2d angle = commandedVelocity.getAngle();
+
+    Translation2d projectedChassisCg = new Translation2d(
+      (angle.getSin() * angle.getCos() * Constants.CHASSIS_CG.getY()) + (Math.pow(angle.getCos(), 2) * Constants.CHASSIS_CG.getX()),
+      (angle.getSin() * angle.getCos() * Constants.CHASSIS_CG.getX()) + (Math.pow(angle.getSin(), 2) * Constants.CHASSIS_CG.getY())
+    );
+    Translation2d projectedManipulatorCg = new Translation2d(
+      (angle.getSin() * angle.getCos() * Constants.ARM_Y_POS) + (Math.pow(angle.getCos(), 2) * armExtension),
+      (angle.getSin() * angle.getCos() * armExtension) + (Math.pow(angle.getSin(), 2) * Constants.ARM_Y_POS)
+    );
+    Translation2d projectedWheelbaseEdge;
+    double angDeg = angle.getDegrees();
+    if (angDeg <= 45 && angDeg >= -45) {
+      projectedWheelbaseEdge = new Translation2d(
+        Drivebase.FRONT_LEFT_X,
+        Drivebase.FRONT_LEFT_X * angle.getTan());
+    } else if (135 >= angDeg && angDeg > 45) {
+      projectedWheelbaseEdge = new Translation2d(
+        Drivebase.FRONT_LEFT_Y / angle.getTan(),
+        Drivebase.FRONT_LEFT_Y);
+    } else if (-135 <= angDeg && angDeg < -45) {
+      projectedWheelbaseEdge = new Translation2d(
+        Drivebase.FRONT_RIGHT_Y / angle.getTan(),
+        Drivebase.FRONT_RIGHT_Y);
+    } else {
+      projectedWheelbaseEdge = new Translation2d(
+        Drivebase.BACK_LEFT_X,
+        Drivebase.BACK_LEFT_X * angle.getTan());
+    }
+
+    double directionalMoment = 
+      projectedManipulatorCg.minus(projectedWheelbaseEdge)
+        .times(Constants.MANIPULATOR_MASS)
+        .plus(projectedChassisCg.minus(projectedWheelbaseEdge)
+          .times(Constants.CHASSIS_MASS)).getNorm();
+
+    double maxAccel = (Constants.GRAVITY * directionalMoment) / verticalMoment;
+    return maxAccel;
   }
 
   // Called once the command ends or is interrupted.
