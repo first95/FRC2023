@@ -32,7 +32,7 @@ public class SwerveBase extends SubsystemBase {
 
   private double angle, lasttime;
 
-  private Timer timer, disabledTimer;
+  private Timer timer;
 
   private boolean wasGyroReset;
 
