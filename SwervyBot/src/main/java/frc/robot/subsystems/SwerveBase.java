@@ -56,14 +56,14 @@ public class SwerveBase extends SubsystemBase {
       zeroGyro();
     }
 
-    odometry = new SwerveDriveOdometry(Drivebase.KINEMATICS, getYaw(), getModulePositions());
-
-    swerveModules = new SwerveModule[] {
+    this.swerveModules = new SwerveModule[] {
       new SwerveModule(0, Drivebase.Mod0.CONSTANTS),
       new SwerveModule(1, Drivebase.Mod1.CONSTANTS),
       new SwerveModule(2, Drivebase.Mod2.CONSTANTS),
       new SwerveModule(3, Drivebase.Mod3.CONSTANTS),
     };
+
+    odometry = new SwerveDriveOdometry(Drivebase.KINEMATICS, getYaw(), getModulePositions());
   }
 
   /**
@@ -121,6 +121,14 @@ public class SwerveBase extends SubsystemBase {
 
   public Pose2d getPose() {
     return odometry.getPoseMeters();
+  }
+
+  public ChassisSpeeds getFieldVelocity() {
+    return ChassisSpeeds.fromFieldRelativeSpeeds(Drivebase.KINEMATICS.toChassisSpeeds(getStates()), getYaw().unaryMinus());
+  }
+
+  public ChassisSpeeds getRobotVelocity() {
+    return Drivebase.KINEMATICS.toChassisSpeeds(getStates());
   }
 
   public void resetOdometry(Pose2d pose) {

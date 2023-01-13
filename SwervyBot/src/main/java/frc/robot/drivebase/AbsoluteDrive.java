@@ -89,8 +89,13 @@ public class AbsoluteDrive extends CommandBase {
     x = Math.pow(vX.getAsDouble(), 3) * Drivebase.MAX_SPEED;
     y = Math.pow(vY.getAsDouble(), 3) * Drivebase.MAX_SPEED;
 
+    // Limit velocity to prevent tippy
+    Translation2d translation = limitVelocity(new Translation2d(x, y));
+    SmartDashboard.putString("LimitedTranslation", translation.toString());
+    SmartDashboard.putString("Translation", (new Translation2d(x, y)).toString());
+
     // Make the robot move
-    swerve.drive(new Translation2d(x, y), omega, true, isOpenLoop);
+    swerve.drive(translation, omega, false, isOpenLoop); //fieldRelative:true
     
     // Used for the position hold feature
     lastAngle = angle;
@@ -98,8 +103,8 @@ public class AbsoluteDrive extends CommandBase {
 
   private double calcMaxAccel(Translation2d commandedVelocity) {
     //remember to special-case sideways
-    double armHeight = SmartDashboard.getNumber("armHeight", 0);
-    double armExtension = SmartDashboard.getNumber("armExtension", 0);
+    double armHeight = SmartDashboard.getNumber("armHeight", Constants.dummyArmHieght);
+    double armExtension = SmartDashboard.getNumber("armExtension", Constants.dummyArmX);
     double verticalMoment = 
       (armHeight * Constants.MANIPULATOR_MASS)
       + (Constants.CHASSIS_CG.getZ() * (Constants.CHASSIS_MASS));
@@ -134,13 +139,33 @@ public class AbsoluteDrive extends CommandBase {
     }
 
     double directionalMoment = 
-      projectedManipulatorCg.minus(projectedWheelbaseEdge)
-        .times(Constants.MANIPULATOR_MASS)
-        .plus(projectedChassisCg.minus(projectedWheelbaseEdge)
-          .times(Constants.CHASSIS_MASS)).getNorm();
+      (projectedChassisCg.minus(projectedWheelbaseEdge).getNorm() * Constants.CHASSIS_MASS)
+      - (projectedManipulatorCg.minus(projectedWheelbaseEdge).getNorm() * Constants.MANIPULATOR_MASS);
 
     double maxAccel = (Constants.GRAVITY * directionalMoment) / verticalMoment;
+    SmartDashboard.putNumber("calcMaxAccel", maxAccel);
     return maxAccel;
+  }
+
+  private Translation2d limitVelocity(Translation2d commandedVelocity) {
+    Translation2d currentVelocity = new Translation2d(
+        swerve.getRobotVelocity().vxMetersPerSecond,
+        swerve.getRobotVelocity().vyMetersPerSecond);
+    SmartDashboard.putString("currentVelocity", currentVelocity.toString());
+    Translation2d deltaV = commandedVelocity.minus(currentVelocity);
+    SmartDashboard.putString("deltaV", deltaV.toString());
+    double maxAccel = calcMaxAccel(deltaV);
+    double requiredAccel = deltaV.getNorm() / 0.020;
+    SmartDashboard.putNumber("RequiredAccel", requiredAccel);
+    if (Math.abs(requiredAccel) > Math.abs(maxAccel)) {
+      if (commandedVelocity.getNorm() != 0) {
+        return new Translation2d((maxAccel * 0.02) + currentVelocity.getNorm(), commandedVelocity.getAngle());
+      } else {
+        return new Translation2d((maxAccel * 0.02) + currentVelocity.getNorm(), currentVelocity.getAngle());
+      }
+    } else {
+      return commandedVelocity;
+    }
   }
 
   // Called once the command ends or is interrupted.
