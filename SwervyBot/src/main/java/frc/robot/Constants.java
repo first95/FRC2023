@@ -21,14 +21,14 @@ import frc.lib.util.SwerveModuleConstants;
 public final class Constants {
 
     public static final double ROBOT_MASS = (143 - 20.3) * 0.453592; // 32lbs * kg per pound
-    public static final double MANIPULATOR_MASS = 20 * 0.453592; // 10lbs * kg per pound
+    public static final double MANIPULATOR_MASS = 15 * 0.453592; // 10lbs * kg per pound
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         0,
         0,
         Units.inchesToMeters(8));
     public static final double ARM_Y_POS = 0; // centered on robot
-    public static final double GRAVITY = 9.81; // m/s/s+
+    public static final double GRAVITY = 9.81; // m/s/s
 
     public static final double dummyArmX = Units.inchesToMeters(42);
     public static final double dummyArmHieght = Units.inchesToMeters(27);
@@ -54,9 +54,9 @@ public final class Constants {
         public static final double WHEEL_LOCK_TIME = 10; // seconds
 
         // Robot heading control gains
-        public static final double HEADING_KP = 0;//0.4;
+        public static final double HEADING_KP = 0.4;
         public static final double HEADING_KI = 0;
-        public static final double HEADING_KD = 0;//0.01;
+        public static final double HEADING_KD = 0.01;
 
         // Motor and encoder inversions
         public static final boolean CANCODER_INVERT = false;

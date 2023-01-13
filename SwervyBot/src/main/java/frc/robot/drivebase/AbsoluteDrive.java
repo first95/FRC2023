@@ -95,7 +95,7 @@ public class AbsoluteDrive extends CommandBase {
     SmartDashboard.putString("Translation", (new Translation2d(x, y)).toString());
 
     // Make the robot move
-    swerve.drive(translation, omega, false, isOpenLoop); //fieldRelative:true
+    swerve.drive(translation, omega, true, isOpenLoop);
     
     // Used for the position hold feature
     lastAngle = angle;
@@ -149,20 +149,16 @@ public class AbsoluteDrive extends CommandBase {
 
   private Translation2d limitVelocity(Translation2d commandedVelocity) {
     Translation2d currentVelocity = new Translation2d(
-        swerve.getRobotVelocity().vxMetersPerSecond,
-        swerve.getRobotVelocity().vyMetersPerSecond);
+        swerve.getFieldVelocity().vxMetersPerSecond,
+        swerve.getFieldVelocity().vyMetersPerSecond);
     SmartDashboard.putString("currentVelocity", currentVelocity.toString());
     Translation2d deltaV = commandedVelocity.minus(currentVelocity);
     SmartDashboard.putString("deltaV", deltaV.toString());
-    double maxAccel = calcMaxAccel(deltaV);
+    Translation2d maxAccel = new Translation2d(calcMaxAccel(deltaV.rotateBy(swerve.getPose().getRotation().unaryMinus())), deltaV.getAngle());
     double requiredAccel = deltaV.getNorm() / 0.020;
     SmartDashboard.putNumber("RequiredAccel", requiredAccel);
-    if (Math.abs(requiredAccel) > Math.abs(maxAccel)) {
-      if (commandedVelocity.getNorm() != 0) {
-        return new Translation2d((maxAccel * 0.02) + currentVelocity.getNorm(), commandedVelocity.getAngle());
-      } else {
-        return new Translation2d((maxAccel * 0.02) + currentVelocity.getNorm(), currentVelocity.getAngle());
-      }
+    if (Math.abs(requiredAccel) > maxAccel.getNorm()) {
+      return maxAccel.times(0.02).plus(currentVelocity);
     } else {
       return commandedVelocity;
     }
