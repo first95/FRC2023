@@ -53,7 +53,6 @@ public class SwerveBase extends SubsystemBase {
     } else {
       imu = new PigeonIMU(Drivebase.PIGEON);
       imu.configFactoryDefault();
-      zeroGyro();
     }
 
     this.swerveModules = new SwerveModule[] {
@@ -64,6 +63,7 @@ public class SwerveBase extends SubsystemBase {
     };
 
     odometry = new SwerveDriveOdometry(Drivebase.KINEMATICS, getYaw(), getModulePositions());
+    zeroGyro();
   }
 
   /**

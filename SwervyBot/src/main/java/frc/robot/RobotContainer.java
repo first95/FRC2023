@@ -50,7 +50,7 @@ public class RobotContainer {
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
       () -> -rotationController.getX(),
-      () -> -rotationController.getY(), true);
+      () -> -rotationController.getY(), false);
 
     AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(
       drivebase,

@@ -20,8 +20,8 @@ import frc.lib.util.SwerveModuleConstants;
  */
 public final class Constants {
 
-    public static final double ROBOT_MASS = (143 - 20.3) * 0.453592; // 32lbs * kg per pound
-    public static final double MANIPULATOR_MASS = 15 * 0.453592; // 10lbs * kg per pound
+    public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
+    public static final double MANIPULATOR_MASS = 10 * 0.453592; // 10lbs * kg per pound
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         0,
@@ -29,7 +29,7 @@ public final class Constants {
         Units.inchesToMeters(8));
     public static final double ARM_Y_POS = 0; // centered on robot
     public static final double GRAVITY = 9.81; // m/s/s
-    public static final double LOOP_TIME = 0.02; //s, 20ms
+    public static final double LOOP_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
 
     public static final double dummyArmX = Units.inchesToMeters(42);
     public static final double dummyArmHieght = Units.inchesToMeters(27);

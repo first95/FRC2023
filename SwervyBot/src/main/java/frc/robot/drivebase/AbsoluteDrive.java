@@ -9,6 +9,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -91,7 +92,7 @@ public class AbsoluteDrive extends CommandBase {
 
     // Limit velocity to prevent tippy
     Translation2d translation = limitVelocity(new Translation2d(x, y));
-    SmartDashboard.putString("LimitedTranslation", translation.toString());
+    SmartDashboard.putNumber("LimitedTranslation", translation.getX());
     SmartDashboard.putString("Translation", (new Translation2d(x, y)).toString());
 
     // Make the robot move
@@ -123,24 +124,21 @@ public class AbsoluteDrive extends CommandBase {
     double armHeight = SmartDashboard.getNumber("armHeight", Constants.dummyArmHieght);
     double armExtension = SmartDashboard.getNumber("armExtension", Constants.dummyArmX);
 
+    double xMoment = (armExtension * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getX() * Constants.CHASSIS_MASS);
+    double yMoment = (Constants.ARM_Y_POS * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getY() * Constants.CHASSIS_MASS);
     // Calculate the vertical mass moment using the floor as the datum.  This will be used later to calculate max acceleration
-    double verticalMoment = 
+    double zMoment = 
       (armHeight * Constants.MANIPULATOR_MASS)
       + (Constants.CHASSIS_CG.getZ() * (Constants.CHASSIS_MASS));
+    
+    Translation3d robotCG = new Translation3d(xMoment, yMoment, zMoment).div(Constants.ROBOT_MASS);
+    Translation2d horizontalCG = robotCG.toTranslation2d();
 
-    // Project the actual location of the arm and chassis CGs onto the line formed by the desired direction.
-    // This will be used to find the position of the overall CG on the line in question, which can then be used
-    // to determine max acceleration.
-    // Projection is done by finding the intersection of the direction line with a perpendicular line that passes
-    // through the actual point.
-    Translation2d projectedChassisCg = new Translation2d(
-      (angle.getSin() * angle.getCos() * Constants.CHASSIS_CG.getY()) + (Math.pow(angle.getCos(), 2) * Constants.CHASSIS_CG.getX()),
-      (angle.getSin() * angle.getCos() * Constants.CHASSIS_CG.getX()) + (Math.pow(angle.getSin(), 2) * Constants.CHASSIS_CG.getY())
+    Translation2d projectedHorizontalCg = new Translation2d(
+      (angle.getSin() * angle.getCos() * horizontalCG.getY()) + (Math.pow(angle.getCos(), 2) * horizontalCG.getX()),
+      (angle.getSin() * angle.getCos() * horizontalCG.getX()) + (Math.pow(angle.getSin(), 2) * horizontalCG.getY())
     );
-    Translation2d projectedManipulatorCg = new Translation2d(
-      (angle.getSin() * angle.getCos() * Constants.ARM_Y_POS) + (Math.pow(angle.getCos(), 2) * armExtension),
-      (angle.getSin() * angle.getCos() * armExtension) + (Math.pow(angle.getSin(), 2) * Constants.ARM_Y_POS)
-    );
+
     // Projects the edge of the wheelbase onto the direction line.  Assumes the wheelbase is rectangular.
     // Because a line is being projected, rather than a point, one of the coordinates of the projected point is
     // already known.
@@ -164,16 +162,8 @@ public class AbsoluteDrive extends CommandBase {
         Drivebase.BACK_LEFT_X * angle.getTan());
     }
 
-    // Calculate the mass moment along the desired direction, using the projected edge of the wheelbase as datum.
-    double directionalMoment = 
-      (projectedChassisCg.minus(projectedWheelbaseEdge).getNorm() * Constants.CHASSIS_MASS)
-      - (projectedManipulatorCg.minus(projectedWheelbaseEdge).getNorm() * Constants.MANIPULATOR_MASS);
-
-    // Calculate the maximum allowable acceleration.  The formula for this is:
-    // (gravity) * (directional cg location) / (vertical cg location)
-    // However, because both cg locations are calculated as (mass moment / total mass),
-    // the total mass cancels.
-    double maxAccel = (Constants.GRAVITY * directionalMoment) / verticalMoment;
+    double horizontalDistance = projectedHorizontalCg.plus(projectedWheelbaseEdge).getNorm();
+    double maxAccel = Constants.GRAVITY * horizontalDistance / robotCG.getZ();
 
     SmartDashboard.putNumber("calcMaxAccel", maxAccel);
     return maxAccel;
@@ -192,12 +182,12 @@ public class AbsoluteDrive extends CommandBase {
     Translation2d currentVelocity = new Translation2d(
         swerve.getFieldVelocity().vxMetersPerSecond,
         swerve.getFieldVelocity().vyMetersPerSecond);
-    SmartDashboard.putString("currentVelocity", currentVelocity.toString());
+    SmartDashboard.putNumber("currentVelocity", currentVelocity.getX());
 
     // Calculate the commanded change in velocity by subtracting current velocity
     // from commanded velocity
     Translation2d deltaV = commandedVelocity.minus(currentVelocity);
-    SmartDashboard.putString("deltaV", deltaV.toString());
+    SmartDashboard.putNumber("deltaV", deltaV.getX());
 
     // Creates an acceleration vector with the direction of delta V and a magnitude
     // of the maximum allowed acceleration in that direction 
@@ -207,16 +197,13 @@ public class AbsoluteDrive extends CommandBase {
         .rotateBy(swerve.getPose().getRotation().unaryMinus())
         .getAngle()),
       deltaV.getAngle());
-    
-    // Calculate the acceleration required to reach the commanded velocity in the next loop cycle.
-    // Vf = Vi + at, so a = (Vf - Vi) / t or deltaV / t
-    double requiredAccel = deltaV.getNorm() / Constants.LOOP_TIME;
-    SmartDashboard.putNumber("RequiredAccel", requiredAccel);
 
-    if (requiredAccel > maxAccel.getNorm()) {
-      // Calculate the maximum achievable velocity by the next loop cycle.
-      // Again, Vf = at + Vi
-      return maxAccel.times(Constants.LOOP_TIME).plus(currentVelocity);
+    // Calculate the maximum achievable velocity by the next loop cycle.
+    // delta V = Vf - Vi = at
+    Translation2d maxAchievableDeltaVelocity = maxAccel.times(Constants.LOOP_TIME);
+    
+    if (deltaV.getNorm() > maxAchievableDeltaVelocity.getNorm()) {
+      return maxAchievableDeltaVelocity.plus(currentVelocity);
     } else {
       // If the commanded velocity is attainable, use that.
       return commandedVelocity;
