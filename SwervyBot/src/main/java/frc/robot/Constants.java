@@ -29,6 +29,7 @@ public final class Constants {
         Units.inchesToMeters(8));
     public static final double ARM_Y_POS = 0; // centered on robot
     public static final double GRAVITY = 9.81; // m/s/s
+    public static final double LOOP_TIME = 0.02; //s, 20ms
 
     public static final double dummyArmX = Units.inchesToMeters(42);
     public static final double dummyArmHieght = Units.inchesToMeters(27);

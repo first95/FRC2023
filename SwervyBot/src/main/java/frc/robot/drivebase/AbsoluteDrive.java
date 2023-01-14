@@ -101,15 +101,38 @@ public class AbsoluteDrive extends CommandBase {
     lastAngle = angle;
   }
 
-  private double calcMaxAccel(Translation2d commandedVelocity) {
-    //remember to special-case sideways
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {}
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
+
+  /**
+   * Calculates the maximum acceleration allowed in a direction without tipping the robot.
+   * Reads arm position from NetworkTables and is passed the direction in question.
+   * @param angle The direction in which to calculate max acceleration, as a Rotation2d.
+   * Note that this is robot-relative.
+   * @return
+   */
+  private double calcMaxAccel(Rotation2d angle) {
+    // Get the position of the arm from NetworkTables 
     double armHeight = SmartDashboard.getNumber("armHeight", Constants.dummyArmHieght);
     double armExtension = SmartDashboard.getNumber("armExtension", Constants.dummyArmX);
+
+    // Calculate the vertical mass moment using the floor as the datum.  This will be used later to calculate max acceleration
     double verticalMoment = 
       (armHeight * Constants.MANIPULATOR_MASS)
       + (Constants.CHASSIS_CG.getZ() * (Constants.CHASSIS_MASS));
-    Rotation2d angle = commandedVelocity.getAngle();
 
+    // Project the actual location of the arm and chassis CGs onto the line formed by the desired direction.
+    // This will be used to find the position of the overall CG on the line in question, which can then be used
+    // to determine max acceleration.
+    // Projection is done by finding the intersection of the direction line with a perpendicular line that passes
+    // through the actual point.
     Translation2d projectedChassisCg = new Translation2d(
       (angle.getSin() * angle.getCos() * Constants.CHASSIS_CG.getY()) + (Math.pow(angle.getCos(), 2) * Constants.CHASSIS_CG.getX()),
       (angle.getSin() * angle.getCos() * Constants.CHASSIS_CG.getX()) + (Math.pow(angle.getSin(), 2) * Constants.CHASSIS_CG.getY())
@@ -118,6 +141,9 @@ public class AbsoluteDrive extends CommandBase {
       (angle.getSin() * angle.getCos() * Constants.ARM_Y_POS) + (Math.pow(angle.getCos(), 2) * armExtension),
       (angle.getSin() * angle.getCos() * armExtension) + (Math.pow(angle.getSin(), 2) * Constants.ARM_Y_POS)
     );
+    // Projects the edge of the wheelbase onto the direction line.  Assumes the wheelbase is rectangular.
+    // Because a line is being projected, rather than a point, one of the coordinates of the projected point is
+    // already known.
     Translation2d projectedWheelbaseEdge;
     double angDeg = angle.getDegrees();
     if (angDeg <= 45 && angDeg >= -45) {
@@ -138,39 +164,62 @@ public class AbsoluteDrive extends CommandBase {
         Drivebase.BACK_LEFT_X * angle.getTan());
     }
 
+    // Calculate the mass moment along the desired direction, using the projected edge of the wheelbase as datum.
     double directionalMoment = 
       (projectedChassisCg.minus(projectedWheelbaseEdge).getNorm() * Constants.CHASSIS_MASS)
       - (projectedManipulatorCg.minus(projectedWheelbaseEdge).getNorm() * Constants.MANIPULATOR_MASS);
 
+    // Calculate the maximum allowable acceleration.  The formula for this is:
+    // (gravity) * (directional cg location) / (vertical cg location)
+    // However, because both cg locations are calculated as (mass moment / total mass),
+    // the total mass cancels.
     double maxAccel = (Constants.GRAVITY * directionalMoment) / verticalMoment;
+
     SmartDashboard.putNumber("calcMaxAccel", maxAccel);
     return maxAccel;
   }
 
+  /**
+   * Limits a commanded velocity to prevent exceeding the maximum acceleration given by 
+   * {@link AbsoluteDrive#calcMaxAccel(Rotation2d)}.  Note that this takes and returns field-relative
+   * velocities.
+   * @param commandedVelocity The desired velocity
+   * @return The limited velocity.  This is either the commanded velocity, if attainable, or the closest
+   * attainable velocity.
+   */
   private Translation2d limitVelocity(Translation2d commandedVelocity) {
+    // Get the robot's current field-relative velocity
     Translation2d currentVelocity = new Translation2d(
         swerve.getFieldVelocity().vxMetersPerSecond,
         swerve.getFieldVelocity().vyMetersPerSecond);
     SmartDashboard.putString("currentVelocity", currentVelocity.toString());
+
+    // Calculate the commanded change in velocity by subtracting current velocity
+    // from commanded velocity
     Translation2d deltaV = commandedVelocity.minus(currentVelocity);
     SmartDashboard.putString("deltaV", deltaV.toString());
-    Translation2d maxAccel = new Translation2d(calcMaxAccel(deltaV.rotateBy(swerve.getPose().getRotation().unaryMinus())), deltaV.getAngle());
-    double requiredAccel = deltaV.getNorm() / 0.020;
+
+    // Creates an acceleration vector with the direction of delta V and a magnitude
+    // of the maximum allowed acceleration in that direction 
+    Translation2d maxAccel = new Translation2d(
+      calcMaxAccel(deltaV
+        // Rotates the velocity vector to convert from field-relative to robot-relative
+        .rotateBy(swerve.getPose().getRotation().unaryMinus())
+        .getAngle()),
+      deltaV.getAngle());
+    
+    // Calculate the acceleration required to reach the commanded velocity in the next loop cycle.
+    // Vf = Vi + at, so a = (Vf - Vi) / t or deltaV / t
+    double requiredAccel = deltaV.getNorm() / Constants.LOOP_TIME;
     SmartDashboard.putNumber("RequiredAccel", requiredAccel);
-    if (Math.abs(requiredAccel) > maxAccel.getNorm()) {
-      return maxAccel.times(0.02).plus(currentVelocity);
+
+    if (requiredAccel > maxAccel.getNorm()) {
+      // Calculate the maximum achievable velocity by the next loop cycle.
+      // Again, Vf = at + Vi
+      return maxAccel.times(Constants.LOOP_TIME).plus(currentVelocity);
     } else {
+      // If the commanded velocity is attainable, use that.
       return commandedVelocity;
     }
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
   }
 }
