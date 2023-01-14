@@ -111,30 +111,64 @@ public class SwerveBase extends SubsystemBase {
     }
   }
 
+  /**
+   * Set the module states (azimuth and velocity) directly.  Used primarily for auto
+   * pathing.
+   * @param desiredStates  A list of SwerveModuleStates to send to the modules.
+   */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
+    // Desaturates wheel speeds
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Drivebase.MAX_SPEED);
 
+    // Sets states
     for (SwerveModule module : swerveModules) {
       module.setDesiredState(desiredStates[module.moduleNumber], false);
     }
   }
 
+  
+  /**
+   * Gets the current pose (position and rotation) of the robot, as reported by odometry.
+   * @return The robot's pose
+   */
   public Pose2d getPose() {
     return odometry.getPoseMeters();
   }
 
+  /**
+   * Gets the current field-relative velocity (x, y and omega) of the robot
+   * @return A ChassisSpeeds object of the current field-relative velocity
+   */
   public ChassisSpeeds getFieldVelocity() {
+    // ChassisSpeeds has a method to convert from field-relative to robot-relative speeds,
+    // but not the reverse.  However, because this transform is a simple rotation, negating the angle
+    // given as the robot angle reverses the direction of rotation, and the conversion is reversed.
     return ChassisSpeeds.fromFieldRelativeSpeeds(Drivebase.KINEMATICS.toChassisSpeeds(getStates()), getYaw().unaryMinus());
   }
 
+  /**
+   * Gets the current robot-relative velocity (x, y and omega) of the robot
+   * @return A ChassisSpeeds object of the current robot-relative velocity
+   */
   public ChassisSpeeds getRobotVelocity() {
     return Drivebase.KINEMATICS.toChassisSpeeds(getStates());
   }
 
+  
+  /**
+   * Resets odometry to the given pose. Gyro angle and module positions do not need to 
+   * be reset when calling this method.  However, if either gyro angle or module position
+   * is reset, this must be called in order for odometry to keep working.
+   * @param pose The pose to set the odometry to
+   */
   public void resetOdometry(Pose2d pose) {
     odometry.resetPosition(getYaw(), getModulePositions(), pose);
   }
 
+  /**
+   * Gets the current module states (azimuth and velocity)
+   * @return A list of SwerveModuleStates containing the current module states
+   */
   public SwerveModuleState[] getStates() {
     SwerveModuleState[] states = new SwerveModuleState[Drivebase.NUM_MODULES];
     for (SwerveModule module : swerveModules) {
@@ -143,6 +177,10 @@ public class SwerveBase extends SubsystemBase {
     return states;
   }
 
+  /**
+   * Gets the current module positions (azimuth and wheel position (meters))
+   * @return A list of SwerveModulePositions cointaing the current module positions
+   */
   public SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[Drivebase.NUM_MODULES];
     for (SwerveModule module : swerveModules) {
@@ -151,24 +189,44 @@ public class SwerveBase extends SubsystemBase {
     return positions;
   }
 
+  /**
+   * A public method to allow other systems to determine if the gyro was reset by accessing
+   * the wasGyroReset flag.
+   * @return The boolean value of wasGyroReset
+   */
   public boolean wasGyroReset() {
     return wasGyroReset;
   }
 
+  /**
+   * Sets wasGyroReset to false.  Should be called after all systems that need to know have called
+   * wasGyroReset.
+   */
   public void clearGyroReset() {
     wasGyroReset = false;
   }
 
+  /**
+   * Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0.
+   * Also sets the wasGyroReset flag to true.
+   */
   public void zeroGyro() {
+    // Resets the real gyro or the angle accumulator, depending on whether the robot is being simulated
     if (Robot.isReal()) {
       imu.setYaw(0);
     } else {
       angle = 0;
     }
     wasGyroReset = true;
+    resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
 
+  /**
+   * Gets the current yaw angle of the robot, as reported by the imu.  CCW positive, not wrapped.
+   * @return The yaw angle
+   */
   public Rotation2d getYaw() {
+    // Read the imu if the robot is real or the accumulator if the robot is simulated.
     if (Robot.isReal()) {
       double[] ypr = new double[3];
       imu.getYawPitchRoll(ypr);
@@ -178,12 +236,19 @@ public class SwerveBase extends SubsystemBase {
     }
   }
 
+  /**
+   * Sets the drive motors to brake/coast mode.
+   * @param brake True to set motors to brake mode, false for coast.
+   */
   public void setMotorBrake(boolean brake) {
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.setMotorBrake(brake);
     }
   }
 
+  /**
+   * Point all modules toward the robot center, thus making the robot very difficult to move.
+   */
   public void setDriveBrake() {
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.setDesiredState(
@@ -196,8 +261,10 @@ public class SwerveBase extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Update odometry
     odometry.update(getYaw(), getModulePositions());
 
+    // Update angle accumulator if the robot is simulated
     if (!Robot.isReal()) {
       angle += Drivebase.KINEMATICS.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lasttime);
       lasttime = timer.get();
