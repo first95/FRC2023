@@ -7,7 +7,7 @@ Checkout the wiki for this repository for more information on all standards rega
 
 # How to get started
 
-- Download and install [WPILib 2023.1.1 Release](https://github.com/wpilibsuite/allwpilib/releases/tag/v2023.1.1)
+- Download and install the latest [WPILib Release](https://github.com/wpilibsuite/allwpilib/releases)
 - [Clone this repo](https://github.com/first95/FRC2023)
 - Follow install guide for [CTE Phoenix Libraries](https://docs.ctre-phoenix.com/en/stable/ch05a_CppJava.html)
 
