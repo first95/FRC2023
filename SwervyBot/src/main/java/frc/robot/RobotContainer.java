@@ -50,7 +50,7 @@ public class RobotContainer {
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
       () -> -rotationController.getX(),
-      () -> -rotationController.getY(), false);
+      () -> -rotationController.getY(), true);
 
     AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(
       drivebase,
@@ -94,7 +94,7 @@ public class RobotContainer {
     driveModeSelector.addOption("Robot Relative (Closed)", closedRobotRel);
 
     SmartDashboard.putData(driveModeSelector);
-    drivebase.setDefaultCommand(absoluteDrive);
+    drivebase.setDefaultCommand(openRobotRel);
   }
 
   /**

@@ -66,8 +66,8 @@ public class SwerveModule {
         angleController.setFF(Drivebase.MODULE_KF);
         angleController.setIZone(Drivebase.MODULE_IZ);
         angleController.setPositionPIDWrappingEnabled(true);
-        angleController.setPositionPIDWrappingMaxInput(Math.PI);
-        angleController.setPositionPIDWrappingMinInput(-Math.PI);
+        angleController.setPositionPIDWrappingMaxInput(180);
+        angleController.setPositionPIDWrappingMinInput(-180);
         angleMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
         // Config drive motor/controller
