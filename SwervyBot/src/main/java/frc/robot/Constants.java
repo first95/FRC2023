@@ -144,7 +144,7 @@ public final class Constants {
 
         public static final int PIGEON = 14;
     }
-
+    public static final int ARM_MOTOR_ID = 10;
     public class OperatorConstants {
         public static final int DRIVER_CONTROLLER_PORT = 0;
 
