@@ -281,4 +281,11 @@ public class SwerveBase extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
   }
+
+
+  public void turnModules(double speed) {
+    for (SwerveModule swerveModule : swerveModules) {
+      swerveModule.turnModule(speed);
+    }
+  }
 }

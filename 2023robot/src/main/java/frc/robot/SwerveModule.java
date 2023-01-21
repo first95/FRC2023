@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants.Drivebase;
 
@@ -150,5 +151,11 @@ public class SwerveModule {
 
     public void setMotorBrake(boolean brake) {
         driveMotor.setIdleMode(brake ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
+    }
+
+    public void turnModule(double speed) {
+        angleMotor.set(speed);
+        SmartDashboard.putNumber("AbsoluteEncoder" + moduleNumber, absoluteEncoder.getVelocity());
+        SmartDashboard.putNumber("ControlEffort" + moduleNumber, angleMotor.getAppliedOutput());
     }
 }
