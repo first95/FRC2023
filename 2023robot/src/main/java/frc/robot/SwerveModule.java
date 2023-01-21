@@ -5,11 +5,13 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,7 +25,7 @@ public class SwerveModule {
     public int moduleNumber;
     private double angleOffset, lastAngle;
     private CANSparkMax angleMotor, driveMotor;
-    private CANCoder absoluteEncoder;
+    private AbsoluteEncoder absoluteEncoder;
     private RelativeEncoder angleEncoder, driveEncoder;
     private SparkMaxPIDController angleController, driveController;
     private double angle, speed, fakePos, lastTime;
@@ -44,19 +46,11 @@ public class SwerveModule {
         driveMotor.restoreFactoryDefaults();
 
         // Config angle encoders
-        absoluteEncoder = new CANCoder(moduleConstants.cancoderID);
-        absoluteEncoder.configFactoryDefault();
-        CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
-        canCoderConfiguration.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        canCoderConfiguration.sensorDirection = Drivebase.CANCODER_INVERT;
-        canCoderConfiguration.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-        canCoderConfiguration.sensorTimeBase = SensorTimeBase.PerSecond;
-        absoluteEncoder.configAllSettings(canCoderConfiguration);
-
-        angleEncoder = angleMotor.getEncoder();
-        angleEncoder.setPositionConversionFactor(Drivebase.DEGREES_PER_STEERING_ROTATION);
-        angleEncoder.setVelocityConversionFactor(Drivebase.DEGREES_PER_STEERING_ROTATION / 60);
-        angleEncoder.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
+        absoluteEncoder = angleMotor.getAbsoluteEncoder(Type.kDutyCycle);
+        absoluteEncoder.setPositionConversionFactor(Drivebase.DEGREES_PER_STEERING_ROTATION);
+        absoluteEncoder.setVelocityConversionFactor(Drivebase.DEGREES_PER_STEERING_ROTATION / 60);
+        absoluteEncoder.setZeroOffset(angleOffset);
+        absoluteEncoder.setInverted(Drivebase.ABSOLUTE_ENCODER_INVERT);
 
         // Config angle motor/controller
         angleController = angleMotor.getPIDController();
@@ -68,6 +62,8 @@ public class SwerveModule {
         angleController.setPositionPIDWrappingEnabled(true);
         angleController.setPositionPIDWrappingMaxInput(180);
         angleController.setPositionPIDWrappingMinInput(-180);
+        angleController.setFeedbackDevice(absoluteEncoder);
+        angleMotor.setInverted(Drivebase.ANGLE_MOTOR_INVERT);
         angleMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
         // Config drive motor/controller
@@ -82,6 +78,9 @@ public class SwerveModule {
         driveController.setIZone(Drivebase.VELOCITY_IZ);
         driveMotor.setInverted(Drivebase.DRIVE_MOTOR_INVERT);
         driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+        driveMotor.burnFlash();
+        angleMotor.burnFlash();
 
         lastAngle = getState().angle.getDegrees();
 
@@ -145,11 +144,7 @@ public class SwerveModule {
         return new SwerveModulePosition(position, azimuth);
     }
 
-    public double getCANCoder() {
-        return absoluteEncoder.getAbsolutePosition();
-    }
-
-    public double getRelativeEncoder() {
+    public double getAbsoluteEncoder() {
         return angleEncoder.getPosition();
     }
 

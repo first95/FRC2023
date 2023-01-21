@@ -274,8 +274,7 @@ public class SwerveBase extends SubsystemBase {
     }
 
     for (SwerveModule module : swerveModules) {
-      SmartDashboard.putNumber("Module" + module.moduleNumber + "CANCoder", module.getCANCoder());
-      SmartDashboard.putNumber("Module" + module.moduleNumber + "Relative Encoder", module.getRelativeEncoder());
+      SmartDashboard.putNumber("Module" + module.moduleNumber + "CANCoder", module.getAbsoluteEncoder());
     }
   }
 
