@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import frc.lib.util.BetterSwerveKinematics;
 import frc.lib.util.SwerveModuleConstants;
 
 /**
@@ -93,7 +94,7 @@ public final class Constants {
         public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
 
         // Swerve base kinematics object
-        public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(MODULE_LOCATIONS);
+        public static final BetterSwerveKinematics KINEMATICS = new BetterSwerveKinematics(MODULE_LOCATIONS);
 
         // Module PIDF gains
         public static final double MODULE_KP = 0.01;
@@ -101,6 +102,7 @@ public final class Constants {
         public static final double MODULE_KD = 0;
         public static final double MODULE_IZ = 0;
         public static final double MODULE_KF = 0;
+        public static final double MODULE_KV = 12 / (360 * (5676 / 12.8) / 60);
 
         public static final double VELOCITY_KP = 0.0020645; // kp from SysId, eventually
         public static final double VELOCITY_KI = 0; // Leave all of these zero to disable them
