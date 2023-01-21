@@ -6,18 +6,28 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.SwerveModule;
 import frc.robot.Constants.Drivebase;
@@ -26,8 +36,9 @@ public class SwerveBase extends SubsystemBase {
 
   private SwerveModule[] swerveModules;
   private PigeonIMU imu;
+  private NetworkTable visionData;
   
-  private SwerveDriveOdometry odometry;
+  private SwerveDrivePoseEstimator odometry;
   public Field2d field = new Field2d();
 
   private double angle, lasttime;
@@ -62,8 +73,10 @@ public class SwerveBase extends SubsystemBase {
       new SwerveModule(3, Drivebase.Mod3.CONSTANTS),
     };
 
-    odometry = new SwerveDriveOdometry(Drivebase.KINEMATICS, getYaw(), getModulePositions());
+    odometry = new SwerveDrivePoseEstimator(Drivebase.KINEMATICS, getYaw(), getModulePositions(), getVisionPose().toPose2d());
     zeroGyro();
+
+    visionData = NetworkTableInstance.getDefault().getTable("limelight");
   }
 
   /**
@@ -132,7 +145,7 @@ public class SwerveBase extends SubsystemBase {
    * @return The robot's pose
    */
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
+    return odometry.getEstimatedPosition();
   }
 
   /**
@@ -259,17 +272,46 @@ public class SwerveBase extends SubsystemBase {
     }
   }
 
+  public Pose3d getVisionPose() {
+    if (visionData.getEntry("tv").getDouble(0) == 0) {
+      return null;
+    }
+    double[] poseComponents = visionData.getEntry("botpose").getDoubleArray(new double[6]);
+    Pose3d camPose = new Pose3d(
+      poseComponents[0],
+      poseComponents[1],
+      poseComponents[2],
+      new Rotation3d(
+        poseComponents[3],
+        poseComponents[4],
+        poseComponents[5]));
+    Pose3d robotPose;
+    Alliance alliance = DriverStation.getAlliance();
+    if (alliance== Alliance.Blue) {
+      robotPose = camPose.plus(new Transform3d(Constants.FIELD_CENTER, new Rotation3d()));
+    } else if (alliance == Alliance.Red) {
+      robotPose = new Pose3d(
+        camPose.getTranslation().unaryMinus().plus(Constants.FIELD_CENTER),
+        camPose.getRotation().rotateBy(new Rotation3d(0, 0, Math.PI)));
+    } else {
+      return null;
+    }
+    return robotPose;
+  }
+
   @Override
   public void periodic() {
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
+    Pose3d visionPose = getVisionPose();
+    
 
     // Update angle accumulator if the robot is simulated
     if (!Robot.isReal()) {
       angle += Drivebase.KINEMATICS.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lasttime);
       lasttime = timer.get();
 
-      field.setRobotPose(odometry.getPoseMeters());
+      field.setRobotPose(odometry.getEstimatedPosition());
       SmartDashboard.putData("Field", field);
     }
 

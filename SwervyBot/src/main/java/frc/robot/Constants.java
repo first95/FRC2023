@@ -20,6 +20,11 @@ import frc.lib.util.SwerveModuleConstants;
  */
 public final class Constants {
 
+    public static final Translation3d FIELD_CENTER = new Translation3d(
+        Units.feetToMeters(27),
+        Units.feetToMeters(13.5),
+        0);
+    
     public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
     public static final double MANIPULATOR_MASS = 10 * 0.453592; // 10lbs * kg per pound
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
