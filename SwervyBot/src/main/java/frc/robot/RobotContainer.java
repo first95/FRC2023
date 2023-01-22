@@ -7,9 +7,11 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.SearchForTargets;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.SwerveBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,9 +30,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  public final LimeLight limelight = new LimeLight("frontsensor", true);
   private final SwerveBase drivebase = new SwerveBase();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
+  // Commands
+  private SearchForTargets targetSearcher = new SearchForTargets(limelight, drivebase);
   private SendableChooser<CommandBase> driveModeSelector;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -95,6 +100,7 @@ public class RobotContainer {
 
     SmartDashboard.putData(driveModeSelector);
     drivebase.setDefaultCommand(absoluteDrive);
+    limelight.setDefaultCommand(targetSearcher);
   }
 
   /**

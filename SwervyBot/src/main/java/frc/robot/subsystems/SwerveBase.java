@@ -37,7 +37,6 @@ public class SwerveBase extends SubsystemBase {
 
   private SwerveModule[] swerveModules;
   private PigeonIMU imu;
-  private NetworkTable visionData;
   
   private SwerveDrivePoseEstimator odometry;
   public Field2d field = new Field2d();
@@ -74,10 +73,8 @@ public class SwerveBase extends SubsystemBase {
       new SwerveModule(3, Drivebase.Mod3.CONSTANTS),
     };
 
-    odometry = new SwerveDrivePoseEstimator(Drivebase.KINEMATICS, getYaw(), getModulePositions(), getVisionPose().toPose2d());
+    odometry = new SwerveDrivePoseEstimator(Drivebase.KINEMATICS, getYaw(), getModulePositions(), null);
     zeroGyro();
-
-    visionData = NetworkTableInstance.getDefault().getTable("limelight");
   }
 
   /**
@@ -179,6 +176,12 @@ public class SwerveBase extends SubsystemBase {
     odometry.resetPosition(getYaw(), getModulePositions(), pose);
   }
 
+  public void updateOdometry(Pose2d pose, double timestamp) {
+    // Change Vision.POSE_ERROR_TOLERANCE to some generic POSE_ERROR_TOLERANCE
+    if (pose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE)
+      odometry.addVisionMeasurement(pose, timestamp);
+  }
+
   /**
    * Gets the current module states (azimuth and velocity)
    * @return A list of SwerveModuleStates containing the current module states
@@ -273,43 +276,10 @@ public class SwerveBase extends SubsystemBase {
     }
   }
 
-  public Pose3d getVisionPose() {
-    if (visionData.getEntry("tv").getDouble(0) == 0) {
-      return null;
-    }
-    double[] poseComponents = visionData.getEntry("botpose").getDoubleArray(new double[6]);
-    Pose3d camPose = new Pose3d(
-      poseComponents[0],
-      poseComponents[1],
-      poseComponents[2],
-      new Rotation3d(
-        poseComponents[3],
-        poseComponents[4],
-        poseComponents[5]));
-    Pose3d robotPose;
-    Alliance alliance = DriverStation.getAlliance();
-    if (alliance== Alliance.Blue) {
-      robotPose = camPose.plus(new Transform3d(Constants.FIELD_CENTER, new Rotation3d()));
-    } else if (alliance == Alliance.Red) {
-      robotPose = new Pose3d(
-        camPose.getTranslation().unaryMinus().plus(Constants.FIELD_CENTER),
-        camPose.getRotation().rotateBy(new Rotation3d(0, 0, Math.PI)));
-    } else {
-      return null;
-    }
-    return robotPose;
-  }
-
   @Override
   public void periodic() {
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
-    Pose2d visionPose = getVisionPose().toPose2d();
-    if (visionPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
-      double timestamp = Timer.getFPGATimestamp() - (visionData.getEntry("tl").getDouble(0) + 11) / 1000;
-      odometry.addVisionMeasurement(visionPose, timestamp);
-    }
-    
 
     // Update angle accumulator if the robot is simulated
     if (!Robot.isReal()) {
