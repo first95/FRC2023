@@ -31,6 +31,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.SwerveModule;
 import frc.robot.Constants.Drivebase;
+import frc.robot.Constants.Vision;
 
 public class SwerveBase extends SubsystemBase {
 
@@ -303,7 +304,11 @@ public class SwerveBase extends SubsystemBase {
   public void periodic() {
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
-    Pose3d visionPose = getVisionPose();
+    Pose2d visionPose = getVisionPose().toPose2d();
+    if (visionPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
+      double timestamp = Timer.getFPGATimestamp() - (visionData.getEntry("tl").getDouble(0) + 11) / 1000;
+      odometry.addVisionMeasurement(visionPose, timestamp);
+    }
     
 
     // Update angle accumulator if the robot is simulated
