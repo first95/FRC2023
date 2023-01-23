@@ -6,9 +6,9 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -16,33 +16,45 @@ import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
 
-  private CANSparkMax motor;
-  private RelativeEncoder encoder;
+  private CANSparkMax armMotor;
+  private RelativeEncoder armEncoder;
+  private SparkMaxPIDController armController;
+  private boolean grip = false;
 
   public Arm() {
-    motor = new CANSparkMax(Constants.ARM_MOTOR_ID, MotorType.kBrushless);
-    encoder = motor.getEncoder();
+    armMotor = new CANSparkMax(Constants.ARM_MOTOR_ID, MotorType.kBrushless);
+    armEncoder = armMotor.getEncoder();
+    armController = armMotor.getPIDController();
   }
 
   public void setSpeed(double speed){
-    motor.set(speed);
+    armMotor.set(speed);
   }
 
-  public void setPos(double position){
-    encoder.setPosition(position);
+  public void setPos(double angle){
+    armController.setReference(angle, CANSparkMax.ControlType.kPosition);
   }
 
   public double getPos(){
-    return encoder.getPosition();
+    return armEncoder.getPosition();
+  }
+  public boolean getGrip(){
+    return true;
+  }
+  public void setGrip(boolean g){
+    grip = g;
+  }
+  public void toggleGrip(){
+    grip = !getGrip();
   }
 
   public void resetOdometry() {
-    encoder.setPosition(0);
+    armEncoder.setPosition(0);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Arm Pos", -encoder.getPosition());
+    
   }
 
   @Override
