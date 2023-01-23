@@ -286,10 +286,14 @@ public class SwerveBase extends SubsystemBase {
       SmartDashboard.putData("Field", field);
     }
 
+    double[] moduleStates = new double[8];
     for (SwerveModule module : swerveModules) {
       SmartDashboard.putNumber("Module" + module.moduleNumber + "CANCoder", module.getCANCoder());
       SmartDashboard.putNumber("Module" + module.moduleNumber + "Relative Encoder", module.getRelativeEncoder());
+      moduleStates[module.moduleNumber] = module.getState().angle.getDegrees();
+      moduleStates[module.moduleNumber + 1] = module.getState().speedMetersPerSecond;
     }
+    SmartDashboard.putNumberArray("moduleStates", moduleStates);
   }
 
   @Override

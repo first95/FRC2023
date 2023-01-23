@@ -27,7 +27,7 @@ public class SwerveModule {
     private CANCoder absoluteEncoder;
     private RelativeEncoder angleEncoder, driveEncoder;
     private SparkMaxPIDController angleController, driveController;
-    private double angle, omega, speed, fakePos, lastTime;
+    private double angle, omega, speed, fakePos, lastTime, dt;
     private Timer time;
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Drivebase.KS, Drivebase.KV, Drivebase.KA);
@@ -95,7 +95,9 @@ public class SwerveModule {
     }
 
     public void setDesiredState(BetterSwerveModuleState desiredState, boolean isOpenLoop) {
-        //desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
+        SwerveModuleState simpleState = new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
+        simpleState = SwerveModuleState.optimize(simpleState, getState().angle);
+        desiredState = new BetterSwerveModuleState(simpleState.speedMetersPerSecond, simpleState.angle, desiredState.omegaRadPerSecond);
 
         if (isOpenLoop) {
             double percentOutput = desiredState.speedMetersPerSecond / Drivebase.MAX_SPEED;
@@ -116,7 +118,7 @@ public class SwerveModule {
         speed = desiredState.speedMetersPerSecond;
 
         if (!Robot.isReal()) {
-            double dt = time.get() - lastTime;
+            dt = time.get() - lastTime;
             fakePos += (speed * dt);
             lastTime = time.get();
         }
@@ -146,7 +148,7 @@ public class SwerveModule {
             azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
         } else {
             position = fakePos;
-            azimuth = Rotation2d.fromDegrees(angle);
+            azimuth = Rotation2d.fromDegrees(angle + (Math.toDegrees(omega) * dt));
         }
         return new SwerveModulePosition(position, azimuth);
     }

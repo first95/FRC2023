@@ -27,7 +27,7 @@ public final class Autos {
   }
 
   public static CommandBase driveAndSpin(SwerveBase swerve) {
-    return Commands.sequence(new RepeatCommand(new InstantCommand(() -> swerve.drive(new Translation2d(1, 0), 1, true, true), swerve)));
+    return Commands.sequence(new RepeatCommand(new InstantCommand(() -> swerve.drive(new Translation2d(1, 0), 5, true, true), swerve)));
   }
 
   private Autos() {
