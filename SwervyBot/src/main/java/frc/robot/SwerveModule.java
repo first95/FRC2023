@@ -83,6 +83,9 @@ public class SwerveModule {
         driveMotor.setInverted(Drivebase.DRIVE_MOTOR_INVERT);
         driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
+        driveMotor.burnFlash();
+        angleMotor.burnFlash();
+
         lastAngle = getState().angle.getDegrees();
 
         if (!Robot.isReal()) {
