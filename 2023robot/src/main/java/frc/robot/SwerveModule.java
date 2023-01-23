@@ -1,10 +1,5 @@
 package frc.robot;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -19,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib.util.BetterSwerveModuleState;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants.Drivebase;
 
@@ -29,7 +25,7 @@ public class SwerveModule {
     private AbsoluteEncoder absoluteEncoder;
     private RelativeEncoder angleEncoder, driveEncoder;
     private SparkMaxPIDController angleController, driveController;
-    private double angle, speed, fakePos, lastTime;
+    private double angle, omega, speed, fakePos, lastTime;
     private Timer time;
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Drivebase.KS, Drivebase.KV, Drivebase.KA);
@@ -92,8 +88,10 @@ public class SwerveModule {
         }
     }
 
-    public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
-        desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
+    public void setDesiredState(BetterSwerveModuleState desiredState, boolean isOpenLoop) {
+        SwerveModuleState simpleState = new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
+        simpleState = SwerveModuleState.optimize(simpleState, getState().angle);
+        desiredState = new BetterSwerveModuleState(simpleState.speedMetersPerSecond, simpleState.angle, desiredState.omegaRadPerSecond);
 
         if (isOpenLoop) {
             double percentOutput = desiredState.speedMetersPerSecond / Drivebase.MAX_SPEED;
@@ -106,10 +104,11 @@ public class SwerveModule {
         double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Drivebase.MAX_SPEED * 0.01) ? 
             lastAngle :
             desiredState.angle.getDegrees()); // Prevents module rotation if speed is less than 1%
-        angleController.setReference(angle, ControlType.kPosition);
+        angleController.setReference(angle, ControlType.kPosition, 0, Math.toDegrees(desiredState.omegaRadPerSecond) * Drivebase.MODULE_KV);
         lastAngle = angle;
 
         this.angle = desiredState.angle.getDegrees();
+        omega = desiredState.omegaRadPerSecond;
         speed = desiredState.speedMetersPerSecond;
 
         if (!Robot.isReal()) {
@@ -119,17 +118,20 @@ public class SwerveModule {
         }
     }
 
-    public SwerveModuleState getState() {
+    public BetterSwerveModuleState getState() {
         double velocity;
         Rotation2d azimuth;
+        double omega;
         if (Robot.isReal()) {
             velocity = driveEncoder.getVelocity();
             azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
+            omega = angleEncoder.getVelocity();
         } else {
             velocity = speed;
             azimuth = Rotation2d.fromDegrees(this.angle);
+            omega = this.omega;
         }
-        return new SwerveModuleState(velocity, azimuth);
+        return new BetterSwerveModuleState(velocity, azimuth, omega);
     }
 
     public SwerveModulePosition getPosition() {

@@ -6,7 +6,6 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Auton;
-import frc.robot.Constants.Drivebase;
 import frc.robot.subsystems.SwerveBase;
 
 public class FollowTrajectory extends SequentialCommandGroup{

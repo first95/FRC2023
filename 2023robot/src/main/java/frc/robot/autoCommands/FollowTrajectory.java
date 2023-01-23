@@ -6,7 +6,6 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Auton;
-import frc.robot.Constants.Drivebase;
 import frc.robot.subsystems.SwerveBase;
 
 public class FollowTrajectory extends SequentialCommandGroup{
@@ -22,11 +21,10 @@ public class FollowTrajectory extends SequentialCommandGroup{
             new PPSwerveControllerCommand(
                 trajectory,
                 drivebase::getPose,
-                Drivebase.KINEMATICS,
                 new PIDController(Auton.X_KP, Auton.X_KI, Auton.X_KD),
                 new PIDController(Auton.Y_KP, Auton.Y_KI, Auton.Y_KD),
                 new PIDController(Auton.ANG_KP, Auton.ANG_KI, Auton.ANG_KD),
-                drivebase::setModuleStates,
+                drivebase::setChassisSpeeds,
                 drivebase)
         );
     } 

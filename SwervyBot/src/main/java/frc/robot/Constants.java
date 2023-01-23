@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.BetterSwerveKinematics;
 import frc.lib.util.SwerveModuleConstants;
@@ -92,6 +91,8 @@ public final class Constants {
         // (2.6 * 6.75 * 4) / (Units.inchesToMeters(2) * ROBOT_MASS)
         // However, the drive is traction-limited, so the max accelration is actually (wheel coefficient of friction * gravity)
         public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
+        // max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
+        public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(5676 / 12.8) / 60; // deg/s
 
         // Swerve base kinematics object
         public static final BetterSwerveKinematics KINEMATICS = new BetterSwerveKinematics(MODULE_LOCATIONS);
@@ -102,7 +103,8 @@ public final class Constants {
         public static final double MODULE_KD = 0;
         public static final double MODULE_IZ = 0;
         public static final double MODULE_KF = 0;
-        public static final double MODULE_KV = 12 / (360 * (5676 / 12.8) / 60);
+        // Volt * seconds / degree.  Equal to (maxVolts) / (maxSpeed)
+        public static final double MODULE_KV = 12 / MAX_MODULE_ANGULAR_SPEED;
 
         public static final double VELOCITY_KP = 0.0020645; // kp from SysId, eventually
         public static final double VELOCITY_KI = 0; // Leave all of these zero to disable them
