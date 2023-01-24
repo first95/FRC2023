@@ -9,7 +9,10 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 
 
@@ -19,12 +22,16 @@ public class Arm extends SubsystemBase {
   private CANSparkMax armMotor;
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
-  private boolean grip = false;
+  private Solenoid gripper;
+
 
   public Arm() {
-    armMotor = new CANSparkMax(Constants.ARM_MOTOR_ID, MotorType.kBrushless);
+    armMotor = new CANSparkMax(Constants.ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless);
     armEncoder = armMotor.getEncoder();
     armController = armMotor.getPIDController();
+    gripper = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.ArmConstants.GRIP_PNEUMATICS_ID);
+    armMotor.restoreFactoryDefaults();
+    armMotor.burnFlash();  
   }
 
   public void setSpeed(double speed){
@@ -34,18 +41,21 @@ public class Arm extends SubsystemBase {
   public void setPos(double angle){
     armController.setReference(angle, CANSparkMax.ControlType.kPosition);
   }
-
+  
   public double getPos(){
     return armEncoder.getPosition();
   }
+
   public boolean getGrip(){
-    return true;
+    return gripper.get();
   }
+
   public void setGrip(boolean g){
-    grip = g;
+    gripper.set(g);
   }
+
   public void toggleGrip(){
-    grip = !getGrip();
+    gripper.toggle();
   }
 
   public void resetOdometry() {
