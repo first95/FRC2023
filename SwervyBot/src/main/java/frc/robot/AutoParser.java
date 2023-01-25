@@ -2,11 +2,25 @@ package frc.robot;
 
 import java.util.Arrays;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.Auton;
+import frc.robot.autoCommands.FollowTrajectory;
+import frc.robot.subsystems.SwerveBase;
 
 public class AutoParser {
+    private SwerveBase drive;
     private CommandBase AutoMove;
+
+    public AutoParser(SwerveBase drive) {
+        this.drive = drive;
+    }
 
     public void parse(String autoMove, Alliance alliance) {
         String[] lines = autoMove.split(";");
@@ -25,11 +39,13 @@ public class AutoParser {
             for (String stringCommand : stringCommands) {
                 stringCommand = stringCommand.trim();
                 
-                String function = stringCommand.split("(")[0];
+                String[] splitCommand = stringCommand.split("\\(");
+
+                String function = splitCommand[0];
                 
-                String[] parameters = stringCommand.split("(")[1].split(",");
+                String[] parameters = splitCommand[1].split(",");
                 for (int j = 0; j < parameters.length; j++) {
-                    parameters[j] = parameters[j].trim().replaceAll("[()]", "");
+                    parameters[j] = parameters[j].trim().replaceAll("[\\(\\)]", "");
                 }
 
                 lineCommands[i] = stringParser(function, parameters);
@@ -52,7 +68,20 @@ public class AutoParser {
     }
 
     private CommandBase stringParser(String command, String[] parameters) {
-        return null;
+        System.out.println(command);
+        System.out.println(parameters);
+        switch (command) {
+            case "followtrajectory":
+                PathPlannerTrajectory trajectory = PathPlanner.loadPath(parameters[0], 
+                    new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION));
+                return new FollowTrajectory(drive, trajectory, Boolean.valueOf(parameters[1]));
+            case "wait":
+                return new WaitCommand(Double.parseDouble(parameters[0]));
+            case "stop":
+                return new InstantCommand(drive::setDriveBrake);
+            default:
+                return new InstantCommand();
+        }
     }
 
 
