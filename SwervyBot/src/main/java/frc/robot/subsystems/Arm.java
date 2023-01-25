@@ -12,10 +12,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-
-
 
 public class Arm extends SubsystemBase {
 
@@ -23,7 +21,7 @@ public class Arm extends SubsystemBase {
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
   private Solenoid gripper;
-
+  
 
   public Arm() {
     armMotor = new CANSparkMax(Constants.ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless);
@@ -34,6 +32,19 @@ public class Arm extends SubsystemBase {
     armMotor.burnFlash();  
   }
 
+  public enum Preset {
+    HANDOFF (0),
+    STOWED  (-80.0),
+    SCORE_LOW  (-20.0),
+    SCORE_MID  (0.0),
+    SCORE_HIGH (10.0);
+    private final double pos;
+    Preset(double pos) {
+      this.pos = pos;
+    }
+    private double pos() { return pos; }
+  }
+
   public void setSpeed(double speed){
     armMotor.set(speed);
   }
@@ -41,11 +52,16 @@ public class Arm extends SubsystemBase {
   public void setPos(double angle){
     armController.setReference(angle, CANSparkMax.ControlType.kPosition);
   }
+
+  public void setPreset(Preset angle){
+    double position = angle.pos();
+    setPos(position);
+  }
   
   public double getPos(){
     return armEncoder.getPosition();
   }
-
+  
   public boolean getGrip(){
     return gripper.get();
   }
@@ -64,7 +80,7 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    
+    SmartDashboard.putNumber("Arm Pos", getPos());
   }
 
   @Override
