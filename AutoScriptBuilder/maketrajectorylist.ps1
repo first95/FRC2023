@@ -1,1 +1,2 @@
-"let trajectoryfiles = [ `"$(((Get-ChildItem ..\SwervyBot\src\main\deploy\pathplanner\*.path).name) -join '","')`"]" > trajectoryfilelist.js
+$BotName = "SwervyBot"
+"let trajectoryfiles = $((Get-ChildItem ..\$BotName\src\main\deploy\pathplanner\*.path).basename | ConvertTo-Json )"  > trajectoryfilelist.js
