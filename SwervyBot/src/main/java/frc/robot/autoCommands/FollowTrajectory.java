@@ -4,6 +4,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Auton;
 import frc.robot.subsystems.SwerveBase;
@@ -12,9 +13,12 @@ public class FollowTrajectory extends SequentialCommandGroup{
     
     public FollowTrajectory(SwerveBase drivebase, PathPlannerTrajectory trajectory, boolean resetOdometry) {
         addRequirements(drivebase);
+        if (trajectory == null) {
+            throw new NullPointerException();
+        }
 
         if(resetOdometry) {
-            drivebase.resetOdometry(trajectory.getInitialHolonomicPose());
+            addCommands(new InstantCommand(() -> drivebase.resetOdometry(trajectory.getInitialHolonomicPose())));
         }
         
         addCommands(
