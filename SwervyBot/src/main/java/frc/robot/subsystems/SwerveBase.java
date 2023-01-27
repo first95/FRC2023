@@ -279,10 +279,10 @@ public class SwerveBase extends SubsystemBase {
     if (!Robot.isReal()) {
       angle += Drivebase.KINEMATICS.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lasttime);
       lasttime = timer.get();
-
-      field.setRobotPose(odometry.getPoseMeters());
-      SmartDashboard.putData("Field", field);
     }
+
+    field.setRobotPose(odometry.getPoseMeters());
+    SmartDashboard.putData("Field", field);
 
     double[] moduleStates = new double[8];
     for (SwerveModule module : swerveModules) {

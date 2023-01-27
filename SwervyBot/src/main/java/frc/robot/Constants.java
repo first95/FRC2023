@@ -92,7 +92,7 @@ public final class Constants {
         // However, the drive is traction-limited, so the max accelration is actually (wheel coefficient of friction * gravity)
         public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
         // max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
-        public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(5676 / 12.8) / 60; // deg/s
+        public static final double MAX_MODULE_ANGULAR_SPEED = 360 * (5676 / 12.8) / 60; // deg/s
 
         // Swerve base kinematics object
         public static final BetterSwerveKinematics KINEMATICS = new BetterSwerveKinematics(MODULE_LOCATIONS);

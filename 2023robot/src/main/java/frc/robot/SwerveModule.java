@@ -25,7 +25,7 @@ public class SwerveModule {
     private AbsoluteEncoder absoluteEncoder;
     private RelativeEncoder angleEncoder, driveEncoder;
     private SparkMaxPIDController angleController, driveController;
-    private double angle, omega, speed, fakePos, lastTime;
+    private double angle, omega, speed, fakePos, lastTime, dt;
     private Timer time;
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Drivebase.KS, Drivebase.KV, Drivebase.KA);
@@ -104,7 +104,7 @@ public class SwerveModule {
         double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Drivebase.MAX_SPEED * 0.01) ? 
             lastAngle :
             desiredState.angle.getDegrees()); // Prevents module rotation if speed is less than 1%
-        angleController.setReference(angle, ControlType.kPosition, 0, Math.toDegrees(desiredState.omegaRadPerSecond) * Drivebase.MODULE_KV);
+        angleController.setReference(angle, ControlType.kPosition, 0, -Math.toDegrees(desiredState.omegaRadPerSecond) * Drivebase.MODULE_KV);
         lastAngle = angle;
 
         this.angle = desiredState.angle.getDegrees();
@@ -112,7 +112,7 @@ public class SwerveModule {
         speed = desiredState.speedMetersPerSecond;
 
         if (!Robot.isReal()) {
-            double dt = time.get() - lastTime;
+            dt = time.get() - lastTime;
             fakePos += (speed * dt);
             lastTime = time.get();
         }
@@ -142,7 +142,7 @@ public class SwerveModule {
             azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
         } else {
             position = fakePos;
-            azimuth = Rotation2d.fromDegrees(angle);
+            azimuth = Rotation2d.fromDegrees(angle + (Math.toDegrees(omega) * dt));
         }
         return new SwerveModulePosition(position, azimuth);
     }
