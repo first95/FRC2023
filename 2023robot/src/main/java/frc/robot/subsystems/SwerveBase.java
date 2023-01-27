@@ -10,14 +10,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.BetterSwerveKinematics;
+import frc.lib.util.BetterSwerveModuleState;
 import frc.robot.Robot;
 import frc.robot.SwerveModule;
 import frc.robot.Constants.Drivebase;
@@ -97,12 +97,12 @@ public class SwerveBase extends SubsystemBase {
     SmartDashboard.putString("RobotVelocity", velocity.toString());
 
     // Calculate required module states via kinematics
-    SwerveModuleState[] swerveModuleStates = 
+    BetterSwerveModuleState[] swerveModuleStates = 
       Drivebase.KINEMATICS.toSwerveModuleStates(
         velocity
       );
     // Desaturate calculated speeds
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Drivebase.MAX_SPEED);
+    BetterSwerveKinematics.desaturateWheelSpeeds(swerveModuleStates, Drivebase.MAX_SPEED);
 
     // Command and display desired states
     for (SwerveModule module : swerveModules) {
@@ -116,14 +116,24 @@ public class SwerveBase extends SubsystemBase {
    * pathing.
    * @param desiredStates  A list of SwerveModuleStates to send to the modules.
    */
-  public void setModuleStates(SwerveModuleState[] desiredStates) {
+  public void setModuleStates(BetterSwerveModuleState[] desiredStates) {
     // Desaturates wheel speeds
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Drivebase.MAX_SPEED);
+    BetterSwerveKinematics.desaturateWheelSpeeds(desiredStates, Drivebase.MAX_SPEED);
 
     // Sets states
     for (SwerveModule module : swerveModules) {
       module.setDesiredState(desiredStates[module.moduleNumber], false);
     }
+  }
+
+  /**
+   * Set field-relative chassis speeds with closed-loop velocity control.
+   * @param chassisSpeeds Field-relative.
+   */
+  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    setModuleStates(
+      Drivebase.KINEMATICS.toSwerveModuleStates(
+        ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getYaw())));
   }
 
   
@@ -169,8 +179,8 @@ public class SwerveBase extends SubsystemBase {
    * Gets the current module states (azimuth and velocity)
    * @return A list of SwerveModuleStates containing the current module states
    */
-  public SwerveModuleState[] getStates() {
-    SwerveModuleState[] states = new SwerveModuleState[Drivebase.NUM_MODULES];
+  public BetterSwerveModuleState[] getStates() {
+    BetterSwerveModuleState[] states = new BetterSwerveModuleState[Drivebase.NUM_MODULES];
     for (SwerveModule module : swerveModules) {
       states[module.moduleNumber] = module.getState();
     }
@@ -252,9 +262,10 @@ public class SwerveBase extends SubsystemBase {
   public void setDriveBrake() {
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.setDesiredState(
-        new SwerveModuleState(
+        new BetterSwerveModuleState(
           0,
-          Drivebase.MODULE_LOCATIONS[swerveModule.moduleNumber].getAngle()),
+          Drivebase.MODULE_LOCATIONS[swerveModule.moduleNumber].getAngle(),
+          0),
         true);
     }
   }
@@ -273,9 +284,13 @@ public class SwerveBase extends SubsystemBase {
       SmartDashboard.putData("Field", field);
     }
 
+    double[] moduleStates = new double[8];
     for (SwerveModule module : swerveModules) {
       SmartDashboard.putNumber("Module" + module.moduleNumber + "CANCoder", module.getAbsoluteEncoder());
+      moduleStates[module.moduleNumber] = module.getState().angle.getDegrees();
+      moduleStates[module.moduleNumber + 1] = module.getState().speedMetersPerSecond;
     }
+    SmartDashboard.putNumberArray("moduleStates", moduleStates);
   }
 
   @Override

@@ -94,7 +94,7 @@ public class RobotContainer {
     driveModeSelector.addOption("Robot Relative (Closed)", closedRobotRel);
 
     SmartDashboard.putData(driveModeSelector);
-    drivebase.setDefaultCommand(absoluteDrive);
+    drivebase.setDefaultCommand(closedFieldRel);
   }
 
   /**
@@ -121,7 +121,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(drivebase);
+    return Autos.driveAndSpin(drivebase);
   }
 
   public void setDriveMode() {
