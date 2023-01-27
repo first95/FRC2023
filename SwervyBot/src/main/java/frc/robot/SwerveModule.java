@@ -95,7 +95,7 @@ public class SwerveModule {
         }
     }
 
-    public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
+    public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean antiJitter) {
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
 
         if (isOpenLoop) {
@@ -106,7 +106,7 @@ public class SwerveModule {
             driveController.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(velocity));
         }
 
-        double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Drivebase.MAX_SPEED * 0.01) ? 
+        double angle = ((Math.abs(desiredState.speedMetersPerSecond) <= (Drivebase.MAX_SPEED * 0.01)) && antiJitter ? 
             lastAngle :
             desiredState.angle.getDegrees()); // Prevents module rotation if speed is less than 1%
         angleController.setReference(angle, ControlType.kPosition);
@@ -120,6 +120,10 @@ public class SwerveModule {
             fakePos += (speed * dt);
             lastTime = time.get();
         }
+    }
+
+    public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
+        setDesiredState(desiredState, isOpenLoop, true);
     }
 
     public SwerveModuleState getState() {

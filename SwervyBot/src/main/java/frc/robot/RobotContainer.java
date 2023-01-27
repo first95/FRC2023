@@ -97,6 +97,7 @@ public class RobotContainer {
     driveModeSelector.addOption("Robot Relative (Closed)", closedRobotRel);
 
     SmartDashboard.putData(driveModeSelector);
+    SmartDashboard.putData("Brake", new InstantCommand(drivebase::setDriveBrake));
     drivebase.setDefaultCommand(absoluteDrive);
   }
 
@@ -115,6 +116,7 @@ public class RobotContainer {
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
+    rotationController.button(1).onTrue(new InstantCommand(drivebase::setDriveBrake));
   }
 
   /**

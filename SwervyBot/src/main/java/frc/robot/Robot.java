@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
-    m_robotContainer.parseAuto();
+    SmartDashboard.putString("AutoCode", "");
     SmartDashboard.putData("Compile", new InstantCommand(m_robotContainer::parseAuto).ignoringDisable(true));
   }
 
