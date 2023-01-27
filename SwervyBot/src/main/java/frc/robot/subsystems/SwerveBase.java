@@ -127,13 +127,12 @@ public class SwerveBase extends SubsystemBase {
   }
 
   /**
-   * Set field-relative chassis speeds with closed-loop velocity control.
-   * @param chassisSpeeds Field-relative.
+   * Set robot-relative chassis speeds with closed-loop velocity control.
+   * @param chassisSpeeds Robot-relative.
    */
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
     setModuleStates(
-      Drivebase.KINEMATICS.toSwerveModuleStates(
-        ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getYaw())));
+      Drivebase.KINEMATICS.toSwerveModuleStates(chassisSpeeds));
   }
 
   
