@@ -74,7 +74,7 @@
         }
         function addLineToScript() {
             var paramvalues = Array.from(document.forms.paramsform.elements, formElmt => formElmt.value);
-            
+
             var commandToAdd = document.getElementById("commandnamefield").value + "(";
             commandToAdd += paramvalues.join(",") + ");\n";
 
@@ -85,7 +85,7 @@
 
         function addCommandToLine() {
             var paramvalues = Array.from(document.forms.paramsform.elements, formElmt => formElmt.value);
-            
+
             var commandToAdd = document.getElementById("commandnamefield").value + "(";
             commandToAdd += paramvalues.join(",") + ")+";
 
@@ -97,6 +97,11 @@
         function copycode() {
             document.getElementById("AutoScript").select();
             document.execCommand("copy");
+        }
+
+        function savetext(s) {
+            function dataUrl(data) { return "data:x-application/text," + escape(data); }
+            window.open(dataUrl(s));
         }
 
     </script>
@@ -115,6 +120,7 @@
     <br>
     <textarea rows="7" cols="80" id="AutoScript"></textarea><br>
     <button onclick="copycode();">Copy Script to clipboard</button>
+    <button onclick='savetext(document.getElementById("AutoScript").value);'>Save Script</button>
 
 </body>
 
