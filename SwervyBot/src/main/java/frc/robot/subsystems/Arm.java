@@ -27,22 +27,9 @@ public class Arm extends SubsystemBase {
     armMotor = new CANSparkMax(Constants.ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless);
     armEncoder = armMotor.getEncoder();
     armController = armMotor.getPIDController();
-    gripper = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.ArmConstants.GRIP_PNEUMATICS_ID);
+    gripper = new Solenoid(PneumaticsModuleType.REVPH, Constants.ArmConstants.GRIP_PNEUMATICS_ID);
     armMotor.restoreFactoryDefaults();
     armMotor.burnFlash();  
-  }
-
-  public enum Preset {
-    HANDOFF (0),
-    STOWED  (-80.0),
-    SCORE_LOW  (-20.0),
-    SCORE_MID  (0.0),
-    SCORE_HIGH (10.0);
-    private final double pos;
-    Preset(double pos) {
-      this.pos = pos;
-    }
-    private double pos() { return pos; }
   }
 
   public void setSpeed(double speed){
