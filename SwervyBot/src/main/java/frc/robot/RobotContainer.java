@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.lib.AutoParseException;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
@@ -138,6 +139,14 @@ public class RobotContainer {
 
   public void parseAuto() {
     String autoText = SmartDashboard.getString("AutoCode", "");
-    autoParser.parse(autoText, DriverStation.getAlliance());
+    String parserOutput = "";
+    try {
+      parserOutput = autoParser.parse(autoText, DriverStation.getAlliance());
+    } catch (Exception e) {
+      parserOutput = e.getMessage();
+      e.printStackTrace();
+    } finally {
+      SmartDashboard.putString("Compiler Message", parserOutput);
+    }
   }
 }

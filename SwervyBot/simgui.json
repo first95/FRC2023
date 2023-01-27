@@ -2,8 +2,10 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Brake": "Command",
       "/SmartDashboard/Compile": "Command",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",
       "/SmartDashboard/SendableChooser[0]": "String Chooser"
     }
   },
