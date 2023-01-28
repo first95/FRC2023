@@ -33,9 +33,9 @@ public class Arm extends SubsystemBase {
     coneGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.GRIP_PNEUMATICS_ID);
     cubeGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.GRIP_PNEUMATICS_ID);
     armMotor.restoreFactoryDefaults();
-    armController.setP(ArmConstants.P);
-    armController.setP(ArmConstants.I);
-    armController.setP(ArmConstants.D);
+    armController.setP(ArmConstants.ARM_KP);
+    armController.setP(ArmConstants.ARM_KI);
+    armController.setP(ArmConstants.ARM_KD);
     armMotor.burnFlash();  
   }
 
