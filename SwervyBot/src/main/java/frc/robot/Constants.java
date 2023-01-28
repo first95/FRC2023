@@ -162,9 +162,9 @@ public final class Constants {
        public enum GripState{
         GRIP_OFF, GRIP_CUBE, GRIP_CONE;
        }
-       public static final double P = 0;
-       public static final double I = 0;
-       public static final double D = 0;
+       public static final double ARM_KP = 0;
+       public static final double ARM_KI = 0;
+       public static final double ARM_PD = 0;
        
     }
    
