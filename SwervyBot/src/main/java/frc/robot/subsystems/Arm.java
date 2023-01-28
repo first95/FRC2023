@@ -18,7 +18,7 @@ import frc.robot.Constants.ArmConstants.GripState;
 
 public class Arm extends SubsystemBase {
 
-  private GripState currentGrip;
+  private GripState currentGrip = GRIP_OFF;
   private CANSparkMax armMotor;
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
@@ -34,8 +34,8 @@ public class Arm extends SubsystemBase {
     cubeGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.GRIP_PNEUMATICS_ID);
     armMotor.restoreFactoryDefaults();
     armController.setP(ArmConstants.ARM_KP);
-    armController.setP(ArmConstants.ARM_KI);
-    armController.setP(ArmConstants.ARM_KD);
+    armController.setI(ArmConstants.ARM_KI);
+    armController.setD(ArmConstants.ARM_KD);
     armMotor.burnFlash();  
   }
 
@@ -47,7 +47,7 @@ public class Arm extends SubsystemBase {
     armController.setReference(angle, CANSparkMax.ControlType.kPosition);
   }
 
-  public void setGrip(ArmConstants.Preset position){
+  public void setPreset(ArmConstants.Preset position){
     double angle = position.angle();
     setPos(angle);
   }
@@ -61,7 +61,6 @@ public class Arm extends SubsystemBase {
   }
 
   public void setGrip(GripState state){
-    currentGrip = state;
     if(currentGrip == GripState.GRIP_CUBE ){
       coneGripper.set(false);
       cubeGripper.set(true);
@@ -72,6 +71,7 @@ public class Arm extends SubsystemBase {
       coneGripper.set(false);
       cubeGripper.set(false);
     }
+    currentGrip = state;
   }
 
   public void resetOdometry() {
