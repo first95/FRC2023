@@ -44,7 +44,6 @@ function buildParameterInputs() {
         );
       }
 
-      parametersdiv.appendChild(br);
       var container = document.createElement("div");
       container.classList.add("parameter");
       container.appendChild(droplable);

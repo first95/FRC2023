@@ -10,7 +10,10 @@
   </head>
 
   <body onload="buildForm();">
-    <h2>Autonomous mode script builder</h2>
+    <div style="display: flex; align-items: center">
+      <h2>Autonomous mode script builder</h2>
+      <img style="margin: 0.5em" src="favicon.png" width="32" />
+    </div>
 
     <div class="builder">
       <div class="commandsContainer">
@@ -35,7 +38,7 @@
     <hr />
 
     <div style="display: flex">
-      <div class="flowContainer">
+      <div style="flex: 1" class="flowContainer">
         <button onclick="addLineToScript();">
           Add Command and end line(;)
         </button>

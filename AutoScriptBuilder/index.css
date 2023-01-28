@@ -6,18 +6,21 @@
 }
 
 #paramsform {
+  height: 200px;
   display: flex;
   margin: 0.25em;
   margin-block-end: 0;
 }
 
 #parametersfields {
+  height: 100%;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
 }
 
 .parameter {
+  margin: 0.25em;
   display: flex;
   flex-direction: column;
 }
@@ -48,7 +51,6 @@ body {
 }
 
 .flowContainer {
-  max-width: 600px;
   margin: 0.25em;
 }
 
@@ -60,4 +62,5 @@ body {
 .builder {
   display: flex;
   margin: 1em;
+  min-height: 200px;
 }
