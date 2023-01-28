@@ -1,0 +1,26 @@
+/* Components */
+.headerLabel {
+  font-size: 20px;
+  text-decoration: underline;
+}
+
+/* Containers */
+.commandsContainer {
+  margin: 0.25em;
+  display: flex;
+  flex-direction: column;
+}
+
+.flowContainer {
+  margin: 0.25em;
+}
+
+.paramsContainer {
+  margin: 0.25em;
+}
+
+.builder {
+  display: flex;
+  margin: 1em;
+  min-height: 150px;
+}
