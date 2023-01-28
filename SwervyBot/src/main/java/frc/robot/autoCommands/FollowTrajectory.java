@@ -29,7 +29,7 @@ public class FollowTrajectory extends SequentialCommandGroup{
                 new PIDController(Auton.Y_KP, Auton.Y_KI, Auton.Y_KD),
                 new PIDController(Auton.ANG_KP, Auton.ANG_KI, Auton.ANG_KD),
                 drivebase::setChassisSpeeds,
-                false,
+                true,
                 drivebase)
         );
     } 
