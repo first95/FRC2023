@@ -6,7 +6,9 @@
       "/SmartDashboard/Compile": "Command",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",
-      "/SmartDashboard/SendableChooser[0]": "String Chooser"
+      "/SmartDashboard/Reset Odometry": "Command",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/Test DriveToPoint": "Command"
     }
   },
   "NetworkTables": {

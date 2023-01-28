@@ -1,5 +1,7 @@
 package frc.robot.autoCommands;
 
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
@@ -32,5 +34,26 @@ public class FollowTrajectory extends SequentialCommandGroup{
                 false,
                 drivebase)
         );
-    } 
+    }
+
+    public FollowTrajectory(SwerveBase drivebase, Supplier<PathPlannerTrajectory> trajectoryGen, boolean resetOdometry) {
+        addRequirements(drivebase);
+        PathPlannerTrajectory trajectory = trajectoryGen.get();
+
+        if(resetOdometry) {
+            addCommands(new InstantCommand(() -> drivebase.resetOdometry(trajectory.getInitialHolonomicPose())));
+        }
+        
+        addCommands(
+            new PPSwerveControllerCommand(
+                trajectory,
+                drivebase::getPose,
+                new PIDController(Auton.X_KP, Auton.X_KI, Auton.X_KD),
+                new PIDController(Auton.Y_KP, Auton.Y_KI, Auton.Y_KD),
+                new PIDController(Auton.ANG_KP, Auton.ANG_KI, Auton.ANG_KD),
+                drivebase::setChassisSpeeds,
+                false,
+                drivebase)
+        );
+    }
 }

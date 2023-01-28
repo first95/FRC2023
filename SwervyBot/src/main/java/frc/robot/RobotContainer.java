@@ -6,12 +6,15 @@ package frc.robot;
 
 import frc.lib.AutoParseException;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.autoCommands.DriveToPose;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveBase;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -99,6 +102,7 @@ public class RobotContainer {
 
     SmartDashboard.putData(driveModeSelector);
     SmartDashboard.putData("Brake", new InstantCommand(drivebase::setDriveBrake));
+    SmartDashboard.putData("Reset Odometry", new InstantCommand(() -> drivebase.resetOdometry(new Pose2d())));
     drivebase.setDefaultCommand(absoluteDrive);
   }
 
@@ -118,6 +122,7 @@ public class RobotContainer {
 
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     rotationController.button(1).onTrue(new InstantCommand(drivebase::setDriveBrake));
+    driverController.button(2).onTrue(new DriveToPose(new Pose2d(1, 0, new Rotation2d()), drivebase));
   }
 
   /**
