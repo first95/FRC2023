@@ -26,7 +26,9 @@
 }
 
 button {
+  flex: 1;
   padding: 0.5em;
+  margin: 0 0.2em;
   border-radius: 5px;
   border: none;
   transition: all 0.25s;
@@ -51,7 +53,11 @@ body {
 }
 
 .flowContainer {
+  min-width: 450px;
+  max-width: 50vw;
   margin: 0.25em;
+  display: flex;
+  flex-direction: column;
 }
 
 .paramsContainer {

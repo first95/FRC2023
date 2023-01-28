@@ -39,12 +39,14 @@
 
     <div style="display: flex">
       <div style="flex: 1" class="flowContainer">
-        <button onclick="addLineToScript();">
-          Add Command and end line(;)
-        </button>
-        <button onclick="addCommandToLine();">
-          Add Command to current line (+)
-        </button>
+        <div style="display: flex; flex: 1">
+          <button onclick="addLineToScript();">
+            Add Command and end line(;)
+          </button>
+          <button onclick="addCommandToLine();">
+            Add Command to current line (+)
+          </button>
+        </div>
 
         <br />
 
@@ -55,12 +57,15 @@
           id="AutoScript"
         ></textarea>
         <br />
-        <button onclick="copycode();">Copy Script to clipboard</button>
-        <button
-          onclick='savetext(document.getElementById("AutoScript").value);'
-        >
-          Save Script
-        </button>
+
+        <div style="display: flex; flex: 1">
+          <button onclick="copycode();">Copy Script to clipboard</button>
+          <button
+            onclick='savetext(document.getElementById("AutoScript").value);'
+          >
+            Save Script
+          </button>
+        </div>
       </div>
     </div>
   </body>
