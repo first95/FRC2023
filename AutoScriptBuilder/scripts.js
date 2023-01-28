@@ -43,6 +43,7 @@ function buildParameterInputs() {
           thisparamopt
         );
       }
+
       parametersdiv.appendChild(br);
       parametersdiv.appendChild(droplable);
       parametersdiv.appendChild(dropdown);
@@ -54,7 +55,6 @@ function buildParameterInputs() {
       inputfield.setAttribute("type", "text");
       inputfield.setAttribute("name", param.paramname);
       inputfield.setAttribute("placeholder", param.paramvalue);
-      parametersdiv.appendChild(br);
       parametersdiv.appendChild(inputlabel);
       parametersdiv.appendChild(inputfield);
     }

@@ -4,6 +4,7 @@
     <!-- Build scripts to be parsed by ..\SwervyBot\src\main\java\frc\robot\AutoParser.java -->
 
     <link rel="stylesheet" type="text/css" href="index.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
     <script src="./trajectoryfilelist.js"></script>
     <script src="./scripts.js"></script>
   </head>
@@ -33,25 +34,31 @@
 
     <hr />
 
-    <div class="flowContainer">
-      <button onclick="addLineToScript();">Add Command and end line(;)</button>
-      <button onclick="addCommandToLine();">
-        Add Command to current line (+)
-      </button>
+    <div style="display: flex">
+      <div class="flowContainer">
+        <button onclick="addLineToScript();">
+          Add Command and end line(;)
+        </button>
+        <button onclick="addCommandToLine();">
+          Add Command to current line (+)
+        </button>
 
-      <br />
+        <br />
 
-      <textarea
-        style="margin: 0.25em 0"
-        rows="7"
-        cols="80"
-        id="AutoScript"
-      ></textarea>
-      <br />
-      <button onclick="copycode();">Copy Script to clipboard</button>
-      <button onclick='savetext(document.getElementById("AutoScript").value);'>
-        Save Script
-      </button>
+        <textarea
+          style="margin: 0.25em 0"
+          rows="7"
+          cols="80"
+          id="AutoScript"
+        ></textarea>
+        <br />
+        <button onclick="copycode();">Copy Script to clipboard</button>
+        <button
+          onclick='savetext(document.getElementById("AutoScript").value);'
+        >
+          Save Script
+        </button>
+      </div>
     </div>
   </body>
 </html>

@@ -2,6 +2,32 @@
 .headerLabel {
   font-size: 20px;
   text-decoration: underline;
+  margin-bottom: 0.25em;
+}
+
+#paramsform {
+  display: flex;
+  margin: 0.25em;
+  margin-block-end: 0;
+}
+
+#parametersfields {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+button {
+  padding: 0.5em;
+  border-radius: 5px;
+  border: none;
+  transition: all 0.25s;
+}
+
+button:hover {
+  background-color: #d9d9d9;
+  transition: all 0.25s;
+  cursor: pointer;
 }
 
 /* Containers */
@@ -12,15 +38,16 @@
 }
 
 .flowContainer {
+  max-width: 600px;
   margin: 0.25em;
 }
 
 .paramsContainer {
+  width: 100%;
   margin: 0.25em;
 }
 
 .builder {
   display: flex;
   margin: 1em;
-  min-height: 150px;
 }
