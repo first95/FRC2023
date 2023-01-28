@@ -98,7 +98,7 @@ public final class Constants {
         public static final BetterSwerveKinematics KINEMATICS = new BetterSwerveKinematics(MODULE_LOCATIONS);
 
         // Module PIDF gains
-        public static final double MODULE_KP = 0.001;
+        public static final double MODULE_KP = 0.01;
         public static final double MODULE_KI = 0;
         public static final double MODULE_KD = 0;
         public static final double MODULE_IZ = 0;
@@ -155,7 +155,7 @@ public final class Constants {
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
 
-        public static final int PIGEON = 14;
+        public static final int PIGEON = 30;
     }
 
     public class OperatorConstants {
