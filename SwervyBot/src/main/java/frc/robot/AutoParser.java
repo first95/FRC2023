@@ -6,6 +6,7 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -18,12 +19,14 @@ import frc.robot.subsystems.SwerveBase;
 public class AutoParser {
     private SwerveBase drive;
     private CommandBase AutoMove;
+    private Alliance currentAlliance;
 
     public AutoParser(SwerveBase drive) {
         this.drive = drive;
     }
 
     public String parse(String autoMove, Alliance alliance) throws Exception {
+        currentAlliance = alliance;
         System.out.println(autoMove);
         String[] lines = autoMove.split(";");
         
@@ -91,6 +94,7 @@ public class AutoParser {
                 PathPlannerTrajectory trajectory = PathPlanner.loadPath(parameters[0], 
                     new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION));
                 try {
+                    trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, currentAlliance);
                     return new FollowTrajectory(drive, trajectory, Boolean.valueOf(parameters[1]));
                 } catch (NullPointerException e) {
                     throw new AutoParseException("FollowTrajectory", "Path file not found", e);
@@ -113,6 +117,4 @@ public class AutoParser {
                 throw new AutoParseException("Unrecognized Command", "Command is not valid");
         }
     }
-
-
 }
