@@ -17,6 +17,11 @@
   flex-direction: column;
 }
 
+.parameter {
+  display: flex;
+  flex-direction: column;
+}
+
 button {
   padding: 0.5em;
   border-radius: 5px;
@@ -31,6 +36,11 @@ button:hover {
 }
 
 /* Containers */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
 .commandsContainer {
   margin: 0.25em;
   display: flex;

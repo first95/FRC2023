@@ -45,8 +45,11 @@ function buildParameterInputs() {
       }
 
       parametersdiv.appendChild(br);
-      parametersdiv.appendChild(droplable);
-      parametersdiv.appendChild(dropdown);
+      var container = document.createElement("div");
+      container.classList.add("parameter");
+      container.appendChild(droplable);
+      container.appendChild(dropdown);
+      parametersdiv.appendChild(container);
     } else {
       var inputlabel = document.createElement("label");
       inputlabel.setAttribute("for", param.paramname);
@@ -55,8 +58,12 @@ function buildParameterInputs() {
       inputfield.setAttribute("type", "text");
       inputfield.setAttribute("name", param.paramname);
       inputfield.setAttribute("placeholder", param.paramvalue);
-      parametersdiv.appendChild(inputlabel);
-      parametersdiv.appendChild(inputfield);
+
+      var container = document.createElement("div");
+      container.classList.add("parameter");
+      container.appendChild(inputlabel);
+      container.appendChild(inputfield);
+      parametersdiv.appendChild(container);
     }
   }
 }
