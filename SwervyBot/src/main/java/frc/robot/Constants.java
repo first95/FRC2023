@@ -146,7 +146,8 @@ public final class Constants {
     }
     public static final class ArmConstants {
        public static final int ARM_MOTOR_ID = 10;  
-       public static final int GRIP_PNEUMATICS_ID = 0;
+       public static final int CUBE_SOLENOID_ID = 0;
+       public static final int CONE_SOLENOID_ID = 0;
        public enum Preset{
         HIGH_SCORE (20.0),
         MID_SCORE (0.0),
