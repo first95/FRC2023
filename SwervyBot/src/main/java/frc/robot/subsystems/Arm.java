@@ -30,8 +30,8 @@ public class Arm extends SubsystemBase {
     armMotor = new CANSparkMax(ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless);
     armEncoder = armMotor.getEncoder();
     armController = armMotor.getPIDController();
-    coneGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.GRIP_PNEUMATICS_ID);
-    cubeGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.GRIP_PNEUMATICS_ID);
+    coneGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.CUBE_SOLENOID_ID);
+    cubeGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.CONE_SOLENOID_ID);
     armMotor.restoreFactoryDefaults();
     armController.setP(ArmConstants.ARM_KP);
     armController.setI(ArmConstants.ARM_KI);
