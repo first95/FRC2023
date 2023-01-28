@@ -74,10 +74,10 @@ public class SwerveBase extends SubsystemBase {
       new SwerveModule(3, Drivebase.Mod3.CONSTANTS),
     };
 
-    odometry = new SwerveDrivePoseEstimator(Drivebase.KINEMATICS, getYaw(), getModulePositions(), getVisionPose().toPose2d());
-    zeroGyro();
-
     visionData = NetworkTableInstance.getDefault().getTable("limelight");
+
+    odometry = new SwerveDrivePoseEstimator(Drivebase.KINEMATICS, getYaw(), getModulePositions(), getVisionPose().toPose2d());
+    setGyro(getVisionPose().toPose2d().getRotation());
   }
 
   /**
@@ -244,6 +244,17 @@ public class SwerveBase extends SubsystemBase {
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
 
+  public void setGyro(Rotation2d angle) {
+    // Resets the real gyro or the angle accumulator, depending on whether the robot is being simulated
+    if (Robot.isReal()) {
+      imu.setYaw(angle.getDegrees());
+    } else {
+      this.angle = angle.getDegrees();
+    }
+    wasGyroReset = true;
+    resetOdometry(new Pose2d(getPose().getTranslation(), angle));
+  }
+
   /**
    * Gets the current yaw angle of the robot, as reported by the imu.  CCW positive, not wrapped.
    * @return The yaw angle
@@ -315,10 +326,13 @@ public class SwerveBase extends SubsystemBase {
   public void periodic() {
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
-    Pose2d visionPose = getVisionPose().toPose2d();
-    if (visionPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
-      double timestamp = Timer.getFPGATimestamp() - (visionData.getEntry("tl").getDouble(0) + 11) / 1000;
-      odometry.addVisionMeasurement(visionPose, timestamp);
+    Pose3d visionPose = getVisionPose();
+    if (visionPose != null) {
+      Pose2d pose = visionPose.toPose2d();
+      if (pose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
+        double timestamp = Timer.getFPGATimestamp() - (visionData.getEntry("tl").getDouble(0) + 11) / 1000;
+        odometry.addVisionMeasurement(pose, timestamp);
+      }
     }
     
 
