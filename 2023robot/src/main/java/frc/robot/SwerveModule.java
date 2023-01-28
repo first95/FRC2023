@@ -23,7 +23,7 @@ public class SwerveModule {
     private double angleOffset, lastAngle;
     private CANSparkMax angleMotor, driveMotor;
     private AbsoluteEncoder absoluteEncoder;
-    private RelativeEncoder angleEncoder, driveEncoder;
+    private RelativeEncoder driveEncoder;
     private SparkMaxPIDController angleController, driveController;
     private double angle, omega, speed, fakePos, lastTime, dt;
     private Timer time;
@@ -124,8 +124,8 @@ public class SwerveModule {
         double omega;
         if (Robot.isReal()) {
             velocity = driveEncoder.getVelocity();
-            azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
-            omega = angleEncoder.getVelocity();
+            azimuth = Rotation2d.fromDegrees(absoluteEncoder.getPosition());
+            omega = absoluteEncoder.getVelocity();
         } else {
             velocity = speed;
             azimuth = Rotation2d.fromDegrees(this.angle);
@@ -139,7 +139,7 @@ public class SwerveModule {
         Rotation2d azimuth;
         if (Robot.isReal()) {
             position = driveEncoder.getPosition();
-            azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
+            azimuth = Rotation2d.fromDegrees(absoluteEncoder.getPosition());
         } else {
             position = fakePos;
             azimuth = Rotation2d.fromDegrees(angle + (Math.toDegrees(omega) * dt));
@@ -148,7 +148,7 @@ public class SwerveModule {
     }
 
     public double getAbsoluteEncoder() {
-        return angleEncoder.getPosition();
+        return absoluteEncoder.getPosition();
     }
 
     public void setMotorBrake(boolean brake) {
