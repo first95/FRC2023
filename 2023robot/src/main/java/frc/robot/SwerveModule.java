@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.AlternateEncoderType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -44,7 +43,7 @@ public class SwerveModule {
         driveMotor.restoreFactoryDefaults();
 
         // Config angle encoders
-        absoluteEncoder = angleMotor.getAbsoluteEncoder(null)
+        absoluteEncoder = angleMotor.getAbsoluteEncoder(Type.kDutyCycle);
         absoluteEncoder.setPositionConversionFactor(Drivebase.DEGREES_PER_STEERING_ROTATION);
         absoluteEncoder.setVelocityConversionFactor(Drivebase.DEGREES_PER_STEERING_ROTATION / 60);
         absoluteEncoder.setZeroOffset(angleOffset);
