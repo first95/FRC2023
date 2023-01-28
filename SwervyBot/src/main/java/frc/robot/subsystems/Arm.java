@@ -13,22 +13,29 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
+import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.ArmConstants.GripState;
 
 public class Arm extends SubsystemBase {
 
+  private GripState currentGrip;
   private CANSparkMax armMotor;
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
-  private Solenoid gripper;
+  private Solenoid coneGripper;
+  private Solenoid cubeGripper;
   
 
   public Arm() {
-    armMotor = new CANSparkMax(Constants.ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless);
+    armMotor = new CANSparkMax(ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless);
     armEncoder = armMotor.getEncoder();
     armController = armMotor.getPIDController();
-    gripper = new Solenoid(PneumaticsModuleType.REVPH, Constants.ArmConstants.GRIP_PNEUMATICS_ID);
+    coneGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.GRIP_PNEUMATICS_ID);
+    cubeGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.GRIP_PNEUMATICS_ID);
     armMotor.restoreFactoryDefaults();
+    armController.setP(ArmConstants.P);
+    armController.setP(ArmConstants.I);
+    armController.setP(ArmConstants.D);
     armMotor.burnFlash();  
   }
 
@@ -40,25 +47,31 @@ public class Arm extends SubsystemBase {
     armController.setReference(angle, CANSparkMax.ControlType.kPosition);
   }
 
-  public void setPreset(Preset angle){
-    double position = angle.pos();
-    setPos(position);
+  public void setGrip(ArmConstants.Preset position){
+    double angle = position.angle();
+    setPos(angle);
   }
   
   public double getPos(){
     return armEncoder.getPosition();
   }
   
-  public boolean getGrip(){
-    return gripper.get();
+  public GripState getGrip(){
+    return currentGrip;
   }
 
-  public void setGrip(boolean g){
-    gripper.set(g);
-  }
-
-  public void toggleGrip(){
-    gripper.toggle();
+  public void setGrip(GripState state){
+    currentGrip = state;
+    if(currentGrip == GripState.GRIP_CUBE ){
+      coneGripper.set(false);
+      cubeGripper.set(true);
+    }else if(currentGrip == GripState.GRIP_CONE){
+      coneGripper.set(true);
+      cubeGripper.set(false);
+    }else{
+      coneGripper.set(false);
+      cubeGripper.set(false);
+    }
   }
 
   public void resetOdometry() {
