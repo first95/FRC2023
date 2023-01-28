@@ -94,7 +94,7 @@ public class RobotContainer {
     driveModeSelector.addOption("Robot Relative (Closed)", closedRobotRel);
 
     SmartDashboard.putData(driveModeSelector);
-    drivebase.setDefaultCommand(new InstantCommand(() -> drivebase.turnModules(0.1)));
+    drivebase.setDefaultCommand(openRobotRel);
   }
 
   /**

@@ -60,8 +60,8 @@ public final class Constants {
         public static final double HEADING_KD = 0.01;
 
         // Motor and encoder inversions
-        public static final boolean ABSOLUTE_ENCODER_INVERT = false;
-        public static final boolean DRIVE_MOTOR_INVERT = false;
+        public static final boolean ABSOLUTE_ENCODER_INVERT = true;
+        public static final boolean DRIVE_MOTOR_INVERT = true;
         public static final boolean ANGLE_MOTOR_INVERT = false;
         public static final boolean INVERT_GYRO = false;
 
@@ -98,7 +98,7 @@ public final class Constants {
         public static final BetterSwerveKinematics KINEMATICS = new BetterSwerveKinematics(MODULE_LOCATIONS);
 
         // Module PIDF gains
-        public static final double MODULE_KP = 0.01;
+        public static final double MODULE_KP = 0.001;
         public static final double MODULE_KI = 0;
         public static final double MODULE_KD = 0;
         public static final double MODULE_IZ = 0;
@@ -121,7 +121,7 @@ public final class Constants {
         // and steering converts motor rotations to module azimuth
         public static final double METERS_PER_MOTOR_ROTATION = (Math.PI * Units.inchesToMeters(3)) / 4.71;
             // Calculation: 3in diameter wheels * pi [circumfrence] / gear ratio
-        public static final double DEGREES_PER_STEERING_ROTATION = 360 * 7 / 372;
+        public static final double DEGREES_PER_STEERING_ROTATION = 360;
             // degrees per rotation / gear ratio between module and motor
         
         public static final int NUM_MODULES = 4;
@@ -129,28 +129,28 @@ public final class Constants {
         public static final class Mod0 {
             public static final int DRIVE_MOTOR_ID = 7;
             public static final int ANGLE_MOTOR_ID = 6;
-            public static final double ANGLE_OFFSET = 0;
+            public static final double ANGLE_OFFSET = 231.48 + 90;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
         public static final class Mod1 {
             public static final int DRIVE_MOTOR_ID = 9;
             public static final int ANGLE_MOTOR_ID = 8;
-            public static final double ANGLE_OFFSET = 0;
+            public static final double ANGLE_OFFSET = 170.69 + 180;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
         public static final class Mod2 {
             public static final int DRIVE_MOTOR_ID = 5;
             public static final int ANGLE_MOTOR_ID = 4;
-            public static final double ANGLE_OFFSET = 0;
+            public static final double ANGLE_OFFSET = 52.67;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
         public static final class Mod3 {
             public static final int DRIVE_MOTOR_ID = 3;
             public static final int ANGLE_MOTOR_ID = 2;
-            public static final double ANGLE_OFFSET = 0;
+            public static final double ANGLE_OFFSET = 224.08 - 90;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
