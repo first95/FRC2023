@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import frc.lib.util.BetterSwerveModuleState;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants.Drivebase;
 
@@ -26,7 +27,7 @@ public class SwerveModule {
     private CANCoder absoluteEncoder;
     private RelativeEncoder angleEncoder, driveEncoder;
     private SparkMaxPIDController angleController, driveController;
-    private double angle, speed, fakePos, lastTime;
+    private double angle, omega, speed, fakePos, lastTime, dt;
     private Timer time;
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Drivebase.KS, Drivebase.KV, Drivebase.KA);
@@ -34,6 +35,7 @@ public class SwerveModule {
     public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants) {
         angle = 0;
         speed = 0;
+        omega = 0;
         fakePos = 0;
         this.moduleNumber = moduleNumber;
         angleOffset = moduleConstants.angleOffset;
@@ -83,6 +85,9 @@ public class SwerveModule {
         driveMotor.setInverted(Drivebase.DRIVE_MOTOR_INVERT);
         driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
+        driveMotor.burnFlash();
+        angleMotor.burnFlash();
+
         lastAngle = getState().angle.getDegrees();
 
         if (!Robot.isReal()) {
@@ -92,8 +97,10 @@ public class SwerveModule {
         }
     }
 
-    public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
-        desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
+    public void setDesiredState(BetterSwerveModuleState desiredState, boolean isOpenLoop, boolean antiJitter) {
+        SwerveModuleState simpleState = new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
+        simpleState = SwerveModuleState.optimize(simpleState, getState().angle);
+        desiredState = new BetterSwerveModuleState(simpleState.speedMetersPerSecond, simpleState.angle, desiredState.omegaRadPerSecond);
 
         if (isOpenLoop) {
             double percentOutput = desiredState.speedMetersPerSecond / Drivebase.MAX_SPEED;
@@ -103,33 +110,41 @@ public class SwerveModule {
             driveController.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(velocity));
         }
 
-        double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Drivebase.MAX_SPEED * 0.01) ? 
+        double angle = ((Math.abs(desiredState.speedMetersPerSecond) <= (Drivebase.MAX_SPEED * 0.01)) && antiJitter ? 
             lastAngle :
             desiredState.angle.getDegrees()); // Prevents module rotation if speed is less than 1%
-        angleController.setReference(angle, ControlType.kPosition);
+        angleController.setReference(angle, ControlType.kPosition, 0, -Math.toDegrees(desiredState.omegaRadPerSecond) * Drivebase.MODULE_KV);
         lastAngle = angle;
 
         this.angle = desiredState.angle.getDegrees();
+        omega = desiredState.omegaRadPerSecond;
         speed = desiredState.speedMetersPerSecond;
 
         if (!Robot.isReal()) {
-            double dt = time.get() - lastTime;
+            dt = time.get() - lastTime;
             fakePos += (speed * dt);
             lastTime = time.get();
         }
     }
 
-    public SwerveModuleState getState() {
+    public void setDesiredState(BetterSwerveModuleState desiredState, boolean isOpenLoop) {
+        setDesiredState(desiredState, isOpenLoop, true);
+    }
+
+    public BetterSwerveModuleState getState() {
         double velocity;
         Rotation2d azimuth;
+        double omega;
         if (Robot.isReal()) {
             velocity = driveEncoder.getVelocity();
             azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
+            omega = angleEncoder.getVelocity();
         } else {
             velocity = speed;
             azimuth = Rotation2d.fromDegrees(this.angle);
+            omega = this.omega;
         }
-        return new SwerveModuleState(velocity, azimuth);
+        return new BetterSwerveModuleState(velocity, azimuth, omega);
     }
 
     public SwerveModulePosition getPosition() {
@@ -140,7 +155,7 @@ public class SwerveModule {
             azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
         } else {
             position = fakePos;
-            azimuth = Rotation2d.fromDegrees(angle);
+            azimuth = Rotation2d.fromDegrees(angle + (Math.toDegrees(omega) * dt));
         }
         return new SwerveModulePosition(position, azimuth);
     }
