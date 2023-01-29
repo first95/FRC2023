@@ -106,8 +106,9 @@ public class SwerveBase extends SubsystemBase {
 
     // Command and display desired states
     for (SwerveModule module : swerveModules) {
-      SmartDashboard.putString("Module" + module.toString(), swerveModuleStates[module.moduleNumber].toString());
       module.setDesiredState(swerveModuleStates[module.moduleNumber], isOpenLoop);
+      SmartDashboard.putNumber("Module " + module.moduleNumber + " Speed Setpoint: ", swerveModuleStates[module.moduleNumber].speedMetersPerSecond);
+      SmartDashboard.putNumber("Module " + module.moduleNumber + " Angle Setpoint: ", swerveModuleStates[module.moduleNumber].angle.getDegrees());
     }
   }
 

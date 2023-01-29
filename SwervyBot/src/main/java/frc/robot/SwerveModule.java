@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.util.BetterSwerveModuleState;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants.Drivebase;
@@ -102,6 +103,9 @@ public class SwerveModule {
         simpleState = SwerveModuleState.optimize(simpleState, getState().angle);
         desiredState = new BetterSwerveModuleState(simpleState.speedMetersPerSecond, simpleState.angle, desiredState.omegaRadPerSecond);
 
+        SmartDashboard.putNumber("Optimized " + moduleNumber + " Speed Setpoint: ", desiredState.speedMetersPerSecond);
+        SmartDashboard.putNumber("Optimized " + moduleNumber + " Angle Setpoint: ", desiredState.angle.getDegrees());
+
         if (isOpenLoop) {
             double percentOutput = desiredState.speedMetersPerSecond / Drivebase.MAX_SPEED;
             driveMotor.set(percentOutput);
@@ -153,6 +157,7 @@ public class SwerveModule {
             position = fakePos;
             azimuth = Rotation2d.fromDegrees(angle + (Math.toDegrees(omega) * dt));
         }
+        SmartDashboard.putNumber("Module " + moduleNumber + "Angle", azimuth.getDegrees());
         return new SwerveModulePosition(position, azimuth);
     }
 

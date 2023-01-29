@@ -92,6 +92,8 @@ public class SwerveModule {
         SwerveModuleState simpleState = new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
         simpleState = SwerveModuleState.optimize(simpleState, getState().angle);
         desiredState = new BetterSwerveModuleState(simpleState.speedMetersPerSecond, simpleState.angle, desiredState.omegaRadPerSecond);
+        SmartDashboard.putNumber("Optimized " + moduleNumber + " Speed Setpoint: ", desiredState.speedMetersPerSecond);
+        SmartDashboard.putNumber("Optimized " + moduleNumber + " Angle Setpoint: ", desiredState.angle.getDegrees());
 
         if (isOpenLoop) {
             double percentOutput = desiredState.speedMetersPerSecond / Drivebase.MAX_SPEED;
@@ -144,6 +146,7 @@ public class SwerveModule {
             position = fakePos;
             azimuth = Rotation2d.fromDegrees(angle + (Math.toDegrees(omega) * dt));
         }
+        SmartDashboard.putNumber("Module " + moduleNumber + "Angle", azimuth.getDegrees());
         return new SwerveModulePosition(position, azimuth);
     }
 
