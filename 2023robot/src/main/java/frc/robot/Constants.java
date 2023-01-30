@@ -165,4 +165,10 @@ public final class Constants {
         public static final double LEFT_X_DEADBAND = 0.01;
         public static final double LEFT_Y_DEADBAND = 0.01;
     }
+
+    public static final class IntakeConstants {
+        public static final int BOTTOM_ROLLER_ID = 14;
+        public static final int TOP_ROLLER_ID = 12;
+        public static final boolean INVERT_ROLLERS = false;
+    }
 }
