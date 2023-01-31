@@ -105,6 +105,7 @@ public class SwerveModule {
 
         SmartDashboard.putNumber("Optimized " + moduleNumber + " Speed Setpoint: ", desiredState.speedMetersPerSecond);
         SmartDashboard.putNumber("Optimized " + moduleNumber + " Angle Setpoint: ", desiredState.angle.getDegrees());
+        SmartDashboard.putNumber("Module " + moduleNumber + " Omega: ", Math.toDegrees(desiredState.omegaRadPerSecond));
 
         if (isOpenLoop) {
             double percentOutput = desiredState.speedMetersPerSecond / Drivebase.MAX_SPEED;
@@ -117,7 +118,7 @@ public class SwerveModule {
         double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Drivebase.MAX_SPEED * 0.01) ? 
             lastAngle :
             desiredState.angle.getDegrees()); // Prevents module rotation if speed is less than 1%
-        angleController.setReference(angle, ControlType.kPosition, 0, -Math.toDegrees(desiredState.omegaRadPerSecond) * Drivebase.MODULE_KV);
+        angleController.setReference(angle, ControlType.kPosition, 0, Math.toDegrees(desiredState.omegaRadPerSecond) * Drivebase.MODULE_KV);
         lastAngle = angle;
 
         this.angle = desiredState.angle.getDegrees();
