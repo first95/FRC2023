@@ -4,10 +4,8 @@
 
 package frc.robot;
 
-import frc.lib.AutoParseException;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.autoCommands.DriveToPose;
-import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
