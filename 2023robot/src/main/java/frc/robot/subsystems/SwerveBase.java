@@ -102,9 +102,6 @@ public class SwerveBase extends SubsystemBase {
         velocity
       );
     
-    for (BetterSwerveModuleState state : swerveModuleStates) {
-      state.omegaRadPerSecond = state.omegaRadPerSecond - rotation;
-    }
     // Desaturate calculated speeds
     BetterSwerveKinematics.desaturateWheelSpeeds(swerveModuleStates, Drivebase.MAX_SPEED);
 
