@@ -100,7 +100,7 @@ public class RobotContainer {
     
 
     SmartDashboard.putData(driveModeSelector);
-    drivebase.setDefaultCommand(openRobotRel);
+    drivebase.setDefaultCommand(absoluteDrive);
     intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), intake));
   }
 
