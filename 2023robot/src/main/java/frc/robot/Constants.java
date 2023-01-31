@@ -60,21 +60,21 @@ public final class Constants {
         public static final double HEADING_KD = 0.01;
 
         // Motor and encoder inversions
-        public static final boolean CANCODER_INVERT = false;
-        public static final boolean DRIVE_MOTOR_INVERT = false;
+        public static final boolean ABSOLUTE_ENCODER_INVERT = true;
+        public static final boolean DRIVE_MOTOR_INVERT = true;
         public static final boolean ANGLE_MOTOR_INVERT = false;
         public static final boolean INVERT_GYRO = false;
 
         // Module locations, in meters, as distances to the center of the robot.
         // Positive x is torwards the robot front, and +y is torwards robot left.
-        public static final double FRONT_LEFT_X = Units.inchesToMeters(11);
-        public static final double FRONT_LEFT_Y = Units.inchesToMeters(11);
-        public static final double FRONT_RIGHT_X = Units.inchesToMeters(11);
-        public static final double FRONT_RIGHT_Y = Units.inchesToMeters(-11);
-        public static final double BACK_LEFT_X = Units.inchesToMeters(-11);
-        public static final double BACK_LEFT_Y = Units.inchesToMeters(11);
-        public static final double BACK_RIGHT_X = Units.inchesToMeters(-11);
-        public static final double BACK_RIGHT_Y = Units.inchesToMeters(-11);
+        public static final double FRONT_LEFT_X = Units.inchesToMeters(10.25);
+        public static final double FRONT_LEFT_Y = Units.inchesToMeters(10.25);
+        public static final double FRONT_RIGHT_X = Units.inchesToMeters(10.25);
+        public static final double FRONT_RIGHT_Y = Units.inchesToMeters(-10.25);
+        public static final double BACK_LEFT_X = Units.inchesToMeters(-10.25);
+        public static final double BACK_LEFT_Y = Units.inchesToMeters(10.25);
+        public static final double BACK_RIGHT_X = Units.inchesToMeters(-10.25);
+        public static final double BACK_RIGHT_Y = Units.inchesToMeters(-10.25);
 
         public static final Translation2d[] MODULE_LOCATIONS = {
             new Translation2d(Drivebase.FRONT_LEFT_X, Drivebase.FRONT_LEFT_Y),
@@ -84,7 +84,7 @@ public final class Constants {
         };
 
         // Drivetrain limitations
-        public static final double MAX_SPEED = Units.feetToMeters(14.5); // meters per second
+        public static final double MAX_SPEED = Units.feetToMeters(15.76); // meters per second
         public static final double MAX_ANGULAR_VELOCITY = MAX_SPEED / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y); // rad/s
         // Theoretical max acceleration should be as follows:
         // (NEO stall torque * module gearing * number of modules) / (wheel radius * robot mass) = m/s/s
@@ -92,7 +92,7 @@ public final class Constants {
         // However, the drive is traction-limited, so the max accelration is actually (wheel coefficient of friction * gravity)
         public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
         // max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
-        public static final double MAX_MODULE_ANGULAR_SPEED = 360 * (5676 / 12.8) / 60; // deg/s
+        public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(5676 * 7 / 372) / 60; // deg/s
 
         // Swerve base kinematics object
         public static final BetterSwerveKinematics KINEMATICS = new BetterSwerveKinematics(MODULE_LOCATIONS);
@@ -103,7 +103,7 @@ public final class Constants {
         public static final double MODULE_KD = 0;
         public static final double MODULE_IZ = 0;
         public static final double MODULE_KF = 0;
-        // Volt * seconds / degree.  Equal to (maxVolts) / (maxSpeed)
+        // Volt * seconds / degree.  Equal to (maxVolts) / ((degreesPerRotation) * (maxMotorSpeedRPM / gearRatio) * (minutesPerSecond))
         public static final double MODULE_KV = 12 / MAX_MODULE_ANGULAR_SPEED;
 
         public static final double VELOCITY_KP = 0.0020645; // kp from SysId, eventually
@@ -119,47 +119,43 @@ public final class Constants {
 
         // Encoder conversion values.  Drive converts motor rotations to linear wheel distance
         // and steering converts motor rotations to module azimuth
-        public static final double METERS_PER_MOTOR_ROTATION = (Math.PI * Units.inchesToMeters(4)) / 6.75;
-            // Calculation: 4in diameter wheels * pi [circumfrence] / gear ratio
-        public static final double DEGREES_PER_STEERING_ROTATION = 360 / 12.8;
+        public static final double METERS_PER_MOTOR_ROTATION = (Math.PI * Units.inchesToMeters(3)) / 4.71;
+            // Calculation: 3in diameter wheels * pi [circumfrence] / gear ratio
+        public static final double DEGREES_PER_STEERING_ROTATION = 360;
             // degrees per rotation / gear ratio between module and motor
         
         public static final int NUM_MODULES = 4;
             // Module specific constants
         public static final class Mod0 {
-            public static final int DRIVE_MOTOR_ID = 3;
-            public static final int ANGLE_MOTOR_ID = 2;
-            public static final int CANCODER_ID = 10;
-            public static final double ANGLE_OFFSET = 105.03;
-            public static final SwerveModuleConstants CONSTANTS =
-                new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
-        }
-        public static final class Mod1 {
-            public static final int DRIVE_MOTOR_ID = 5;
-            public static final int ANGLE_MOTOR_ID = 4;
-            public static final int CANCODER_ID = 11;
-            public static final double ANGLE_OFFSET = 334.95;
-            public static final SwerveModuleConstants CONSTANTS =
-                new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
-        }
-        public static final class Mod2 {
             public static final int DRIVE_MOTOR_ID = 7;
             public static final int ANGLE_MOTOR_ID = 6;
-            public static final int CANCODER_ID = 12;
-            public static final double ANGLE_OFFSET = 34.10;
+            public static final double ANGLE_OFFSET = 231.48 + 90;
             public static final SwerveModuleConstants CONSTANTS =
-                new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
+                new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
-        public static final class Mod3 {
+        public static final class Mod1 {
             public static final int DRIVE_MOTOR_ID = 9;
             public static final int ANGLE_MOTOR_ID = 8;
-            public static final int CANCODER_ID = 13;
-            public static final double ANGLE_OFFSET = 306.47;
+            public static final double ANGLE_OFFSET = 170.69 + 180;
             public static final SwerveModuleConstants CONSTANTS =
-                new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
+                new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
+        }
+        public static final class Mod2 {
+            public static final int DRIVE_MOTOR_ID = 5;
+            public static final int ANGLE_MOTOR_ID = 4;
+            public static final double ANGLE_OFFSET = 52.67;
+            public static final SwerveModuleConstants CONSTANTS =
+                new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
+        }
+        public static final class Mod3 {
+            public static final int DRIVE_MOTOR_ID = 3;
+            public static final int ANGLE_MOTOR_ID = 2;
+            public static final double ANGLE_OFFSET = 224.08 - 90;
+            public static final SwerveModuleConstants CONSTANTS =
+                new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
 
-        public static final int PIGEON = 14;
+        public static final int PIGEON = 30;
     }
 
     public class OperatorConstants {
