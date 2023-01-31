@@ -101,6 +101,7 @@ public class SwerveBase extends SubsystemBase {
       Drivebase.KINEMATICS.toSwerveModuleStates(
         velocity
       );
+    // Convert field-relative rotation rates to robot-relative
     for (BetterSwerveModuleState state : swerveModuleStates) {
       state.omegaRadPerSecond = state.omegaRadPerSecond - rotation;
     }
