@@ -5,17 +5,16 @@
 package frc.robot;
 
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.lib.util.BetterSwerveKinematics;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.lib.util.BetterSwerveKinematics;
 import frc.lib.util.SwerveModuleConstants;
-import frc.robot.autoCommands.FollowTrajectory;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -41,6 +40,8 @@ public final class Constants {
     public static final double dummyArmX = Units.inchesToMeters(42);
     public static final double dummyArmHieght = Units.inchesToMeters(27);
 
+    public static final double FIELD_WIDTH = Units.feetToMeters(27);
+
     public static final class Auton {
 
         public static final double X_KP = 4;
@@ -57,6 +58,21 @@ public final class Constants {
 
         public static final double MAX_SPEED = Units.feetToMeters(14.5);
         public static final double MAX_ACCELERATION = 1.19 * 9.81;
+
+        private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(null);
+        private static final Map<String, Pose2d> RED_MAP =
+            BLUE_MAP.entrySet().stream().collect(Collectors.toMap(
+                entry -> entry.getKey(),
+                entry -> new Pose2d(
+                    new Translation2d(
+                        entry.getValue().getX(),
+                        FIELD_WIDTH - entry.getValue().getY()),
+                    entry.getValue().getRotation())));
+        
+        public static final Map<Alliance, Map<String, Pose2d>> POSE_MAP = Map.of(
+            Alliance.Blue, BLUE_MAP,
+            Alliance.Red, RED_MAP
+        );
     }
     public static final class Drivebase {
         // Hold time on motor brakes when disabled
