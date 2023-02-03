@@ -5,12 +5,15 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
+import frc.robot.autoCommands.DriveToPose;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveBase;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,6 +33,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveBase drivebase = new SwerveBase();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+
+  private AutoParser autoParser = new AutoParser(drivebase);
 
   private SendableChooser<CommandBase> driveModeSelector;
 
@@ -94,7 +99,9 @@ public class RobotContainer {
     driveModeSelector.addOption("Robot Relative (Closed)", closedRobotRel);
 
     SmartDashboard.putData(driveModeSelector);
-    drivebase.setDefaultCommand(openFieldRel);
+    SmartDashboard.putData("Brake", new InstantCommand(drivebase::setDriveBrake));
+    SmartDashboard.putData("Reset Odometry", new InstantCommand(() -> drivebase.resetOdometry(new Pose2d())));
+    drivebase.setDefaultCommand(absoluteDrive);
   }
 
   /**
@@ -112,6 +119,8 @@ public class RobotContainer {
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
+    rotationController.button(1).onTrue(new InstantCommand(drivebase::setDriveBrake));
+    driverController.button(2).onTrue(new DriveToPose(new Pose2d(1, 0, new Rotation2d()), drivebase));
   }
 
   /**
@@ -121,7 +130,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.driveAndSpin(drivebase);
+    return autoParser.getAutoCommand();
   }
 
   public void setDriveMode() {
@@ -129,5 +138,18 @@ public class RobotContainer {
   }
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
+  }
+
+  public void parseAuto() {
+    String autoText = SmartDashboard.getString("AutoCode", "");
+    String parserOutput = "";
+    try {
+      parserOutput = autoParser.parse(autoText, DriverStation.getAlliance());
+    } catch (Exception e) {
+      parserOutput = e.getMessage();
+      e.printStackTrace();
+    } finally {
+      SmartDashboard.putString("Compiler Message", parserOutput);
+    }
   }
 }
