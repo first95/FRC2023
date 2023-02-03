@@ -9,6 +9,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,12 +19,14 @@ import frc.robot.Constants.ArmConstants.GripState;
 
 public class Arm extends SubsystemBase {
 
-  private GripState currentGrip = GRIP_OFF;
+  private GripState currentGrip = GripState.GRIP_OFF;
   private CANSparkMax armMotor;
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
   private Solenoid coneGripper;
   private Solenoid cubeGripper;
+  DigitalInput toplimitSwitch = new DigitalInput(0);
+  DigitalInput bottomlimitSwitch = new DigitalInput(1);
   
 
   public Arm() {
@@ -40,7 +43,23 @@ public class Arm extends SubsystemBase {
   }
 
   public void setSpeed(double speed){
-    armMotor.set(speed);
+    if (speed > 0) {
+      if (toplimitSwitch.get()) {
+          // We are going up and top limit is tripped so stop
+          armMotor.set(0);
+      } else {
+          // We are going up but top limit is not tripped so go at commanded speed
+          armMotor.set(speed);
+      }
+  } else {
+      if (bottomlimitSwitch.get()) {
+          // We are going down and bottom limit is tripped so stop
+          armMotor.set(0);
+      } else {
+          // We are going down but bottom limit is not tripped so go at commanded speed
+          armMotor.set(speed);
+      }
+  }
   }
 
   public void setPos(double angle){
