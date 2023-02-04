@@ -41,7 +41,7 @@ public final class Constants {
     public static final double dummyArmX = Units.inchesToMeters(42);
     public static final double dummyArmHieght = Units.inchesToMeters(27);
 
-    public static final double FIELD_WIDTH = Units.feetToMeters(27);
+    public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
 
     public static final class Auton {
 
