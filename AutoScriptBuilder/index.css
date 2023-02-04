@@ -1,0 +1,72 @@
+/* Components */
+.headerLabel {
+  font-size: 20px;
+  text-decoration: underline;
+  margin-bottom: 0.25em;
+}
+
+#paramsform {
+  height: 200px;
+  display: flex;
+  margin: 0.25em;
+  margin-block-end: 0;
+}
+
+#parametersfields {
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.parameter {
+  margin: 0.25em;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  flex: 1;
+  padding: 0.5em;
+  margin: 0 0.2em;
+  border-radius: 5px;
+  border: none;
+  transition: all 0.25s;
+}
+
+button:hover {
+  background-color: #d9d9d9;
+  transition: all 0.25s;
+  cursor: pointer;
+}
+
+/* Containers */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+.commandsContainer {
+  margin: 0.25em;
+  display: flex;
+  flex-direction: column;
+}
+
+.flowContainer {
+  min-width: 450px;
+  max-width: 50vw;
+  margin: 0.25em;
+  display: flex;
+  flex-direction: column;
+}
+
+.paramsContainer {
+  width: 100%;
+  margin: 0.25em;
+}
+
+.builder {
+  display: flex;
+  margin: 1em;
+  min-height: 200px;
+}

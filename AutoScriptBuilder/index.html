@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <title>FRC 95 AutoScriptBuilder</title>
+    <!-- Build scripts to be parsed by ..\SwervyBot\src\main\java\frc\robot\AutoParser.java -->
+
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <script src="./trajectoryfilelist.js"></script>
+    <script src="./scripts.js"></script>
+  </head>
+
+  <body onload="buildForm();">
+    <div style="display: flex; align-items: center">
+      <h2>Autonomous mode script builder</h2>
+      <img style="margin: 0.5em" src="favicon.png" width="32" />
+    </div>
+
+    <div class="builder">
+      <div class="commandsContainer">
+        <label class="headerLabel" for="commandnamefield">Commands</label>
+        <select
+          name="Command"
+          id="commandnamefield"
+          onchange="buildParameterInputs();"
+        ></select>
+      </div>
+
+      <div style="margin: 0 2em; border-right: solid 1px #000"></div>
+
+      <div class="paramsContainer">
+        <label class="headerLabel">Command Parameters</label>
+        <form id="paramsform">
+          <div id="parametersfields"></div>
+        </form>
+      </div>
+    </div>
+
+    <hr />
+
+    <div style="display: flex">
+      <div style="flex: 1" class="flowContainer">
+        <div style="display: flex; flex: 1">
+          <button
+            onclick="addLineToScript();"
+            title="Add command to run in sequence"
+          >
+            Add Command and end line(;)
+          </button>
+          <button
+            onclick="addCommandToLine();"
+            title="Add command to run in parallel"
+          >
+            Add Command to current line (+)
+          </button>
+        </div>
+
+        <br />
+
+        <textarea
+          style="margin: 0.25em 0"
+          rows="7"
+          cols="80"
+          id="AutoScript"
+        ></textarea>
+        <br />
+
+        <div style="display: flex; flex: 1">
+          <button onclick="copycode();">Copy Script to clipboard</button>
+          <button
+            onclick='savetext(document.getElementById("AutoScript").value);'
+          >
+            Save Script
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
