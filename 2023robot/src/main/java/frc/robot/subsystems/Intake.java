@@ -29,11 +29,13 @@ public class Intake extends SubsystemBase {
     bottomRoller.restoreFactoryDefaults();
     bottomRoller.setIdleMode(IdleMode.kBrake);
     bottomRoller.setInverted(IntakeConstants.INVERT_ROLLERS);
+    bottomRoller.setSmartCurrentLimit(15);
     bottomRoller.burnFlash();
 
     topRoller.restoreFactoryDefaults();
     topRoller.setIdleMode(IdleMode.kBrake);
     topRoller.setInverted(!IntakeConstants.INVERT_ROLLERS);
+    topRoller.setSmartCurrentLimit(15);
     topRoller.burnFlash();
 
     gearRack.restoreFactoryDefaults();
