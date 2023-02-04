@@ -36,6 +36,10 @@ public class AutoBalance extends CommandBase {
     error = Constants.CHARGER_GOAL_DEGREES - currentAngle;
     driveVelocity = -Math.min(Constants.CHARGER_KP * error, 5);
 
+    /* This command will change depending on: In robot-relative mode, positive x is torwards the bow (front) 
+     * and positive y is torwards port (left).  In field-relative mode, positive x is away from the alliance 
+     * wall (field North) and positive y is torwards the left wall when looking 
+     * through the driver station glass (field West). */
     m_SwerveBase.drive(
       new Translation2d(0, driveVelocity),
       0,
