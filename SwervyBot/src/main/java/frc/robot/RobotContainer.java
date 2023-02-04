@@ -4,10 +4,8 @@
 
 package frc.robot;
 
-import frc.lib.AutoParseException;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.autoCommands.DriveToPose;
-import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
@@ -21,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -35,6 +34,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveBase drivebase = new SwerveBase();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final AbsoluteDrive absDrive;
 
   private AutoParser autoParser = new AutoParser(drivebase);
 
@@ -50,7 +50,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    AbsoluteDrive absoluteDrive = new AbsoluteDrive(
+    absDrive = new AbsoluteDrive(
       drivebase,
       // Applies deadbands and inverts controls because joysticks are back-right positive while robot
       // controls are front-left positive
@@ -93,7 +93,7 @@ public class RobotContainer {
       () -> -driverController.getTwist(), () -> true, false);
 
     driveModeSelector = new SendableChooser<>();
-    driveModeSelector.setDefaultOption("AbsoluteDrive", absoluteDrive);
+    driveModeSelector.setDefaultOption("AbsoluteDrive", absDrive);
     driveModeSelector.addOption("Field Relative", openFieldRel);
     driveModeSelector.addOption("Robot Relative", openRobotRel);
     driveModeSelector.addOption("Absolute (Closed)", closedAbsoluteDrive);
@@ -103,7 +103,7 @@ public class RobotContainer {
     SmartDashboard.putData(driveModeSelector);
     SmartDashboard.putData("Brake", new InstantCommand(drivebase::setDriveBrake));
     SmartDashboard.putData("Reset Odometry", new InstantCommand(() -> drivebase.resetOdometry(new Pose2d())));
-    drivebase.setDefaultCommand(absoluteDrive);
+    //drivebase.setDefaultCommand(absoluteDrive);
   }
 
   /**
@@ -122,7 +122,7 @@ public class RobotContainer {
 
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     rotationController.button(1).onTrue(new InstantCommand(drivebase::setDriveBrake));
-    driverController.button(2).onTrue(new DriveToPose(new Pose2d(1, 0, new Rotation2d()), drivebase));
+    driverController.button(2).onTrue(new DriveToPose("Node5High", DriverStation.getAlliance(), drivebase));
   }
 
   /**
@@ -135,8 +135,12 @@ public class RobotContainer {
     return autoParser.getAutoCommand();
   }
 
-  public void setDriveMode() {
-    //drivebase.setDefaultCommand();
+  public void setDriveMode(boolean drive) {
+    if (drive) {
+      drivebase.setDefaultCommand(absDrive);
+    } else {
+      drivebase.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, drivebase)));
+    }
   }
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);

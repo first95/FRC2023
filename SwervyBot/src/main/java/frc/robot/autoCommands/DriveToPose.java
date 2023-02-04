@@ -10,6 +10,9 @@ import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -25,9 +28,9 @@ public class DriveToPose extends SequentialCommandGroup{
      * by following a trajectory.  Should eventually take a named pose and alliance.
      * @param pose Pose2d to drive to.
      */
-    public DriveToPose(Pose2d pose, SwerveBase drive) {
+    public DriveToPose(String pose, Alliance alliance, SwerveBase drive) {
         this.drive = drive;
-        this.pose = pose;
+        this.pose = Auton.POSE_MAP.get(alliance).get(pose);
         addRequirements(drive);
 
         addCommands(new FollowTrajectory(drive, this::generateTrajectory, false));
@@ -36,17 +39,17 @@ public class DriveToPose extends SequentialCommandGroup{
 
     private PathPlannerTrajectory generateTrajectory() {
         Pose2d currentPose = drive.getPose();
-            Translation2d currentPosition = 
-                new Translation2d(currentPose.getX(), currentPose.getY());
-            Translation2d desiredPosition = 
-                new Translation2d(pose.getX(), pose.getY());
-            Rotation2d driveAngle = desiredPosition.minus(currentPosition).getAngle();
-            PathPlannerTrajectory trajectory = PathPlanner.generatePath(
-                new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION),
-                List.of(
-                    new PathPoint(currentPosition, driveAngle, drive.getPose().getRotation()),
-                    new PathPoint(desiredPosition, driveAngle, pose.getRotation())
-                ));
+        Translation2d currentPosition = 
+            new Translation2d(currentPose.getX(), currentPose.getY());
+        Translation2d desiredPosition = 
+            new Translation2d(pose.getX(), pose.getY());
+        Rotation2d driveAngle = desiredPosition.minus(currentPosition).getAngle();
+        PathPlannerTrajectory trajectory = PathPlanner.generatePath(
+            new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION),
+            List.of(
+                new PathPoint(currentPosition, driveAngle, drive.getPose().getRotation()),
+                new PathPoint(desiredPosition, driveAngle, pose.getRotation())
+            ));
         return trajectory;
     }
 }
