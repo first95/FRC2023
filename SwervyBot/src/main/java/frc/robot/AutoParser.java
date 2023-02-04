@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.Auton;
+import frc.robot.autoCommands.DriveToPose;
 import frc.robot.autoCommands.FollowTrajectory;
 import frc.robot.subsystems.SwerveBase;
 
@@ -44,6 +45,7 @@ public class AutoParser {
      * FollowTrajectory(path, resetOdometry)
      * Wait(seconds)
      * Stop()
+     * DriveToPose(pose)
      * </pre></p>
      * @param drive The robot's drivebase subsystem
      */
@@ -179,6 +181,12 @@ public class AutoParser {
                     return new InstantCommand(drive::setDriveBrake);
                 } catch (Exception e) {
                     throw new AutoParseException("Stop", "What did you do!?", e);
+                }
+            case "drivetopose":
+                try {
+                    return new DriveToPose(parameters[0], currentAlliance, drive);
+                } catch (NullPointerException e) {
+                    throw new AutoParseException("DriveToPose", "Pose not recognized", e);
                 }
             default:
                 // If none of the preceeding cases apply, the command is invalid.
