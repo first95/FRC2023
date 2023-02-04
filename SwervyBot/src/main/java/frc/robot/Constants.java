@@ -45,20 +45,20 @@ public final class Constants {
 
     public static final class Auton {
 
-        public static final double X_KP = 4;
+        public static final double X_KP = 2;
         public static final double X_KI = 0;
         public static final double X_KD = 0;
 
-        public static final double Y_KP = 4;
+        public static final double Y_KP = 2;
         public static final double Y_KI = 0;
         public static final double Y_KD = 0;
 
-        public static final double ANG_KP = 4;
+        public static final double ANG_KP = 6;
         public static final double ANG_KI = 0;
         public static final double ANG_KD = 0;
 
         public static final double MAX_SPEED = Units.feetToMeters(14.5);
-        public static final double MAX_ACCELERATION = 1.19 * 9.81;
+        public static final double MAX_ACCELERATION = 8;
 
         private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(
             Map.entry("Node1High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
