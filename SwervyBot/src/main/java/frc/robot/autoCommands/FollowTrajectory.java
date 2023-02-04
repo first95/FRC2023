@@ -6,12 +6,14 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Auton;
 import frc.robot.subsystems.SwerveBase;
 
 public class FollowTrajectory extends SequentialCommandGroup{
+    private CommandBase trajectoryFollower;
     
     public FollowTrajectory(SwerveBase drivebase, PathPlannerTrajectory trajectory, boolean resetOdometry) {
         addRequirements(drivebase);
@@ -38,22 +40,19 @@ public class FollowTrajectory extends SequentialCommandGroup{
 
     public FollowTrajectory(SwerveBase drivebase, Supplier<PathPlannerTrajectory> trajectoryGen, boolean resetOdometry) {
         addRequirements(drivebase);
-        PathPlannerTrajectory trajectory = trajectoryGen.get();
-
-        if(resetOdometry) {
-            addCommands(new InstantCommand(() -> drivebase.resetOdometry(trajectory.getInitialHolonomicPose())));
-        }
         
-        addCommands(
-            new PPSwerveControllerCommand(
-                trajectory,
+        if(resetOdometry) {
+            addCommands(new InstantCommand(() -> drivebase.resetOdometry(trajectoryGen.get().getInitialHolonomicPose())));
+        }
+
+        addCommands(new FunctionalSwerveController(
+                trajectoryGen,
                 drivebase::getPose,
                 new PIDController(Auton.X_KP, Auton.X_KI, Auton.X_KD),
                 new PIDController(Auton.Y_KP, Auton.Y_KI, Auton.Y_KD),
                 new PIDController(Auton.ANG_KP, Auton.ANG_KI, Auton.ANG_KD),
                 drivebase::setChassisSpeeds,
-                false,
-                drivebase)
-        );
+                drivebase));
+        
     }
 }

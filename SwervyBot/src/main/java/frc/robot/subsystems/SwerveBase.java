@@ -283,6 +283,7 @@ public class SwerveBase extends SubsystemBase {
     }
 
     field.setRobotPose(odometry.getPoseMeters());
+    SmartDashboard.putString("Odometry", odometry.getPoseMeters().toString());
     SmartDashboard.putData("Field", field);
 
     double[] moduleStates = new double[8];

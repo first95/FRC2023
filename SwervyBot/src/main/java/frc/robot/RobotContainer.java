@@ -120,7 +120,7 @@ public class RobotContainer {
 
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     rotationController.button(1).onTrue(new InstantCommand(drivebase::setDriveBrake));
-    driverController.button(2).onTrue(new DriveToPose(new Pose2d(1, 0, new Rotation2d()), drivebase));
+    driverController.button(2).onTrue(new DriveToPose("Node1High", DriverStation.getAlliance(), drivebase));
   }
 
   /**
