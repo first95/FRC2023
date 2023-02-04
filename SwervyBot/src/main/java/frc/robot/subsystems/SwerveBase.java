@@ -38,6 +38,7 @@ public class SwerveBase extends SubsystemBase {
   private SwerveModule[] swerveModules;
   private PigeonIMU imu;
   private NetworkTable visionData;
+  private boolean wasOdometrySeeded;
   
   private SwerveDrivePoseEstimator odometry;
   public Field2d field = new Field2d();
@@ -76,8 +77,8 @@ public class SwerveBase extends SubsystemBase {
 
     visionData = NetworkTableInstance.getDefault().getTable("limelight");
 
-    odometry = new SwerveDrivePoseEstimator(Drivebase.KINEMATICS, getYaw(), getModulePositions(), getVisionPose().toPose2d());
-    setGyro(getVisionPose().toPose2d().getRotation());
+    odometry = new SwerveDrivePoseEstimator(Drivebase.KINEMATICS, getYaw(), getModulePositions(), new Pose2d());
+    wasOdometrySeeded = false;
   }
 
   /**
@@ -325,11 +326,18 @@ public class SwerveBase extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Seed odometry if this has not been done
+    if (visionData.getEntry("tv").getDouble(0) == 1 && !wasOdometrySeeded) {
+      Pose2d seed = getVisionPose().toPose2d();
+      resetOdometry(seed);
+      setGyro(seed.getRotation());
+      wasOdometrySeeded = true;
+    }
+    
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
-    Pose3d visionPose = getVisionPose();
-    if (visionPose != null) {
-      Pose2d pose = visionPose.toPose2d();
+    if (visionData.getValue("tv").getDouble() == 1) {
+      Pose2d pose = getVisionPose().toPose2d();
       if (pose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
         double timestamp = Timer.getFPGATimestamp() - (visionData.getEntry("tl").getDouble(0) + 11) / 1000;
         odometry.addVisionMeasurement(pose, timestamp);
