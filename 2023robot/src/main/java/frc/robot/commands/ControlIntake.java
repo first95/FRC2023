@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.Intake;
 
 import java.util.function.DoubleSupplier;
@@ -13,17 +14,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /** An example command that uses an example subsystem. */
 public class ControlIntake extends CommandBase {
   private final Intake subsystem;
-  private DoubleSupplier coneSpeed, cubeSpeed;
+  private DoubleSupplier coneSpeed, cubeSpeed, position;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ControlIntake(DoubleSupplier coneSpeed, DoubleSupplier cubeSpeed, Intake subsystem) {
+  public ControlIntake(DoubleSupplier coneSpeed, DoubleSupplier cubeSpeed, DoubleSupplier position, Intake subsystem) {
     this.subsystem = subsystem;
     this.coneSpeed = coneSpeed;
     this.cubeSpeed = cubeSpeed;
+    this.position = position;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -36,6 +38,7 @@ public class ControlIntake extends CommandBase {
   @Override
   public void execute() {
     subsystem.runRollers(coneSpeed.getAsDouble(), cubeSpeed.getAsDouble());
+    subsystem.moveIntake(position.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

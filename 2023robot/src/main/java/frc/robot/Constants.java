@@ -21,7 +21,7 @@ import frc.lib.util.SwerveModuleConstants;
 public final class Constants {
 
     public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
-    public static final double MANIPULATOR_MASS = 10 * 0.453592; // 10lbs * kg per pound
+    public static final double MANIPULATOR_MASS = 0 * 0.453592; // 10lbs * kg per pound
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         0,
@@ -174,6 +174,22 @@ public final class Constants {
     public static final class IntakeConstants {
         public static final int BOTTOM_ROLLER_ID = 14;
         public static final int TOP_ROLLER_ID = 12;
+        public static final int RACK_ID = 13;
+
         public static final boolean INVERT_ROLLERS = false;
+        public static final boolean INVERT_RACK = false;
+
+        public static final double RACK_METERS_PER_MOTOR_ROTATION =
+            (Units.inchesToMeters(0.9) * Math.PI) / 5;
+            // Pitch diameter * pi / gear ratio
+        public static final float RACK_LOWER_LIMIT = 0;
+        public static final float RACK_UPPER_LIMIT = (float)Units.inchesToMeters(14);
+        public static final double RACK_TRAVEL = RACK_UPPER_LIMIT - RACK_LOWER_LIMIT;
+
+        public static final double KP = 0.1;
+        public static final double KI = 0;
+        public static final double KD = 0;
+        public static final double KF = 0;
+        public static final double IZ = 0;
     }
 }
