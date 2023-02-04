@@ -4,7 +4,8 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.Pigeon2Configuration;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,7 +26,7 @@ import frc.robot.Constants.Drivebase;
 public class SwerveBase extends SubsystemBase {
 
   private SwerveModule[] swerveModules;
-  private PigeonIMU imu;
+  private Pigeon2 imu;
   
   private SwerveDriveOdometry odometry;
   public Field2d field = new Field2d();
@@ -51,8 +52,13 @@ public class SwerveBase extends SubsystemBase {
       timer.start();
       lasttime = 0;
     } else {
-      imu = new PigeonIMU(Drivebase.PIGEON);
+      imu = new Pigeon2(Drivebase.PIGEON);
       imu.configFactoryDefault();
+      Pigeon2Configuration config = new Pigeon2Configuration();
+      config.MountPosePitch = Drivebase.IMU_MOUNT_PITCH;
+      config.MountPoseRoll = Drivebase.IMU_MOUNT_ROLL;
+      config.MountPoseYaw = Drivebase.IMU_MOUNT_YAW;
+      imu.configAllSettings(config);
     }
 
     this.swerveModules = new SwerveModule[] {
@@ -240,9 +246,8 @@ public class SwerveBase extends SubsystemBase {
   public Rotation2d getYaw() {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
     if (Robot.isReal()) {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return (Drivebase.INVERT_GYRO) ? Rotation2d.fromDegrees(360 - ypr[0]) : Rotation2d.fromDegrees(ypr[0]);
+      double yaw = imu.getYaw();
+      return (Drivebase.INVERT_GYRO) ? Rotation2d.fromDegrees(360 - yaw) : Rotation2d.fromDegrees(yaw);
     } else {
       return new Rotation2d(angle);
     }
