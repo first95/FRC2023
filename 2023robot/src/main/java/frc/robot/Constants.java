@@ -83,6 +83,11 @@ public final class Constants {
             new Translation2d(Drivebase.BACK_RIGHT_X, Drivebase.BACK_RIGHT_Y)
         };
 
+        // IMU Mounting. CCW Positive
+        public static final double IMU_MOUNT_YAW = 0;
+        public static final double IMU_MOUNT_PITCH = 0;
+        public static final double IMU_MOUNT_ROLL = 0;
+
         // Drivetrain limitations
         public static final double MAX_SPEED = Units.feetToMeters(15.76); // meters per second
         public static final double MAX_ANGULAR_VELOCITY = MAX_SPEED / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y); // rad/s

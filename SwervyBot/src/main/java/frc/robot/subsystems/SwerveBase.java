@@ -101,9 +101,6 @@ public class SwerveBase extends SubsystemBase {
       Drivebase.KINEMATICS.toSwerveModuleStates(
         velocity
       );
-    for (BetterSwerveModuleState state : swerveModuleStates) {
-      state.omegaRadPerSecond = state.omegaRadPerSecond - rotation;
-    }
     // Desaturate calculated speeds
     BetterSwerveKinematics.desaturateWheelSpeeds(swerveModuleStates, Drivebase.MAX_SPEED);
 
@@ -131,13 +128,12 @@ public class SwerveBase extends SubsystemBase {
   }
 
   /**
-   * Set field-relative chassis speeds with closed-loop velocity control.
-   * @param chassisSpeeds Field-relative.
+   * Set robot-relative chassis speeds with closed-loop velocity control.
+   * @param chassisSpeeds Robot-relative.
    */
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
     setModuleStates(
-      Drivebase.KINEMATICS.toSwerveModuleStates(
-        ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getYaw())));
+      Drivebase.KINEMATICS.toSwerveModuleStates(chassisSpeeds));
   }
 
   
@@ -270,7 +266,8 @@ public class SwerveBase extends SubsystemBase {
           0,
           Drivebase.MODULE_LOCATIONS[swerveModule.moduleNumber].getAngle(),
           0),
-        true);
+        true,
+        false);
     }
   }
 
@@ -286,6 +283,7 @@ public class SwerveBase extends SubsystemBase {
     }
 
     field.setRobotPose(odometry.getPoseMeters());
+    SmartDashboard.putString("Odometry", odometry.getPoseMeters().toString());
     SmartDashboard.putData("Field", field);
 
     double[] moduleStates = new double[8];

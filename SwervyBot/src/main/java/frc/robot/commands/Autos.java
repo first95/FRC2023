@@ -23,6 +23,7 @@ public final class Autos {
   public static CommandBase exampleAuto(SwerveBase swerve) {
     PathPlannerTrajectory example = PathPlanner.loadPath("New Path", 
       new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION));
+    
     return Commands.sequence(new FollowTrajectory(swerve, example, true));
   }
 
@@ -33,4 +34,6 @@ public final class Autos {
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
   }
+
+  
 }

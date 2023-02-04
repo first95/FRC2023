@@ -13,6 +13,7 @@ import frc.robot.drivebase.TeleopDrive;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveBase;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,6 +34,8 @@ public class RobotContainer {
   private final SwerveBase drivebase = new SwerveBase();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final Intake intake = new Intake();
+
+  private AutoParser autoParser = new AutoParser(drivebase);
 
   private SendableChooser<CommandBase> driveModeSelector;
 
@@ -128,7 +131,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(drivebase);
+    return autoParser.getAutoCommand();
   }
 
   public void setDriveMode() {
@@ -136,5 +139,18 @@ public class RobotContainer {
   }
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
+  }
+
+  public void parseAuto() {
+    String autoText = SmartDashboard.getString("AutoCode", "");
+    String parserOutput = "";
+    try {
+      parserOutput = autoParser.parse(autoText, DriverStation.getAlliance());
+    } catch (Exception e) {
+      parserOutput = e.getMessage();
+      e.printStackTrace();
+    } finally {
+      SmartDashboard.putString("Compiler Message", parserOutput);
+    }
   }
 }
