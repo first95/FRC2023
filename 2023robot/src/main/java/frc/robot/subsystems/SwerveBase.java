@@ -26,7 +26,7 @@ public class SwerveBase extends SubsystemBase {
 
   private SwerveModule[] swerveModules;
   private PigeonIMU imu;
-  
+
   private SwerveDriveOdometry odometry;
   public Field2d field = new Field2d();
 
@@ -304,5 +304,9 @@ public class SwerveBase extends SubsystemBase {
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.turnModule(speed);
     }
+  }
+
+  public double getPitch() {
+    return imu.getPitch();
   }
 }

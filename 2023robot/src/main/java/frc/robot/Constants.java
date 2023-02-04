@@ -19,6 +19,9 @@ import frc.lib.util.SwerveModuleConstants;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static final double CHARGER_KP = 0.015;
+    public static final double CHARGER_GOAL_DEGREES = 0;
+    public static final double CHARGER_THRESHOLD_DEGREES = 1;
 
     public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
     public static final double MANIPULATOR_MASS = 10 * 0.453592; // 10lbs * kg per pound
