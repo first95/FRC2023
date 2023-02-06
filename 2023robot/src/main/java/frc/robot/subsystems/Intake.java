@@ -48,8 +48,8 @@ public class Intake extends SubsystemBase {
     rackEncoder.setVelocityConversionFactor(IntakeConstants.RACK_METERS_PER_MOTOR_ROTATION / 60);
     rackEncoder.setPosition(0);
 
-    //gearRack.setSoftLimit(SoftLimitDirection.kForward, IntakeConstants.RACK_UPPER_LIMIT);
-    //gearRack.setSoftLimit(SoftLimitDirection.kReverse, IntakeConstants.RACK_LOWER_LIMIT);
+    gearRack.setSoftLimit(SoftLimitDirection.kForward, IntakeConstants.RACK_UPPER_LIMIT);
+    gearRack.setSoftLimit(SoftLimitDirection.kReverse, IntakeConstants.RACK_LOWER_LIMIT);
     
     rackController = gearRack.getPIDController();
     rackController.setP(IntakeConstants.KP);
