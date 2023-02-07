@@ -39,7 +39,7 @@ public class Intake extends SubsystemBase {
     topRoller.burnFlash();
 
     gearRack.restoreFactoryDefaults();
-    gearRack.setIdleMode(IdleMode.kBrake);
+    gearRack.setIdleMode(IdleMode.kCoast);
     gearRack.setInverted(IntakeConstants.INVERT_RACK);
     gearRack.setSmartCurrentLimit(15);
 
