@@ -220,6 +220,35 @@ public final class Constants {
 
         public static final int PIGEON = 14;
     }
+    public static final class ArmConstants {
+       public static final int ARM_MOTOR_ID = 10;  
+       public static final int CUBE_SOLENOID_ID = 0;
+       public static final int CONE_SOLENOID_ID = 0;
+       public enum Preset{
+        HIGH_SCORE (20.0),
+        MID_SCORE (0.0),
+        LOW_SCORE (-10.0),
+        HANDOFF (-40.0),
+        STOWED (-80.0);
+        private final double angle;
+        Preset(double angle) {
+        this.angle = angle;
+        }
+        public double angle() { return angle; }
+       }
+       public enum GripState{
+        GRIP_OFF, GRIP_CUBE, GRIP_CONE;
+       }
+       public static final double ARM_KP = 0;
+       public static final double ARM_KI = 0;
+       public static final double ARM_KD = 0;
+       public static final double ARM_KS = 0;
+       public static final double ARM_KG = 0;
+       public static final double ARM_KV = 0;
+       
+       
+    }
+   
 
     public class OperatorConstants {
         public static final int DRIVER_CONTROLLER_PORT = 0;
