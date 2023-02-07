@@ -9,6 +9,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -25,8 +26,9 @@ public class Arm extends SubsystemBase {
   private SparkMaxPIDController armController;
   private Solenoid coneGripper;
   private Solenoid cubeGripper;
-  DigitalInput toplimitSwitch = new DigitalInput(0);
-  DigitalInput bottomlimitSwitch = new DigitalInput(1);
+  private DigitalInput toplimitSwitch = new DigitalInput(0);
+  private DigitalInput bottomlimitSwitch = new DigitalInput(1);
+  private ArmFeedforward feedForward = new ArmFeedforward(ArmConstants.ARM_KS, ArmConstants.ARM_KG, ArmConstants.ARM_KV);
   
 
   public Arm() {
@@ -61,6 +63,11 @@ public class Arm extends SubsystemBase {
       }
   }
   }
+
+  public void setVoltage(double p, double v){
+    armMotor.setVoltage(feedForward.calculate(p,v));
+  }
+
 
   public void setPos(double angle){
     armController.setReference(angle, CANSparkMax.ControlType.kPosition);
