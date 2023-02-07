@@ -102,6 +102,11 @@ public final class Constants {
             Alliance.Blue, BLUE_MAP,
             Alliance.Red, RED_MAP
         );
+
+        // meters and radians
+        public static final double X_TOLERANCE = 0.01;
+        public static final double Y_TOLERANCE = 0.01;
+        public static final double ANG_TOLERANCE = 0.01;
     }
     public static final class Drivebase {
         // Hold time on motor brakes when disabled
@@ -146,6 +151,7 @@ public final class Constants {
         public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
         // max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
         public static final double MAX_MODULE_ANGULAR_SPEED = 360 * (5676 / 12.8) / 60; // deg/s
+        public static final double MAX_ANGULAR_ACCELERATION = MAX_ACCELERATION / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y);
 
         // Swerve base kinematics object
         public static final BetterSwerveKinematics KINEMATICS = new BetterSwerveKinematics(MODULE_LOCATIONS);
