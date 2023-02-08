@@ -54,6 +54,8 @@ public final class Constants {
         // Hold time on motor brakes when disabled
         public static final double WHEEL_LOCK_TIME = 10; // seconds
 
+        public static final int SWERVE_MODULE_CURRENT_LIMIT = 60;
+
         // Robot heading control gains
         public static final double HEADING_KP = 0.4;
         public static final double HEADING_KI = 0;
