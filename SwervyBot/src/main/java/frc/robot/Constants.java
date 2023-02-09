@@ -219,6 +219,8 @@ public final class Constants {
         }
 
         public static final int PIGEON = 14;
+
+        public static final int SWERVE_MODULE_CURRENT_LIMIT = 60;
     }
     public static final class ArmConstants {
        public static final int ARM_MOTOR_ID = 10;  

@@ -72,6 +72,7 @@ public class SwerveModule {
         angleController.setPositionPIDWrappingMaxInput(180);
         angleController.setPositionPIDWrappingMinInput(-180);
         angleMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        angleMotor.setSmartCurrentLimit(Drivebase.SWERVE_MODULE_CURRENT_LIMIT);
 
         // Config drive motor/controller
         driveController = driveMotor.getPIDController();
@@ -85,6 +86,7 @@ public class SwerveModule {
         driveController.setIZone(Drivebase.VELOCITY_IZ);
         driveMotor.setInverted(Drivebase.DRIVE_MOTOR_INVERT);
         driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        angleMotor.setSmartCurrentLimit(60);
 
         driveMotor.burnFlash();
         angleMotor.burnFlash();

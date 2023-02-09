@@ -42,10 +42,6 @@ public class SwerveModule {
         angleMotor.restoreFactoryDefaults();
         driveMotor.restoreFactoryDefaults();
 
-        // Set general current limits
-        angleMotor.setSmartCurrentLimit(Drivebase.SWERVE_MODULE_CURRENT_LIMIT);
-        driveMotor.setSmartCurrentLimit(Drivebase.SWERVE_MODULE_CURRENT_LIMIT);
-
         // Config angle encoders
         absoluteEncoder = angleMotor.getAbsoluteEncoder(Type.kDutyCycle);
         absoluteEncoder.setPositionConversionFactor(Drivebase.DEGREES_PER_STEERING_ROTATION);
@@ -66,6 +62,7 @@ public class SwerveModule {
         angleController.setFeedbackDevice(absoluteEncoder);
         angleMotor.setInverted(Drivebase.ANGLE_MOTOR_INVERT);
         angleMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        angleMotor.setSmartCurrentLimit(Drivebase.SWERVE_MODULE_CURRENT_LIMIT);
 
         // Config drive motor/controller
         driveController = driveMotor.getPIDController();
@@ -79,6 +76,7 @@ public class SwerveModule {
         driveController.setIZone(Drivebase.VELOCITY_IZ);
         driveMotor.setInverted(Drivebase.DRIVE_MOTOR_INVERT);
         driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        driveMotor.setSmartCurrentLimit(Drivebase.SWERVE_MODULE_CURRENT_LIMIT);
 
         driveMotor.burnFlash();
         angleMotor.burnFlash();
