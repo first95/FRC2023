@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.Auton;
 import frc.robot.autoCommands.DriveToPose;
 import frc.robot.autoCommands.FollowTrajectory;
+import frc.robot.autoCommands.PrecisionAlign;
 import frc.robot.subsystems.SwerveBase;
 
 public class AutoParser {
@@ -187,6 +188,12 @@ public class AutoParser {
                     return new DriveToPose(parameters[0], currentAlliance, drive);
                 } catch (NullPointerException e) {
                     throw new AutoParseException("DriveToPose", "Pose not recognized", e);
+                }
+            case "alignto":
+                try {
+                    return new PrecisionAlign(parameters[0], currentAlliance, drive);
+                } catch (NullPointerException e) {
+                    throw new AutoParseException("AlignTo", "Pose not recognized", e); 
                 }
             default:
                 // If none of the preceeding cases apply, the command is invalid.
