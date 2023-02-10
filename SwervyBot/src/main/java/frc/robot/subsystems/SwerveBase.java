@@ -79,6 +79,8 @@ public class SwerveBase extends SubsystemBase {
 
     visionData = NetworkTableInstance.getDefault().getTable("limelight");
 
+    SmartDashboard.putData("Field", field);
+
     odometry = new SwerveDrivePoseEstimator(Drivebase.KINEMATICS, getYaw(), getModulePositions(), new Pose2d());
     wasOdometrySeeded = false;
   }
@@ -304,7 +306,7 @@ public class SwerveBase extends SubsystemBase {
     wasOdometrySeeded = false;
   }
 
-  public Pose3d getVisionPose() {
+  public Pose3d getVisionPose(NetworkTable visionData) {
     if (visionData.getEntry("tv").getDouble(0) == 0) {
       return null;
     }
@@ -341,7 +343,7 @@ public class SwerveBase extends SubsystemBase {
     // Seed odometry if this has not been done
     if (visionData.getEntry("tv").getDouble(0) == 1 && !wasOdometrySeeded) {
       try {
-        Pose2d seed = getVisionPose().toPose2d();
+        Pose2d seed = getVisionPose(visionData).toPose2d();
         resetOdometry(seed);
         setGyro(seed.getRotation());
         wasOdometrySeeded = true;
@@ -353,7 +355,7 @@ public class SwerveBase extends SubsystemBase {
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
     if (visionData.getEntry("tv").getDouble(0) == 1 && wasOdometrySeeded) {
-      Pose2d pose = getVisionPose().toPose2d();
+      Pose2d pose = getVisionPose(visionData).toPose2d();
       if (pose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
         double timestamp = Timer.getFPGATimestamp() - (visionData.getEntry("tl").getDouble(0) + 11) / 1000;
         odometry.addVisionMeasurement(pose, timestamp);
@@ -368,7 +370,6 @@ public class SwerveBase extends SubsystemBase {
     }
 
     field.setRobotPose(odometry.getEstimatedPosition());
-    SmartDashboard.putData("Field", field);
     SmartDashboard.putString("Odometry", odometry.getEstimatedPosition().toString());
 
     double[] moduleStates = new double[8];
