@@ -49,6 +49,8 @@ public class SwerveBase extends SubsystemBase {
 
   private boolean wasGyroReset;
 
+  private Alliance alliance;
+
   /** Creates a new swerve drivebase subsystem.  Robot is controlled via the drive() method,
    * or via the setModuleStates() method.  The drive() method incorporates kinematics— it takes a 
    * translation and rotation, as well as parameters for field-centric and closed-loop velocity control.
@@ -297,27 +299,37 @@ public class SwerveBase extends SubsystemBase {
     }
   }
 
+  public void setAlliance(Alliance alliance) {
+    this.alliance = alliance;
+    wasOdometrySeeded = false;
+  }
+
   public Pose3d getVisionPose() {
     if (visionData.getEntry("tv").getDouble(0) == 0) {
       return null;
     }
-    double[] poseComponents = visionData.getEntry("botpose").getDoubleArray(new double[6]);
-    Pose3d camPose = new Pose3d(
-      poseComponents[0],
-      poseComponents[1],
-      poseComponents[2],
-      new Rotation3d(
-        poseComponents[3],
-        poseComponents[4],
-        poseComponents[5]));
     Pose3d robotPose;
-    Alliance alliance = DriverStation.getAlliance();
+    double[] poseComponents;
     if (alliance== Alliance.Blue) {
-      robotPose = camPose.plus(new Transform3d(Constants.FIELD_CENTER, new Rotation3d()));
-    } else if (alliance == Alliance.Red) {
+      poseComponents = visionData.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
       robotPose = new Pose3d(
-        camPose.getTranslation().unaryMinus().plus(Constants.FIELD_CENTER),
-        camPose.getRotation().rotateBy(new Rotation3d(0, 0, Math.PI)));
+        poseComponents[0],
+        poseComponents[1],
+        poseComponents[2],
+        new Rotation3d(
+          poseComponents[3],
+          poseComponents[4],
+          poseComponents[5]));
+    } else if (alliance == Alliance.Red) {
+      poseComponents = visionData.getEntry("botpose_wpired").getDoubleArray(new double[6]);
+      robotPose = new Pose3d(
+        poseComponents[0],
+        poseComponents[1],
+        poseComponents[2],
+        new Rotation3d(
+          Math.toRadians(poseComponents[3]),
+          Math.toRadians(poseComponents[4]),
+          Math.toRadians(poseComponents[5])));
     } else {
       return null;
     }
@@ -328,15 +340,19 @@ public class SwerveBase extends SubsystemBase {
   public void periodic() {
     // Seed odometry if this has not been done
     if (visionData.getEntry("tv").getDouble(0) == 1 && !wasOdometrySeeded) {
-      Pose2d seed = getVisionPose().toPose2d();
-      resetOdometry(seed);
-      setGyro(seed.getRotation());
-      wasOdometrySeeded = true;
+      try {
+        Pose2d seed = getVisionPose().toPose2d();
+        resetOdometry(seed);
+        setGyro(seed.getRotation());
+        wasOdometrySeeded = true;
+      } catch (NullPointerException e) {
+        DriverStation.reportWarning("Alliance for odometry not set", false);
+      }
     }
     
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
-    if (visionData.getValue("tv").getDouble() == 1) {
+    if (visionData.getEntry("tv").getDouble(0) == 1 && wasOdometrySeeded) {
       Pose2d pose = getVisionPose().toPose2d();
       if (pose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
         double timestamp = Timer.getFPGATimestamp() - (visionData.getEntry("tl").getDouble(0) + 11) / 1000;
@@ -353,6 +369,7 @@ public class SwerveBase extends SubsystemBase {
 
     field.setRobotPose(odometry.getEstimatedPosition());
     SmartDashboard.putData("Field", field);
+    SmartDashboard.putString("Odometry", odometry.getEstimatedPosition().toString());
 
     double[] moduleStates = new double[8];
     for (SwerveModule module : swerveModules) {

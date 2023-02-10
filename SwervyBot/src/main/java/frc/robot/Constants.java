@@ -266,6 +266,6 @@ public final class Constants {
     }
 
     public class Vision {
-        public static final double POSE_ERROR_TOLERANCE = 2;
+        public static final double POSE_ERROR_TOLERANCE = 0.5;
     }
 }

@@ -103,6 +103,7 @@ public class RobotContainer {
     SmartDashboard.putData(driveModeSelector);
     SmartDashboard.putData("Brake", new InstantCommand(drivebase::setDriveBrake));
     SmartDashboard.putData("Reset Odometry", new InstantCommand(() -> drivebase.resetOdometry(new Pose2d())));
+    SmartDashboard.putData("SendAlliance", new InstantCommand(() -> drivebase.setAlliance(DriverStation.getAlliance())).ignoringDisable(true));
     //drivebase.setDefaultCommand(absoluteDrive);
   }
 
@@ -122,7 +123,7 @@ public class RobotContainer {
 
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     rotationController.button(1).onTrue(new InstantCommand(drivebase::setDriveBrake));
-    driverController.button(2).onTrue(new DriveToPose("Node5High", DriverStation.getAlliance(), drivebase));
+    driverController.button(2).onTrue(new DriveToPose("Node2High", DriverStation.getAlliance(), drivebase));
   }
 
   /**
