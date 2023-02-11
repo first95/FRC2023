@@ -50,15 +50,15 @@ public final class Constants {
 
     public static final class Auton {
 
-        public static final double X_KP = 2;
+        public static final double X_KP = 4;
         public static final double X_KI = 0;
         public static final double X_KD = 0;
 
-        public static final double Y_KP = 2;
+        public static final double Y_KP = 4;
         public static final double Y_KI = 0;
         public static final double Y_KD = 0;
 
-        public static final double ANG_KP = 6;
+        public static final double ANG_KP = 8;
         public static final double ANG_KI = 0;
         public static final double ANG_KD = 0;
 
@@ -109,9 +109,9 @@ public final class Constants {
         );
 
         // meters and radians
-        public static final double X_TOLERANCE = 0.01;
-        public static final double Y_TOLERANCE = 0.01;
-        public static final double ANG_TOLERANCE = 0.01;
+        public static final double X_TOLERANCE = 0.02;
+        public static final double Y_TOLERANCE = 0.02;
+        public static final double ANG_TOLERANCE = 0.5;
     }
     public static final class Drivebase {
         // Hold time on motor brakes when disabled

@@ -34,10 +34,6 @@ public class PrecisionAlign extends CommandBase {
     angController = new PIDController(Auton.ANG_KP, Auton.ANG_KI, Auton.ANG_KD);
 
     angController.enableContinuousInput(-Math.PI, Math.PI);
-
-    xController.setSetpoint(target.getX());
-    yController.setSetpoint(target.getY());
-    angController.setSetpoint(target.getRotation().getRadians());
     
     xController.setTolerance(Auton.X_TOLERANCE);
     yController.setTolerance(Auton.Y_TOLERANCE);
@@ -49,7 +45,11 @@ public class PrecisionAlign extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    xController.setSetpoint(target.getX());
+    yController.setSetpoint(target.getY());
+    angController.setSetpoint(target.getRotation().getRadians());
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

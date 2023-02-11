@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.autoCommands.DriveToPose;
+import frc.robot.autoCommands.PrecisionAlign;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
@@ -123,7 +124,7 @@ public class RobotContainer {
 
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     rotationController.button(1).onTrue(new InstantCommand(drivebase::setDriveBrake));
-    driverController.button(2).onTrue(new DriveToPose("Node2High", DriverStation.getAlliance(), drivebase));
+    driverController.button(2).onTrue(new DriveToPose("Node2High", DriverStation.getAlliance(), drivebase).andThen(new PrecisionAlign("Node2High", DriverStation.getAlliance(), drivebase)));
   }
 
   /**
