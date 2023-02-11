@@ -8,6 +8,13 @@ const commandmap = new Map([
   ],
   ["wait", [{ paramname: "duration_in_seconds", paramvalue: "0" }]],
   ["stop", []],
+  ["drivetopose",
+    [{ paramname: "robotPose", paramvalue: savedRobotPoses }]
+  ],
+  [
+    "alignto",
+    [{ paramname: "robotPose", paramvalue: savedRobotPoses }]
+  ]
 ]);
 
 function buildForm() {
