@@ -22,6 +22,7 @@ public class Arm extends SubsystemBase {
 
   private GripState currentGrip = GripState.GRIP_OFF;
   private CANSparkMax armMotor;
+  private CANSparkMax armMotorFollow;
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
   private Solenoid coneGripper;
@@ -33,6 +34,8 @@ public class Arm extends SubsystemBase {
 
   public Arm() {
     armMotor = new CANSparkMax(ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless);
+    armMotorFollow = new CANSparkMax(ArmConstants.ARM_MOTOR_FOLLOW_ID, MotorType.kBrushless);
+    armMotorFollow.follow(armMotor, true);
     armEncoder = armMotor.getEncoder();
     armController = armMotor.getPIDController();
     coneGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.CUBE_SOLENOID_ID);
