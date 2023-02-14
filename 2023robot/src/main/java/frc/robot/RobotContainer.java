@@ -5,10 +5,12 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ArmCommands;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveBase;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -31,6 +33,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveBase drivebase = new SwerveBase();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final Arm arm = new Arm();
 
   private AutoParser autoParser = new AutoParser(drivebase);
 
@@ -39,6 +42,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandJoystick driverController = new CommandJoystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
   CommandJoystick rotationController = new CommandJoystick(1);
+  CommandXboxController operatorController = new CommandXboxController(2);
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -95,6 +99,8 @@ public class RobotContainer {
     driveModeSelector.addOption("Absolute (Closed)", closedAbsoluteDrive);
     driveModeSelector.addOption("Field Relative (Closed)", closedFieldRel);
     driveModeSelector.addOption("Robot Relative (Closed)", closedRobotRel);
+
+    arm.setDefaultCommand(new ArmCommands(() -> operatorController.getRightY(), arm));
 
     SmartDashboard.putData(driveModeSelector);
     drivebase.setDefaultCommand(absoluteDrive);
