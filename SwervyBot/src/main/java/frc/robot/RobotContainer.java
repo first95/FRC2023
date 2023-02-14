@@ -5,17 +5,21 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ArmCommands;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveBase;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -30,12 +34,14 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveBase drivebase = new SwerveBase();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final Arm arm = new Arm();
 
   private SendableChooser<CommandBase> driveModeSelector;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandJoystick driverController = new CommandJoystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
   CommandJoystick rotationController = new CommandJoystick(1);
+  XboxController operatorController = new XboxController(2);
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -84,6 +90,8 @@ public class RobotContainer {
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
       () -> -driverController.getTwist(), () -> true, false);
+    
+    arm.setDefaultCommand(new ArmCommands(() -> (Math.abs(operatorController.getRightY()) > OperatorConstants.LEFT_Y_DEADBAND) ? operatorController.getRightY() : 0, arm));
 
     driveModeSelector = new SendableChooser<>();
     driveModeSelector.setDefaultOption("AbsoluteDrive", absoluteDrive);

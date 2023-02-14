@@ -6,19 +6,24 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.SwerveBase;
+
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class ArmCommands extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Arm a_sub;
-  private final SwerveBase d_sub;
+  private final DoubleSupplier velocitySupplier;
+  //private final SwerveBase d_sub;
 
-  public ArmCommands(Arm subsystemA, SwerveBase subsystemD) {
+  public ArmCommands(DoubleSupplier velocitySupplier, Arm subsystemA) {//, SwerveBase subsystemD) {
+    this.velocitySupplier = velocitySupplier;
     a_sub = subsystemA;
-    d_sub = subsystemD;
+    //d_sub = subsystemD;
     addRequirements(a_sub);
-    addRequirements(d_sub);
+    //addRequirements(d_sub);
   }
 
   @Override
@@ -26,9 +31,7 @@ public class ArmCommands extends CommandBase {
 
   @Override
   public void execute() {
-    a_sub.setPos(0.8);
-    d_sub.driveBack(backwards);
-    a_sub.setPos(0.5);
+    a_sub.setSpeed(velocitySupplier.getAsDouble());
   }
 
   @Override
