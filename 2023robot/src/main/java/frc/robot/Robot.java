@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
+
     if (SmartDashboard.getString("AutoCode", null) == null) {
       SmartDashboard.putString("AutoCode", "");
     }
@@ -82,7 +83,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_robotContainer.setMotorBrake(true);
-    m_robotContainer.setDriveMode(false);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -104,7 +104,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    m_robotContainer.setDriveMode(true);
+    m_robotContainer.setDriveMode();
     m_robotContainer.setMotorBrake(true);
   }
 

@@ -4,9 +4,17 @@
 
 package frc.robot;
 
+import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.lib.util.BetterSwerveKinematics;
 import frc.lib.util.SwerveModuleConstants;
 
 /**
@@ -19,30 +27,98 @@ import frc.lib.util.SwerveModuleConstants;
  */
 public final class Constants {
 
-    public static final double ROBOT_MASS = 32 * 0.453592; // 32lbs * kg per pound
+    public static final Translation3d FIELD_CENTER = new Translation3d(
+        Units.feetToMeters(27),
+        Units.feetToMeters(13.5),
+        0);
+    
+    public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
+    public static final double MANIPULATOR_MASS = 10 * 0.453592; // 10lbs * kg per pound
+    public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
+    public static final Translation3d CHASSIS_CG = new Translation3d(
+        0,
+        0,
+        Units.inchesToMeters(8));
+    public static final double ARM_Y_POS = 0; // centered on robot
+    public static final double GRAVITY = 9.81; // m/s/s
+    public static final double LOOP_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
+
+    public static final double dummyArmX = Units.inchesToMeters(42);
+    public static final double dummyArmHieght = Units.inchesToMeters(27);
+
+    public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
 
     public static final class Auton {
-        public static final double X_KP = 0.7;
+
+        public static final double X_KP = 4;
         public static final double X_KI = 0;
         public static final double X_KD = 0;
 
-        public static final double Y_KP = 0.7;
+        public static final double Y_KP = 4;
         public static final double Y_KI = 0;
         public static final double Y_KD = 0;
 
-        public static final double ANG_KP = 0.4;
+        public static final double ANG_KP = 8;
         public static final double ANG_KI = 0;
-        public static final double ANG_KD = 0.01;
+        public static final double ANG_KD = 0;
 
-        public static final double MAX_SPEED = 4;
-        public static final double MAX_ACCELERATION = 2;
+        public static final double MAX_SPEED = Units.feetToMeters(14.5);
+        public static final double MAX_ACCELERATION = 8;
+
+        private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(
+            Map.entry("Node1High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node2High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node3High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node4High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(85.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node5High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node6High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(129.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node7High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node8High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(195.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node1Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node2Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node3Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node4Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node5Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node6Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node7Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node8Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node1Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node2Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node3Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node4Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node5Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node6Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node7Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node8Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180)))
+        );
+        private static final Map<String, Pose2d> RED_MAP =
+            BLUE_MAP.entrySet().stream().collect(Collectors.toMap(
+                entry -> entry.getKey(),
+                entry -> new Pose2d(
+                    new Translation2d(
+                        entry.getValue().getX(),
+                        FIELD_WIDTH - entry.getValue().getY()),
+                    entry.getValue().getRotation())));
+        
+        public static final Map<Alliance, Map<String, Pose2d>> POSE_MAP = Map.of(
+            Alliance.Blue, BLUE_MAP,
+            Alliance.Red, RED_MAP
+        );
+
+        // meters and radians
+        public static final double X_TOLERANCE = 0.02;
+        public static final double Y_TOLERANCE = 0.02;
+        public static final double ANG_TOLERANCE = 0.5;
     }
     public static final class Drivebase {
         // Hold time on motor brakes when disabled
         public static final double WHEEL_LOCK_TIME = 10; // seconds
 
         // Robot heading control gains
-        public static final double HEADING_KP = 0.4; //0.5;
+        public static final double HEADING_KP = 0.4;
         public static final double HEADING_KI = 0;
         public static final double HEADING_KD = 0.01;
 
@@ -78,9 +154,12 @@ public final class Constants {
         // (2.6 * 6.75 * 4) / (Units.inchesToMeters(2) * ROBOT_MASS)
         // However, the drive is traction-limited, so the max accelration is actually (wheel coefficient of friction * gravity)
         public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
+        // max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
+        public static final double MAX_MODULE_ANGULAR_SPEED = 360 * (5676 / 12.8) / 60; // deg/s
+        public static final double MAX_ANGULAR_ACCELERATION = MAX_ACCELERATION / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y);
 
         // Swerve base kinematics object
-        public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(MODULE_LOCATIONS);
+        public static final BetterSwerveKinematics KINEMATICS = new BetterSwerveKinematics(MODULE_LOCATIONS);
 
         // Module PIDF gains
         public static final double MODULE_KP = 0.01;
@@ -88,6 +167,8 @@ public final class Constants {
         public static final double MODULE_KD = 0;
         public static final double MODULE_IZ = 0;
         public static final double MODULE_KF = 0;
+        // Volt * seconds / degree.  Equal to (maxVolts) / (maxSpeed)
+        public static final double MODULE_KV = 12 / MAX_MODULE_ANGULAR_SPEED;
 
         public static final double VELOCITY_KP = 0.0020645; // kp from SysId, eventually
         public static final double VELOCITY_KI = 0; // Leave all of these zero to disable them
@@ -143,6 +224,8 @@ public final class Constants {
         }
 
         public static final int PIGEON = 14;
+
+        public static final int SWERVE_MODULE_CURRENT_LIMIT = 60;
     }
     public static final class ArmConstants {
        public static final int ARM_MOTOR_ID = 10; 
@@ -181,5 +264,9 @@ public final class Constants {
         // Joystick Deadband
         public static final double LEFT_X_DEADBAND = 0.01;
         public static final double LEFT_Y_DEADBAND = 0.01;
+    }
+
+    public class Vision {
+        public static final double POSE_ERROR_TOLERANCE = 0.5;
     }
 }
