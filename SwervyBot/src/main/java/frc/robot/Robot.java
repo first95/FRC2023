@@ -66,6 +66,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     m_robotContainer.setMotorBrake(true);
+    m_robotContainer.setArmBrakes(false);
     disabledTimer.reset();
     disabledTimer.start();
   }
@@ -106,6 +107,7 @@ public class Robot extends TimedRobot {
     }
     m_robotContainer.setDriveMode(true);
     m_robotContainer.setMotorBrake(true);
+    m_robotContainer.setArmBrakes(true);
   }
 
   /** This function is called periodically during operator control. */

@@ -230,8 +230,8 @@ public final class Constants {
     public static final class ArmConstants {
        public static final int ARM_MOTOR_ID = 10; 
        public static final int ARM_MOTOR_FOLLOW_ID = 11; 
-       public static final int CUBE_SOLENOID_ID = 0;
-       public static final int CONE_SOLENOID_ID = 0;
+       public static final int GRIPPER_SOLENOID_ID = 1;
+       // public static final int CONE_SOLENOID_ID = 0;
        public enum Preset{
         HIGH_SCORE (20.0),
         MID_SCORE (0.0),
@@ -245,7 +245,7 @@ public final class Constants {
         public double angle() { return angle; }
        }
        public enum GripState{
-        GRIP_OFF, GRIP_CUBE, GRIP_CONE;
+        GRIP_OFF, GRIP_ON;
        }
        public static final double ARM_KP = 0;
        public static final double ARM_KI = 0;
@@ -262,8 +262,8 @@ public final class Constants {
         public static final int DRIVER_CONTROLLER_PORT = 0;
 
         // Joystick Deadband
-        public static final double LEFT_X_DEADBAND = 0.01;
-        public static final double LEFT_Y_DEADBAND = 0.01;
+        public static final double LEFT_X_DEADBAND = 0.05;
+        public static final double LEFT_Y_DEADBAND = 0.05;
     }
 
     public class Vision {
