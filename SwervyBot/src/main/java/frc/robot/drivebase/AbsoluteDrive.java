@@ -59,7 +59,7 @@ public class AbsoluteDrive extends CommandBase {
   public void initialize() {
     thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    lastAngle = 0;
+    lastAngle = swerve.getYaw().getRadians();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
