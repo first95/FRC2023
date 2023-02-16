@@ -95,9 +95,9 @@ public class Arm extends SubsystemBase {
   }
 
   public void setGrip(GripState state){
-    if(currentGrip == GripState.GRIP_ON)
+    if(state == GripState.GRIP_ON)
       gripper.set(true);
-    else if(currentGrip == GripState.GRIP_OFF)
+    else if(state == GripState.GRIP_OFF)
       gripper.set(false);
     currentGrip = state;
 
