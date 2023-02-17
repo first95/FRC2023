@@ -104,7 +104,16 @@ public class RobotContainer {
 
     SmartDashboard.putData(driveModeSelector);
     drivebase.setDefaultCommand(absoluteDrive);
-    intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), () -> (operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), intake));
+    //intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), () -> (operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), intake));
+    intake.setDefaultCommand(new ControlIntake(
+      () -> operatorController.getLeftX(), 
+      () -> operatorController.getLeftY(),
+      () -> operatorController.getLeftTriggerAxis(),
+      operatorController.y(),
+      operatorController.b(),
+      operatorController.a(),
+      operatorController.x(),
+      intake));
   }
 
   /**

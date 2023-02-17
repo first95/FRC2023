@@ -196,7 +196,7 @@ public final class Constants {
         public static final float RACK_UPPER_LIMIT = (float)Units.inchesToMeters(14);
         public static final double RACK_TRAVEL = RACK_UPPER_LIMIT - RACK_LOWER_LIMIT;
 
-        public static final double KP = 0.1;
+        public static final double KP = 10;
         public static final double KI = 0;
         public static final double KD = 0;
         public static final double KF = 0;
@@ -209,5 +209,21 @@ public final class Constants {
 
         public static final double KV = 12 / MAX_LINEAR_SPEED;
         public static final double KA = 12 / MAX_LINEAR_ACCELERATION;
+
+        public enum PRESETS {
+            STOWED (0),
+            HANDOFF (0),
+            CONE (Units.inchesToMeters(6)),
+            CUBE (Units.inchesToMeters(13.5));
+
+            private final double position;
+            PRESETS(double position) {
+                this.position = position;
+            }
+
+            public double position() {
+                return position;
+            }
+        }
     }
 }

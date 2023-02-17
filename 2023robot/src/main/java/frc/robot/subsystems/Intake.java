@@ -6,21 +6,25 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.IntakeConstants;;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.IntakeConstants.PRESETS;;
 
 public class Intake extends SubsystemBase {
   private CANSparkMax bottomRoller, topRoller, gearRack;
   private SparkMaxPIDController rackController;
   private RelativeEncoder rackEncoder;
+  private SparkMaxLimitSwitch homeSwitch;
   /** Creates a new Intake subsystem. */
   public Intake() {
     bottomRoller = new CANSparkMax(IntakeConstants.BOTTOM_ROLLER_ID, MotorType.kBrushless);
@@ -42,7 +46,7 @@ public class Intake extends SubsystemBase {
     gearRack.restoreFactoryDefaults();
     gearRack.setIdleMode(IdleMode.kCoast);
     gearRack.setInverted(IntakeConstants.INVERT_RACK);
-    gearRack.setSmartCurrentLimit(15);
+    gearRack.setSmartCurrentLimit(20);
 
     rackEncoder = gearRack.getEncoder();
     rackEncoder.setPositionConversionFactor(IntakeConstants.RACK_METERS_PER_MOTOR_ROTATION);
@@ -58,6 +62,8 @@ public class Intake extends SubsystemBase {
     rackController.setD(IntakeConstants.KD);
     rackController.setFF(IntakeConstants.KF);
     rackController.setIZone(IntakeConstants.IZ);
+
+    homeSwitch = gearRack.getReverseLimitSwitch(Type.kNormallyOpen);
 
     gearRack.burnFlash();
   }
@@ -79,6 +85,10 @@ public class Intake extends SubsystemBase {
 
   public void setPosition(double meters) {
     rackController.setReference(meters, ControlType.kPosition);
+  }
+
+  public void setPreset(PRESETS preset) {
+    setPosition(0.1524);
   }
 
   public void moveIntake(double speed) {
@@ -112,6 +122,9 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (homeSwitch.isPressed()) {
+      rackEncoder.setPosition(0);
+    }
   }
 
   @Override
