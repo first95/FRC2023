@@ -53,6 +53,7 @@ public class ControlIntake extends CommandBase {
     } 
     else if (setHandoff.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.HANDOFF);
+      subsystem.grabCone(-0.6);
     } 
     else if (setCone.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.CONE);

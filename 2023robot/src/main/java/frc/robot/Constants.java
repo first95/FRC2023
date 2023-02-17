@@ -213,7 +213,7 @@ public final class Constants {
         public enum PRESETS {
             STOWED (0),
             HANDOFF (0),
-            CONE (Units.inchesToMeters(6)),
+            CONE (Units.inchesToMeters(13.5)),
             CUBE (Units.inchesToMeters(13.5));
 
             private final double position;
