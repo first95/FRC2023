@@ -7,11 +7,13 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmCommands;
 import frc.robot.commands.Autos;
+import frc.robot.commands.ControlIntake;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -34,6 +36,7 @@ public class RobotContainer {
   private final SwerveBase drivebase = new SwerveBase();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final Arm arm = new Arm();
+  private final Intake intake = new Intake();
 
   private AutoParser autoParser = new AutoParser(drivebase);
 
@@ -102,8 +105,20 @@ public class RobotContainer {
 
     arm.setDefaultCommand(new ArmCommands(() -> (Math.abs(operatorController.getRightY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (operatorController.getRightY() / 4) : 0, arm));
 
+    
+
     SmartDashboard.putData(driveModeSelector);
     drivebase.setDefaultCommand(absoluteDrive);
+    //intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), () -> (operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), intake));
+    intake.setDefaultCommand(new ControlIntake(
+      () -> operatorController.getLeftX(), 
+      () -> operatorController.getLeftY(),
+      () -> operatorController.getLeftTriggerAxis(),
+      operatorController.y(),
+      operatorController.b(),
+      operatorController.a(),
+      operatorController.x(),
+      intake));
   }
 
   /**

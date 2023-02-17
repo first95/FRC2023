@@ -20,8 +20,14 @@ import frc.lib.util.SwerveModuleConstants;
  */
 public final class Constants {
 
-    public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
-    public static final double MANIPULATOR_MASS = 10 * 0.453592; // 10lbs * kg per pound
+    public static final double KG_PER_LB = 0.453592;
+    
+    public static final double NEO_FREE_SPEED = 5676; // RPM
+    public static final double NEO_STALL_TORQUE = 2.6; // N * m
+    public static final double NEO_550_FREE_SPEED = 11000; // RPM
+    
+    public static final double ROBOT_MASS = (148 - 20.3) * KG_PER_LB; // 32lbs * kg per pound
+    public static final double MANIPULATOR_MASS = 0 * 0.453592; // 10lbs * kg per pound
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         0,
@@ -99,7 +105,7 @@ public final class Constants {
         // However, the drive is traction-limited, so the max accelration is actually (wheel coefficient of friction * gravity)
         public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
         // max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
-        public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(5676 * 7 / 372) / 60; // deg/s
+        public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(NEO_550_FREE_SPEED * 7 / 372) / 60; // deg/s
 
         // Swerve base kinematics object
         public static final BetterSwerveKinematics KINEMATICS = new BetterSwerveKinematics(MODULE_LOCATIONS);
@@ -201,4 +207,52 @@ public final class Constants {
         
         
      }
+
+    public static final class IntakeConstants {
+        public static final int BOTTOM_ROLLER_ID = 14;
+        public static final int TOP_ROLLER_ID = 12;
+        public static final int RACK_ID = 13;
+
+        public static final boolean INVERT_ROLLERS = true;
+        public static final boolean INVERT_RACK = false;
+
+        public static final double PINION_PITCH_DIAMETER = Units.inchesToMeters(0.9);
+        public static final double RACK_DRIVE_GEAR_RATIO = 0.2;
+        public static final double INTAKE_MASS = 9 * KG_PER_LB;
+        public static final double RACK_METERS_PER_MOTOR_ROTATION =
+            (PINION_PITCH_DIAMETER * Math.PI) * RACK_DRIVE_GEAR_RATIO;
+        public static final float RACK_LOWER_LIMIT = 0;
+        public static final float RACK_UPPER_LIMIT = (float)Units.inchesToMeters(14);
+        public static final double RACK_TRAVEL = RACK_UPPER_LIMIT - RACK_LOWER_LIMIT;
+
+        public static final double KP = 10;
+        public static final double KI = 0;
+        public static final double KD = 0;
+        public static final double KF = 0;
+        public static final double IZ = 0;
+
+        // motor max rpm --> m/s
+        public static final double MAX_LINEAR_SPEED = 5676 * RACK_METERS_PER_MOTOR_ROTATION / 60;
+        public static final double MAX_LINEAR_ACCELERATION =
+            (NEO_STALL_TORQUE / RACK_DRIVE_GEAR_RATIO) * (PINION_PITCH_DIAMETER / 2) / INTAKE_MASS;
+
+        public static final double KV = 12 / MAX_LINEAR_SPEED;
+        public static final double KA = 12 / MAX_LINEAR_ACCELERATION;
+
+        public enum PRESETS {
+            STOWED (0),
+            HANDOFF (0),
+            CONE (Units.inchesToMeters(13.5)),
+            CUBE (Units.inchesToMeters(13.5));
+
+            private final double position;
+            PRESETS(double position) {
+                this.position = position;
+            }
+
+            public double position() {
+                return position;
+            }
+        }
+    }
 }
