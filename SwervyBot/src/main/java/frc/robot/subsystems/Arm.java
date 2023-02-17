@@ -47,9 +47,9 @@ public class Arm extends SubsystemBase {
     // cubeGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.CONE_SOLENOID_ID);
 
     armMotor.restoreFactoryDefaults();
-    armController.setP(ArmConstants.ARM_KP);
-    armController.setI(ArmConstants.ARM_KI);
-    armController.setD(ArmConstants.ARM_KD);
+    armController.setP(.001);
+    armController.setI(0);
+    armController.setD(0);
     armMotor.burnFlash();  
   }
 
@@ -78,8 +78,8 @@ public class Arm extends SubsystemBase {
   // }
   }
 
-  public void setVoltage(double p, double v){
-    armMotor.setVoltage(feedForward.calculate(p,v));
+  public void setVoltage(double setpoint){
+    armMotor.setVoltage(feedForward.calculate(setpoint, ArmConstants.ARM_KV));
   }
 
   public double getPos(){
