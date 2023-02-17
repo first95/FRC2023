@@ -44,18 +44,18 @@ public class ControlArm extends CommandBase {
 
   private void monitorMode() {
     // Setpoints
-    if (setStowed.getAsBoolean() 
+    if ((setStowed.getAsBoolean() 
         || setHandoff.getAsBoolean() 
         || setHighScore.getAsBoolean() 
         || setMedScore.getAsBoolean() 
-        || setLowScore.getAsBoolean()) {
+        || setLowScore.getAsBoolean()) 
+        && currentMode != CONTROL_MODE.POSITION) {
           currentMode = CONTROL_MODE.POSITION;
           arm.setControlMode(CONTROL_MODE.POSITION);
     } 
-    // Joystick velocity override
+    // Joystick duty override
     else if (Math.abs(manualControl.getAsDouble()) > 0) {
       currentMode = CONTROL_MODE.DUTY;
-      arm.setControlMode(CONTROL_MODE.DUTY);
     }
     else {
       if (currentMode == CONTROL_MODE.DUTY) {
