@@ -88,7 +88,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void setPreset(PRESETS preset) {
-    setPosition(0.1524);
+    setPosition(preset.position());
   }
 
   public void moveIntake(double speed) {

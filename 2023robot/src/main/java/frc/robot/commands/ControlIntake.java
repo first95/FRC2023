@@ -46,27 +46,25 @@ public class ControlIntake extends CommandBase {
   public void execute() {
     //subsystem.runRollers(coneSpeed.getAsDouble(), cubeSpeed.getAsDouble());
     //subsystem.moveIntake(position.getAsDouble());
-    subsystem.setPosition(IntakeConstants.RACK_TRAVEL * position.getAsDouble());
-    /*if (setStowed.getAsBoolean()) {
+    //subsystem.setPosition(IntakeConstants.RACK_TRAVEL * position.getAsDouble());
+    if (setStowed.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.STOWED);
-      SmartDashboard.putString("mode", "stowed");
-      SmartDashboard.putNumber("position", IntakeConstants.PRESETS.STOWED.position());
+      subsystem.runRollers(0, 0);
     } 
     else if (setHandoff.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.HANDOFF);
-      SmartDashboard.putString("mode", "handoff");
-      SmartDashboard.putNumber("position", IntakeConstants.PRESETS.HANDOFF.position());
     } 
     else if (setCone.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.CONE);
-      SmartDashboard.putString("mode", "cone");
-      SmartDashboard.putNumber("position", IntakeConstants.PRESETS.CONE.position());
+      subsystem.grabCone(0.6);
     } 
     else if (setCube.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.CUBE);
-      SmartDashboard.putString("mode", "cube");
-      SmartDashboard.putNumber("position", IntakeConstants.PRESETS.CUBE.position());
-    }*/
+      subsystem.grabCube(0.6);
+    } else {
+      subsystem.setPreset(IntakeConstants.PRESETS.STOWED);
+      subsystem.runRollers(0, 0);
+    }
   }
 
   // Called once the command ends or is interrupted.

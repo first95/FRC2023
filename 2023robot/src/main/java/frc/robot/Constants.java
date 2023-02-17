@@ -184,7 +184,7 @@ public final class Constants {
         public static final int TOP_ROLLER_ID = 12;
         public static final int RACK_ID = 13;
 
-        public static final boolean INVERT_ROLLERS = false;
+        public static final boolean INVERT_ROLLERS = true;
         public static final boolean INVERT_RACK = false;
 
         public static final double PINION_PITCH_DIAMETER = Units.inchesToMeters(0.9);
