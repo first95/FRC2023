@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.ArmConstants.CONTROL_MODE;
 import frc.robot.Constants.ArmConstants.GripState;
 import frc.robot.subsystems.Arm;
 
@@ -17,12 +18,7 @@ public class ControlArm extends CommandBase {
   private DoubleSupplier manualControl;
   private BooleanSupplier setStowed, setHandoff, setHighScore, setMedScore, setLowScore;
 
-  private enum Mode {
-    POSITION,
-    VELOCITY
-  }
-
-  private Mode currentMode = Mode.VELOCITY;
+  private CONTROL_MODE currentMode = CONTROL_MODE.DUTY;
   
   public ControlArm(
       DoubleSupplier manualControl, 
@@ -47,15 +43,25 @@ public class ControlArm extends CommandBase {
   }
 
   private void monitorMode() {
+    // Setpoints
     if (setStowed.getAsBoolean() 
         || setHandoff.getAsBoolean() 
         || setHighScore.getAsBoolean() 
         || setMedScore.getAsBoolean() 
         || setLowScore.getAsBoolean()) {
-          currentMode = Mode.POSITION;
+          currentMode = CONTROL_MODE.POSITION;
+          arm.setControlMode(CONTROL_MODE.POSITION);
     } 
-    else if (manualControl.getAsDouble() > 0) {
-      currentMode = Mode.VELOCITY;
+    // Joystick velocity override
+    else if (Math.abs(manualControl.getAsDouble()) > 0) {
+      currentMode = CONTROL_MODE.DUTY;
+      arm.setControlMode(CONTROL_MODE.DUTY);
+    }
+    else {
+      if (currentMode == CONTROL_MODE.DUTY) {
+        currentMode = CONTROL_MODE.HOLD;
+        arm.setControlMode(CONTROL_MODE.POSITION);
+      }
     }
   }
 
@@ -66,7 +72,7 @@ public class ControlArm extends CommandBase {
   public void execute() {
     monitorMode();
 
-    if(currentMode == Mode.POSITION) {
+    if(currentMode == CONTROL_MODE.POSITION) {
       if (setStowed.getAsBoolean()) {
         arm.setGrip(GripState.GRIP_OFF);
         arm.setPreset(ArmConstants.PRESETS.STOWED);
@@ -91,6 +97,8 @@ public class ControlArm extends CommandBase {
         arm.setPreset(ArmConstants.PRESETS.STOWED);
       }
     }
+    else if (currentMode == CONTROL_MODE.HOLD)
+      arm.setPos(arm.getPos());
     else {
       arm.setSpeed(manualControl.getAsDouble());
     }

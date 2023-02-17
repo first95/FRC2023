@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.ArmConstants.CONTROL_MODE;
 import frc.robot.Constants.ArmConstants.GripState;
 
 public class Arm extends SubsystemBase {
@@ -51,6 +52,13 @@ public class Arm extends SubsystemBase {
     armMotor.setIdleMode(IdleMode.kCoast);
 
     armMotor.burnFlash();  
+  }
+
+  public void setControlMode(CONTROL_MODE mode) {
+    if(mode == CONTROL_MODE.POSITION)
+      armController.setReference(getPos(), CANSparkMax.ControlType.kPosition);
+    else if(mode == CONTROL_MODE.DUTY)
+      armController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
   }
 
   public void setBreaks(boolean enabled) {

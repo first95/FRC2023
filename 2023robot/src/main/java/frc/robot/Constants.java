@@ -193,6 +193,12 @@ public final class Constants {
         // Calculated by: 1 / 5 / 5 * 22 / 40
         public static final double ARM_DEGREES_PER_MOTOR_ROTATION = 0.22 * 360;
 
+        public enum CONTROL_MODE {
+            POSITION,
+            DUTY,
+            HOLD
+          }
+
         // TODO: Change these presets to the correct angle!
         public enum PRESETS {
             HIGH_SCORE (20.0),
