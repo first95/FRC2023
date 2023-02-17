@@ -20,6 +20,7 @@ import frc.lib.util.SwerveModuleConstants;
  */
 public final class Constants {
 
+    public static final int PNEUMATIC_HUB_ID = 60;
     public static final double KG_PER_LB = 0.453592;
     
     public static final double NEO_FREE_SPEED = 5676; // RPM
@@ -56,6 +57,7 @@ public final class Constants {
         public static final double MAX_SPEED = 4;
         public static final double MAX_ACCELERATION = 2;
     }
+    
     public static final class Drivebase {
         // Hold time on motor brakes when disabled
         public static final double WHEEL_LOCK_TIME = 10; // seconds
@@ -177,35 +179,44 @@ public final class Constants {
         // Joystick Deadband
         public static final double LEFT_X_DEADBAND = 0.05;
         public static final double LEFT_Y_DEADBAND = 0.05;
+
+        // Joystick Deadband
+        public static final double RIGHT_X_DEADBAND = 0.05;
+        public static final double RIGHT_Y_DEADBAND = 0.05;
     }
 
     public static final class ArmConstants {
         public static final int ARM_MOTOR_ID = 10; 
-        public static final int ARM_MOTOR_FOLLOW_ID = 11; 
+        public static final int ARM_MOTOR_FOLLOWER_ID = 11; 
         public static final int GRIPPER_SOLENOID_ID = 1;
-        public enum Preset{
-         HIGH_SCORE (20.0),
-         MID_SCORE (0.0),
-         LOW_SCORE (-10.0),
-         HANDOFF (-40.0),
-         STOWED (-80.0);
-         private final double angle;
-         Preset(double angle) {
-         this.angle = angle;
-         }
-         public double angle() { return angle; }
+
+        // Calculated by: 1 / 5 / 5 * 22 / 40
+        public static final double ARM_DEGREES_PER_MOTOR_ROTATION = 0.22 * 360;
+
+        // TODO: Change these presets to the correct angle!
+        public enum PRESETS {
+            HIGH_SCORE (20.0),
+            MID_SCORE (0.0),
+            LOW_SCORE (-10.0),
+            HANDOFF (-40.0),
+            STOWED (-80.0);
+            
+            private final double angle;
+            PRESETS(double angle) { this.angle = angle; }
+            public double angle() { return angle; }
         }
-        public enum GripState{
-         GRIP_OFF, GRIP_ON;
-        }
+
+        public enum GripState {GRIP_OFF, GRIP_ON}
+
+        // Constants for PID
         public static final double ARM_KP = 0;
         public static final double ARM_KI = 0;
         public static final double ARM_KD = 0;
+
+        // Constants for feed forward
         public static final double ARM_KS = 0;
         public static final double ARM_KG = 0;
         public static final double ARM_KV = 0;
-        
-        
      }
 
     public static final class IntakeConstants {

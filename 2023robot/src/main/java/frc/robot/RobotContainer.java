@@ -5,7 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.ArmCommands;
+import frc.robot.commands.ControlArm;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ControlIntake;
 import frc.robot.commands.ExampleCommand;
@@ -15,6 +15,9 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveBase;
+
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,14 +42,12 @@ public class RobotContainer {
   private final Intake intake = new Intake();
 
   private AutoParser autoParser = new AutoParser(drivebase);
-
   private SendableChooser<CommandBase> driveModeSelector;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandJoystick driverController = new CommandJoystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
   CommandJoystick rotationController = new CommandJoystick(1);
   CommandXboxController operatorController = new CommandXboxController(2);
-
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -102,11 +103,7 @@ public class RobotContainer {
     driveModeSelector.addOption("Absolute (Closed)", closedAbsoluteDrive);
     driveModeSelector.addOption("Field Relative (Closed)", closedFieldRel);
     driveModeSelector.addOption("Robot Relative (Closed)", closedRobotRel);
-
-    arm.setDefaultCommand(new ArmCommands(() -> (Math.abs(operatorController.getRightY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (operatorController.getRightY() / 4) : 0, arm));
-
     
-
     SmartDashboard.putData(driveModeSelector);
     drivebase.setDefaultCommand(absoluteDrive);
     //intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), () -> (operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), intake));
@@ -119,6 +116,18 @@ public class RobotContainer {
       operatorController.a(),
       operatorController.x(),
       intake));
+
+    arm.setDefaultCommand(new ControlArm(
+      () -> (Math.abs(operatorController.getRightY()) > OperatorConstants.RIGHT_Y_DEADBAND) 
+              ? (operatorController.getRightY() / 4) 
+              : 0
+      , 
+      operatorController.povDown(),   // STOW
+      operatorController.povUp(),     // HANDOFF
+      operatorController.povLeft(),   // HIGH
+      operatorController.povRight(),  // MED
+      new BooleanSupplier() { public boolean getAsBoolean() {return false;};}, // LOW
+      arm));   
   }
 
   /**

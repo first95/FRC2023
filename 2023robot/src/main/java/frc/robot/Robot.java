@@ -34,14 +34,17 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   @Override
-  public void robotInit() {
-    Solenoid fans = new Solenoid(60, PneumaticsModuleType.REVPH, 0);
-    fans.set(true);
+  public void robotInit() { 
     PathPlannerServer.startServer(5811);
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
+        
+    // Instantiate our RobotContainer.  
+    // This will perform all our button bindings, and put our autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    m_compressor = new Compressor(60, PneumaticsModuleType.REVPH);
+    m_compressor = new Compressor(Constants.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH);
+
+    // Enable fans linked to solenoid
+    Solenoid fans = new Solenoid(Constants.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH, 0);
+    fans.set(true);
 
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
@@ -67,6 +70,9 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // Logging...
+    SmartDashboard.putBoolean("Compressor Status", m_compressor.isEnabled());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -118,9 +124,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    SmartDashboard.putBoolean("Compressor Status", m_compressor.isEnabled());
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {

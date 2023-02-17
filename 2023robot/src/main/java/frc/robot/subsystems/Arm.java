@@ -16,60 +16,61 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmConstants.GripState;
 
 public class Arm extends SubsystemBase {
-
   private GripState currentGrip = GripState.GRIP_OFF;
+
   private CANSparkMax armMotor;
   private CANSparkMax armMotorFollow;
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
+
   private Solenoid gripper;
-  private DigitalInput toplimitSwitch = new DigitalInput(0);
-  private DigitalInput bottomlimitSwitch = new DigitalInput(1);
-  private ArmFeedforward feedForward = new ArmFeedforward(ArmConstants.ARM_KS, ArmConstants.ARM_KG, ArmConstants.ARM_KV);
-  
+
+  private DigitalInput bottomLimitSwitch = new DigitalInput(1);
 
   public Arm() {
+    gripper = new Solenoid(Constants.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH, ArmConstants.GRIPPER_SOLENOID_ID);
     armMotor = new CANSparkMax(ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless);
-    armMotorFollow = new CANSparkMax(ArmConstants.ARM_MOTOR_FOLLOW_ID, MotorType.kBrushless);
+    armMotorFollow = new CANSparkMax(ArmConstants.ARM_MOTOR_FOLLOWER_ID, MotorType.kBrushless);
     armMotorFollow.follow(armMotor, true);
-    armEncoder = armMotor.getEncoder();
-    armController = armMotor.getPIDController();
-    gripper = new Solenoid(60, PneumaticsModuleType.REVPH, ArmConstants.GRIPPER_SOLENOID_ID);
     armMotor.restoreFactoryDefaults();
-    armController.setP(.001);
-    armController.setI(0);
-    armController.setD(0);
+
+    armEncoder = armMotor.getEncoder();
+    armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION);
+    armController = armMotor.getPIDController();
+    
+    armController.setP(ArmConstants.ARM_KP);
+    armController.setI(ArmConstants.ARM_KI);
+    armController.setD(ArmConstants.ARM_KD);
+
+    armMotor.setSmartCurrentLimit(20);
+    armMotor.setIdleMode(IdleMode.kCoast);
+
     armMotor.burnFlash();  
   }
 
   public void setBreaks(boolean enabled) {
     armMotor.setIdleMode(enabled ? IdleMode.kBrake : IdleMode.kCoast);
-    armMotorFollow.setIdleMode(enabled ? IdleMode.kBrake : IdleMode.kCoast);
   }
 
   public void setSpeed(double speed){
     armMotor.set(speed);
   }
 
-  public void setVoltage(double setpoint){
-    armMotor.setVoltage(feedForward.calculate(setpoint, ArmConstants.ARM_KV));
-  }
-
-  public void setPreset(ArmConstants.Preset position){
-    double angle = position.angle();
-    setPos(angle);
+  public void setPreset(ArmConstants.PRESETS position){
+    setPos(position.angle());
   }
   
   public double getPos(){
     return armEncoder.getPosition();
   }
 
-  public void setPos(double rotation){
-    armController.setReference(rotation, CANSparkMax.ControlType.kPosition);
+  public void setPos(double angleDegree){
+    armController.setReference(angleDegree, CANSparkMax.ControlType.kPosition);
   }
   
   public GripState getGrip(){
@@ -93,13 +94,13 @@ public class Arm extends SubsystemBase {
       setGrip(GripState.GRIP_OFF);
   }
 
-  public void resetOdometry() {
-    armEncoder.setPosition(0);
-  }
-
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Arm Pos", getPos());
+    if (bottomLimitSwitch.get()) armEncoder.setPosition(0);
+
+    // Logging...
+    SmartDashboard.putBoolean("Bottom Limit Switch:: ", bottomLimitSwitch.get());
+    SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
   }
 
   @Override
