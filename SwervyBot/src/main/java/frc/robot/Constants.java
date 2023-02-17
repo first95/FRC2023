@@ -223,7 +223,7 @@ public final class Constants {
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
         }
 
-        public static final int PIGEON = 14;
+        public static final int PIGEON = 30;
 
         public static final int SWERVE_MODULE_CURRENT_LIMIT = 60;
     }

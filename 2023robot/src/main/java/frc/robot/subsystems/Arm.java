@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -25,8 +26,7 @@ public class Arm extends SubsystemBase {
   private CANSparkMax armMotorFollow;
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
-  private Solenoid coneGripper;
-  private Solenoid cubeGripper;
+  private Solenoid gripper;
   private DigitalInput toplimitSwitch = new DigitalInput(0);
   private DigitalInput bottomlimitSwitch = new DigitalInput(1);
   private ArmFeedforward feedForward = new ArmFeedforward(ArmConstants.ARM_KS, ArmConstants.ARM_KG, ArmConstants.ARM_KV);
@@ -38,8 +38,7 @@ public class Arm extends SubsystemBase {
     armMotorFollow.follow(armMotor, true);
     armEncoder = armMotor.getEncoder();
     armController = armMotor.getPIDController();
-    coneGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.CONE_SOLENOID_ID);
-    cubeGripper = new Solenoid(PneumaticsModuleType.REVPH, ArmConstants.CUBE_SOLENOID_ID);
+    gripper = new Solenoid(60, PneumaticsModuleType.REVPH, ArmConstants.GRIPPER_SOLENOID_ID);
     armMotor.restoreFactoryDefaults();
     armController.setP(.001);
     armController.setI(0);
@@ -47,35 +46,17 @@ public class Arm extends SubsystemBase {
     armMotor.burnFlash();  
   }
 
+  public void setBreaks(boolean enabled) {
+    armMotor.setIdleMode(enabled ? IdleMode.kBrake : IdleMode.kCoast);
+    armMotorFollow.setIdleMode(enabled ? IdleMode.kBrake : IdleMode.kCoast);
+  }
+
   public void setSpeed(double speed){
-    /*if (speed > 0) {
-      if (toplimitSwitch.get()) {
-          // We are going up and top limit is tripped so stop
-          armMotor.set(0);
-      } else {
-          // We are going up but top limit is not tripped so go at commanded speed
-          armMotor.set(speed);
-      }
-  } else {
-      if (bottomlimitSwitch.get()) {
-          // We are going down and bottom limit is tripped so stop
-          armMotor.set(0);
-      } else {
-          // We are going down but bottom limit is not tripped so go at commanded speed
-          armMotor.set(speed);
-      }
-    }*/
-    SmartDashboard.putNumber("CommandedThrottle", speed * 0.4);
-    armMotor.set(speed * 0.4);
+    armMotor.set(speed);
   }
 
   public void setVoltage(double setpoint){
     armMotor.setVoltage(feedForward.calculate(setpoint, ArmConstants.ARM_KV));
-  }
-
-
-  public void setPos(double angle){
-    armController.setReference(angle, CANSparkMax.ControlType.kPosition);
   }
 
   public void setPreset(ArmConstants.Preset position){
@@ -86,23 +67,30 @@ public class Arm extends SubsystemBase {
   public double getPos(){
     return armEncoder.getPosition();
   }
+
+  public void setPos(double rotation){
+    armController.setReference(rotation, CANSparkMax.ControlType.kPosition);
+  }
   
   public GripState getGrip(){
     return currentGrip;
   }
 
   public void setGrip(GripState state){
-    if(currentGrip == GripState.GRIP_CUBE ){
-      coneGripper.set(false);
-      cubeGripper.set(true);
-    }else if(currentGrip == GripState.GRIP_CONE){
-      coneGripper.set(true);
-      cubeGripper.set(false);
-    }else{
-      coneGripper.set(false);
-      cubeGripper.set(false);
-    }
+    System.out.println("Gripper State: " + state);
+    if(currentGrip == GripState.GRIP_ON)
+      gripper.set(true);
+    else if(currentGrip == GripState.GRIP_OFF)
+      gripper.set(false);
     currentGrip = state;
+  }
+
+  public void toggleGrip() {
+    System.out.println("Toggling Grip");
+    if(currentGrip == GripState.GRIP_OFF)
+      setGrip(GripState.GRIP_ON);
+    else
+      setGrip(GripState.GRIP_OFF);
   }
 
   public void resetOdometry() {

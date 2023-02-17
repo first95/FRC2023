@@ -100,7 +100,7 @@ public class RobotContainer {
     driveModeSelector.addOption("Field Relative (Closed)", closedFieldRel);
     driveModeSelector.addOption("Robot Relative (Closed)", closedRobotRel);
 
-    arm.setDefaultCommand(new ArmCommands(() -> operatorController.getRightY(), arm));
+    arm.setDefaultCommand(new ArmCommands(() -> (Math.abs(operatorController.getRightY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (operatorController.getRightY() / 4) : 0, arm));
 
     SmartDashboard.putData(driveModeSelector);
     drivebase.setDefaultCommand(absoluteDrive);
@@ -120,6 +120,14 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
+    // TEST GRIPPER //
+    operatorController.x().onTrue((new InstantCommand(arm::toggleGrip)));
+    operatorController.a().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
+    // operatorController.a().onTrue((new InstantCommand(() -> arm.setPos(0))));
+    // operatorController.b().onTrue((new InstantCommand(() -> arm.setPos(8.5))));
+    // operatorController.y().onTrue((new InstantCommand(() -> arm.setPos(14))));
+    //////////////////
+
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
   }
 
@@ -138,6 +146,10 @@ public class RobotContainer {
   }
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
+  }
+
+  public void setArmBrakes(boolean brake) {
+    arm.setBreaks(brake);
   }
 
   public void parseAuto() {

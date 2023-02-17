@@ -6,6 +6,9 @@ package frc.robot;
 
 import com.pathplanner.lib.server.PathPlannerServer;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,7 +26,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
+  private Compressor m_compressor;
   private Timer disabledTimer;
 
   /**
@@ -32,10 +35,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    Solenoid fans = new Solenoid(60, PneumaticsModuleType.REVPH, 0);
+    fans.set(true);
     PathPlannerServer.startServer(5811);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_compressor = new Compressor(60, PneumaticsModuleType.REVPH);
 
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
@@ -67,6 +73,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     m_robotContainer.setMotorBrake(true);
+    m_robotContainer.setArmBrakes(false);
     disabledTimer.reset();
     disabledTimer.start();
   }
@@ -106,11 +113,14 @@ public class Robot extends TimedRobot {
     }
     m_robotContainer.setDriveMode();
     m_robotContainer.setMotorBrake(true);
+    m_robotContainer.setArmBrakes(true);
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    SmartDashboard.putBoolean("Compressor Status", m_compressor.isEnabled());
+  }
 
   @Override
   public void testInit() {
