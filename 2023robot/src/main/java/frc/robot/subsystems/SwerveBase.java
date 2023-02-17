@@ -7,13 +7,19 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,13 +28,16 @@ import frc.lib.util.BetterSwerveModuleState;
 import frc.robot.Robot;
 import frc.robot.SwerveModule;
 import frc.robot.Constants.Drivebase;
+import frc.robot.Constants.Vision;
 
 public class SwerveBase extends SubsystemBase {
 
   private SwerveModule[] swerveModules;
   private Pigeon2 imu;
+  private NetworkTable portLimelightData, starboardLimelightData;
+  private boolean wasOdometrySeeded;
   
-  private SwerveDriveOdometry odometry;
+  private SwerveDrivePoseEstimator odometry;
   public Field2d field = new Field2d();
 
   private double angle, lasttime;
@@ -36,6 +45,8 @@ public class SwerveBase extends SubsystemBase {
   private Timer timer;
 
   private boolean wasGyroReset;
+
+  private Alliance alliance;
 
   /** Creates a new swerve drivebase subsystem.  Robot is controlled via the drive() method,
    * or via the setModuleStates() method.  The drive() method incorporates kinematics— it takes a 
@@ -68,8 +79,11 @@ public class SwerveBase extends SubsystemBase {
       new SwerveModule(3, Drivebase.Mod3.CONSTANTS),
     };
 
-    odometry = new SwerveDriveOdometry(Drivebase.KINEMATICS, getYaw(), getModulePositions());
-    zeroGyro();
+    portLimelightData = NetworkTableInstance.getDefault().getTable("limelight-" + Vision.PORT_LIMELIGHT_NAME);
+    starboardLimelightData = NetworkTableInstance.getDefault().getTable("limelight-" + Vision.STARBOARD_LIMELIGHT_NAME);
+
+    odometry = new SwerveDrivePoseEstimator(Drivebase.KINEMATICS, getYaw(), getModulePositions(), new Pose2d());
+    wasOdometrySeeded = false;
   }
 
   /**
@@ -135,13 +149,12 @@ public class SwerveBase extends SubsystemBase {
   }
 
   /**
-   * Set field-relative chassis speeds with closed-loop velocity control.
-   * @param chassisSpeeds Field-relative.
+   * Set robot-relative chassis speeds with closed-loop velocity control.
+   * @param chassisSpeeds Robot-relative.
    */
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
     setModuleStates(
-      Drivebase.KINEMATICS.toSwerveModuleStates(
-        ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getYaw())));
+      Drivebase.KINEMATICS.toSwerveModuleStates(chassisSpeeds));
   }
 
   
@@ -150,7 +163,7 @@ public class SwerveBase extends SubsystemBase {
    * @return The robot's pose
    */
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
+    return odometry.getEstimatedPosition();
   }
 
   /**
@@ -239,6 +252,17 @@ public class SwerveBase extends SubsystemBase {
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
 
+  public void setGyro(Rotation2d angle) {
+    // Resets the real gyro or the angle accumulator, depending on whether the robot is being simulated
+    if (Robot.isReal()) {
+      imu.setYaw(angle.getDegrees());
+    } else {
+      this.angle = angle.getDegrees();
+    }
+    wasGyroReset = true;
+    resetOdometry(new Pose2d(getPose().getTranslation(), angle));
+  }
+
   /**
    * Gets the current yaw angle of the robot, as reported by the imu.  CCW positive, not wrapped.
    * @return The yaw angle
@@ -277,8 +301,50 @@ public class SwerveBase extends SubsystemBase {
     }
   }
 
+  public void setAlliance(Alliance alliance) {
+    this.alliance = alliance;
+    wasOdometrySeeded = false;
+  }
+
+  public Pose3d getVisionPose(NetworkTable visionData) {
+    if ((visionData.getEntry("tv").getDouble(0) == 0)) {//|| () { Check pipeline number here
+      return null;
+    }
+    Pose3d robotPose;
+    double[] poseComponents;
+    if (alliance== Alliance.Blue) {
+      poseComponents = visionData.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+      robotPose = new Pose3d(
+        poseComponents[0],
+        poseComponents[1],
+        poseComponents[2],
+        new Rotation3d(
+          poseComponents[3],
+          poseComponents[4],
+          poseComponents[5]));
+    } else if (alliance == Alliance.Red) {
+      poseComponents = visionData.getEntry("botpose_wpired").getDoubleArray(new double[6]);
+      robotPose = new Pose3d(
+        poseComponents[0],
+        poseComponents[1],
+        poseComponents[2],
+        new Rotation3d(
+          Math.toRadians(poseComponents[3]),
+          Math.toRadians(poseComponents[4]),
+          Math.toRadians(poseComponents[5])));
+    } else {
+      return null;
+    }
+    return robotPose;
+  }
+
   @Override
   public void periodic() {
+    // Seed odometry if this has not been done
+    if (!wasOdometrySeeded) { 
+      
+    }
+    
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
 

@@ -226,4 +226,10 @@ public final class Constants {
             }
         }
     }
+    public class Vision {
+        public static final int APRILTAG_PIPELINE_NUMBER = 0;
+        public static final String PORT_LIMELIGHT_NAME = "port";
+        public static final String STARBOARD_LIMELIGHT_NAME = "starboard";
+        public static final double POSE_ERROR_TOLERANCE = 0.5;
+    }
 }
