@@ -32,6 +32,12 @@ public class AutoHandoffCube extends SequentialCommandGroup {
         addCommands(new InstantCommand(() -> {arm.setPos(40);}));
         addCommands(new WaitUntilCommand(arm.hasReachedReference(40)));
         addCommands(new InstantCommand(() -> { arm.setHoldAngle(40); }));      
+
+        addCommands(new InstantCommand(() -> {
+            intake.grabCube(0);
+            intake.setPreset(IntakeConstants.PRESETS.STOWED);
+        }));
+
     }
 
 }

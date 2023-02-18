@@ -59,7 +59,7 @@ public class Arm extends SubsystemBase {
     
     applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
     armController.setFF(ArmConstants.ARM_KF);
-    armController.setOutputRange(-0.8, 0.8);
+    armController.setOutputRange(-0.5, 0.5);
 
     armMotor.setSmartCurrentLimit(30);
     armMotor.setIdleMode(IdleMode.kCoast);
@@ -94,8 +94,8 @@ public class Arm extends SubsystemBase {
   }
   
   public BooleanSupplier hasReachedReference(double reference) {
-    return () -> { return armMotor.getEncoder().getPosition() + 1.5 > (reference)
-      && armMotor.getEncoder().getPosition() -1.5 < (reference); };  
+    return () -> { return armMotor.getEncoder().getPosition() + 3 > (reference)
+      && armMotor.getEncoder().getPosition() -3 < (reference); };  
     }
 
   public double getPos(){
