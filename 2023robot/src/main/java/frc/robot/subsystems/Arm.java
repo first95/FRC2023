@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
+import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -25,9 +26,12 @@ import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmConstants.CONTROL_MODE;
 import frc.robot.Constants.ArmConstants.GripState;
+import frc.robot.Constants.ArmConstants.PRESETS;
 
 public class Arm extends SubsystemBase {
   private GripState currentGrip = GripState.GRIP_OFF;
+  private PRESETS currentPosition;
+  private double holdAngle = 0;
 
   private CANSparkMax armMotor;
   private CANSparkMax armMotorFollow;
@@ -35,8 +39,6 @@ public class Arm extends SubsystemBase {
   private SparkMaxPIDController armController;
 
   private Solenoid gripper;
-
-  // private DigitalInput bottomLimitSwitch = new DigitalInput(1);
   private SparkMaxLimitSwitch bottomLimitSwitch;
 
   public Arm() {
@@ -48,22 +50,32 @@ public class Arm extends SubsystemBase {
 
     armEncoder = armMotor.getEncoder();
     armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION);
-    // armEncoder.setVelocityConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
-    armController = armMotor.getPIDController();
 
-    // armMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.ARM_UPPER_LIMIT);
-    // armMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.ARM_LOWER_LIMIT);
+    armController = armMotor.getPIDController();
+    armController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+
+    armMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.ARM_UPPER_LIMIT);
+    armMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.ARM_LOWER_LIMIT);
     
-    armController.setP(ArmConstants.ARM_KP);
-    armController.setI(ArmConstants.ARM_KI);
-    armController.setD(ArmConstants.ARM_KD);
+    applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
     armController.setFF(ArmConstants.ARM_KF);
+    armController.setOutputRange(-0.8, 0.8);
 
     armMotor.setSmartCurrentLimit(30);
     armMotor.setIdleMode(IdleMode.kCoast);
 
     bottomLimitSwitch = armMotor.getReverseLimitSwitch(Type.kNormallyOpen);
 
+    armMotor.burnFlash();  
+  }
+
+  // Allow for setting special PID for certain operations
+  // Example: When setting arm to stowed position set P value lower
+  //          to prevent slamming into back.
+  public void applyPID(double p, double I, double D) {
+    armController.setP(p);
+    armController.setI(I);
+    armController.setD(D);
     armMotor.burnFlash();  
   }
 
@@ -76,12 +88,15 @@ public class Arm extends SubsystemBase {
   }
 
   public void setPreset(ArmConstants.PRESETS position){
+    setHoldAngle(position.angle());
     setPos(position.angle());
+    currentPosition = position;
   }
   
   public BooleanSupplier hasReachedReference(double reference) {
-    return () -> { return getPos() + 1.5 > (reference); };
-  }
+    return () -> { return armMotor.getEncoder().getPosition() + 1.5 > (reference)
+      && armMotor.getEncoder().getPosition() -1.5 < (reference); };  
+    }
 
   public double getPos(){
     return armEncoder.getPosition();
@@ -90,13 +105,20 @@ public class Arm extends SubsystemBase {
   public void setPos(double angleDegree){
     armController.setReference(angleDegree, CANSparkMax.ControlType.kPosition);
   }
+
+  public double getHoldAngle() {
+    return holdAngle;
+  }
+
+  public void setHoldAngle(double newHoldAngle) {
+    holdAngle = newHoldAngle;
+  }
   
   public GripState getGrip(){
     return currentGrip;
   }
 
   public void setGrip(GripState state){
-    System.out.println("Gripper State: " + state);
     if(currentGrip == GripState.GRIP_ON)
       gripper.set(true);
     else if(currentGrip == GripState.GRIP_OFF)
@@ -105,7 +127,6 @@ public class Arm extends SubsystemBase {
   }
 
   public void toggleGrip() {
-    System.out.println("Toggling Grip");
     if(currentGrip == GripState.GRIP_OFF)
       setGrip(GripState.GRIP_ON);
     else

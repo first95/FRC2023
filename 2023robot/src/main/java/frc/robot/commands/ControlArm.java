@@ -19,7 +19,6 @@ public class ControlArm extends CommandBase {
   private BooleanSupplier setStowed, setHandoff, setHighScore, setMedScore, setLowScore;
 
   private CONTROL_MODE currentMode = CONTROL_MODE.DUTY;
-  private double holdAngle = 0;
   
   public ControlArm(
       DoubleSupplier manualControl, 
@@ -60,7 +59,7 @@ public class ControlArm extends CommandBase {
     else {
       if (currentMode == CONTROL_MODE.DUTY) {
         currentMode = CONTROL_MODE.HOLD;
-        holdAngle = arm.getPos();
+        arm.setHoldAngle(arm.getPos());
       }
     }
   }
@@ -74,23 +73,32 @@ public class ControlArm extends CommandBase {
 
     if(currentMode == CONTROL_MODE.POSITION) {
       if (setStowed.getAsBoolean()) {
+        // When running return to stow, alter P value to slow return.
+        // Another approach would first allow the motors to coast to ~16 before returning to 0
+        arm.applyPID(0.005, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
         arm.setPreset(ArmConstants.PRESETS.STOWED);
       } 
       else if (setHandoff.getAsBoolean()) {
+        arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
         arm.setPreset(ArmConstants.PRESETS.HANDOFF);
       } 
       else if (setHighScore.getAsBoolean()) {
+        arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
         arm.setPreset(ArmConstants.PRESETS.HIGH_SCORE);
       } 
       else if (setMedScore.getAsBoolean()) {
+        arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
         arm.setPreset(ArmConstants.PRESETS.MID_SCORE);
       } 
       else if (setLowScore.getAsBoolean()) {
+        arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
         arm.setPreset(ArmConstants.PRESETS.LOW_SCORE);
       }
     }
-    else if (currentMode == CONTROL_MODE.HOLD)
-      arm.setPos(holdAngle);
+    else if (currentMode == CONTROL_MODE.HOLD){
+      arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
+      arm.setPos(arm.getHoldAngle());
+    }
     else if(currentMode == CONTROL_MODE.DUTY) {
       arm.setSpeed(manualControl.getAsDouble());
     }
