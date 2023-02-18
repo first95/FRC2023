@@ -221,7 +221,7 @@ public final class Constants {
         public enum GripState {GRIP_OFF, GRIP_ON}
 
         // Constants for PID
-        public static final double ARM_KP = 0.01;
+        public static final double ARM_KP = 0.02;
         public static final double ARM_KI = 0;
         public static final double ARM_KD = 0;
         public static final double ARM_KF = 0;
