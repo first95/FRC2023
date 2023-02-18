@@ -109,6 +109,9 @@ public class RobotContainer {
     
     SmartDashboard.putData(driveModeSelector);
     drivebase.setDefaultCommand(absoluteDrive);
+
+    SmartDashboard.putData("sendAlliance", new InstantCommand(() -> drivebase.setAlliance(DriverStation.getAlliance())));
+
     //intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), () -> (operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), intake));
     intake.setDefaultCommand(new ControlIntake(
       () -> operatorController.getLeftX(), 
