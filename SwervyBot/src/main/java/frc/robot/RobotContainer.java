@@ -5,11 +5,14 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ArmConstants.Preset;
+import frc.robot.commands.ArmCommands;
 import frc.robot.autoCommands.DriveToPose;
 import frc.robot.autoCommands.PrecisionAlign;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveBase;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -38,12 +42,14 @@ public class RobotContainer {
   private final AbsoluteDrive absDrive;
 
   private AutoParser autoParser = new AutoParser(drivebase);
+  private final Arm arm = new Arm();
 
   private SendableChooser<CommandBase> driveModeSelector;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandJoystick driverController = new CommandJoystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
   CommandJoystick rotationController = new CommandJoystick(1);
+  CommandXboxController operatorController = new CommandXboxController(2);
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -92,6 +98,8 @@ public class RobotContainer {
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
       () -> -driverController.getTwist(), () -> true, false);
+    
+    arm.setDefaultCommand(new ArmCommands(() -> (Math.abs(operatorController.getRightY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (operatorController.getRightY() / 4) : 0, arm));
 
     driveModeSelector = new SendableChooser<>();
     driveModeSelector.setDefaultOption("AbsoluteDrive", absDrive);
@@ -122,6 +130,13 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
+    // TEST GRIPPER //
+    operatorController.x().onTrue((new InstantCommand(arm::toggleGrip)));
+    operatorController.a().onTrue((new InstantCommand(() -> arm.setPos(0))));
+    operatorController.b().onTrue((new InstantCommand(() -> arm.setPos(8.5))));
+    operatorController.y().onTrue((new InstantCommand(() -> arm.setPos(14))));
+    //////////////////
+
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
     rotationController.button(1).onTrue(new InstantCommand(drivebase::setDriveBrake));
     driverController.button(2).onTrue(new DriveToPose("Node2High", DriverStation.getAlliance(), drivebase).andThen(new PrecisionAlign("Node2High", DriverStation.getAlliance(), drivebase)));
@@ -146,6 +161,10 @@ public class RobotContainer {
   }
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
+  }
+
+  public void setArmBrakes(boolean brake) {
+    arm.setBreaks(brake);
   }
 
   public void parseAuto() {

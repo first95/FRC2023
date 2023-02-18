@@ -6,6 +6,8 @@ package frc.robot;
 
 import com.pathplanner.lib.server.PathPlannerServer;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
+  private Compressor m_compressor;
   private RobotContainer m_robotContainer;
 
   private Timer disabledTimer;
@@ -36,6 +38,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_compressor = new Compressor(PneumaticsModuleType.REVPH);
 
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
@@ -66,6 +69,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     m_robotContainer.setMotorBrake(true);
+    m_robotContainer.setArmBrakes(false);
     disabledTimer.reset();
     disabledTimer.start();
   }
@@ -106,6 +110,7 @@ public class Robot extends TimedRobot {
     }
     m_robotContainer.setDriveMode(true);
     m_robotContainer.setMotorBrake(true);
+    m_robotContainer.setArmBrakes(true);
   }
 
   /** This function is called periodically during operator control. */
