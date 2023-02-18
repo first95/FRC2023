@@ -147,8 +147,9 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    // Hacky solutuon to stow arm on cube intake, doesn't work
-    operatorController.a().onTrue(new InstantCommand(() -> {arm.setPreset(ArmConstants.PRESETS.STOWED);}));
+    // Hacky solutuon to stow arm on cube intake //
+    // Could be causing a CommandScheduler loop overrun //
+    operatorController.x().onTrue(new InstantCommand(() -> {arm.setPreset(ArmConstants.PRESETS.STOWED);}));
 
     operatorController.back().onTrue(new AutoHandoffCube(arm, intake));
     operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake));

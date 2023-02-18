@@ -191,8 +191,8 @@ public final class Constants {
         public static final int GRIPPER_SOLENOID_ID = 1;
 
         // Limits in degrees
-        public static final float ARM_LOWER_LIMIT = -20;
-        public static final float ARM_UPPER_LIMIT = 100;
+        public static final float ARM_LOWER_LIMIT = -10;
+        public static final float ARM_UPPER_LIMIT = 160;
 
         // Ratio = 1 / 5 / 5 * 22 / 40
         // 5 to 1 | 5 to 1 | 40 to 22
@@ -207,10 +207,10 @@ public final class Constants {
 
         // TODO: Change these presets to the correct angle!
         public enum PRESETS {
-            HIGH_SCORE (140),
-            MID_SCORE (120),
+            HIGH_SCORE (122),
+            MID_SCORE (105.7),
             LOW_SCORE (16),
-            HANDOFF (16),
+            HANDOFF (13),
             STOWED (0);
             
             private final double angle;
@@ -221,7 +221,7 @@ public final class Constants {
         public enum GripState {GRIP_OFF, GRIP_ON}
 
         // Constants for PID
-        public static final double ARM_KP = 0.02;
+        public static final double ARM_KP = 0.008;
         public static final double ARM_KI = 0;
         public static final double ARM_KD = 0;
         public static final double ARM_KF = 0;
@@ -266,7 +266,7 @@ public final class Constants {
         public enum PRESETS {
             STOWED (0),
             HANDOFF (0),
-            CONE (Units.inchesToMeters(13.5)),
+            CONE (0.15),
             CUBE (Units.inchesToMeters(13.5));
 
             private final double position;
