@@ -66,9 +66,7 @@ public class ControlArm extends CommandBase {
   }
 
   @Override
-  public void initialize() {
-    arm.setPos(0);
-  }
+  public void initialize() {}
 
   @Override
   public void execute() {
