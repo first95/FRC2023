@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
@@ -125,6 +126,9 @@ public class Intake extends SubsystemBase {
     if (homeSwitch.isPressed()) {
       rackEncoder.setPosition(0);
     }
+
+    // Logging...
+    SmartDashboard.putNumber("Rack Encoder", rackEncoder.getPosition());
   }
 
   @Override
