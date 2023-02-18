@@ -6,9 +6,12 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -31,7 +34,8 @@ public class Arm extends SubsystemBase {
 
   private Solenoid gripper;
 
-  private DigitalInput bottomLimitSwitch = new DigitalInput(1);
+  // private DigitalInput bottomLimitSwitch = new DigitalInput(1);
+  private SparkMaxLimitSwitch bottomLimitSwitch;
 
   public Arm() {
     gripper = new Solenoid(Constants.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH, ArmConstants.GRIPPER_SOLENOID_ID);
@@ -42,23 +46,23 @@ public class Arm extends SubsystemBase {
 
     armEncoder = armMotor.getEncoder();
     armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION);
+    // armEncoder.setVelocityConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
     armController = armMotor.getPIDController();
+
+    // armMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.ARM_UPPER_LIMIT);
+    // armMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.ARM_LOWER_LIMIT);
     
     armController.setP(ArmConstants.ARM_KP);
     armController.setI(ArmConstants.ARM_KI);
     armController.setD(ArmConstants.ARM_KD);
+    armController.setFF(ArmConstants.ARM_KF);
 
-    armMotor.setSmartCurrentLimit(20);
+    armMotor.setSmartCurrentLimit(30);
     armMotor.setIdleMode(IdleMode.kCoast);
 
-    armMotor.burnFlash();  
-  }
+    bottomLimitSwitch = armMotor.getReverseLimitSwitch(Type.kNormallyOpen);
 
-  public void setControlMode(CONTROL_MODE mode) {
-    if(mode == CONTROL_MODE.POSITION)
-      armController.setReference(getPos(), CANSparkMax.ControlType.kPosition);
-    else if(mode == CONTROL_MODE.DUTY)
-      armController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+    armMotor.burnFlash();  
   }
 
   public void setBreaks(boolean enabled) {
@@ -104,10 +108,10 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (bottomLimitSwitch.get()) armEncoder.setPosition(0);
+    if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(0);
 
     // Logging...
-    SmartDashboard.putBoolean("Bottom Limit Switch:: ", bottomLimitSwitch.get());
+    SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
   }
 
@@ -116,3 +120,5 @@ public class Arm extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 }
+
+// See intake retracted, then move arm at the same time (For cones only)

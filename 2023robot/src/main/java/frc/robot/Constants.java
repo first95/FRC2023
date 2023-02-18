@@ -144,28 +144,28 @@ public final class Constants {
         public static final class Mod0 {
             public static final int DRIVE_MOTOR_ID = 7;
             public static final int ANGLE_MOTOR_ID = 6;
-            public static final double ANGLE_OFFSET = 231.48 + 90;
+            public static final double ANGLE_OFFSET = 111.9 + 90 - 161.4; // 231.48 + 90;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
         public static final class Mod1 {
             public static final int DRIVE_MOTOR_ID = 9;
             public static final int ANGLE_MOTOR_ID = 8;
-            public static final double ANGLE_OFFSET = 170.69 + 180;
+            public static final double ANGLE_OFFSET = 180.7 + 180; // 170.69 + 180;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
         public static final class Mod2 {
             public static final int DRIVE_MOTOR_ID = 5;
             public static final int ANGLE_MOTOR_ID = 4;
-            public static final double ANGLE_OFFSET = 52.67;
+            public static final double ANGLE_OFFSET = 52.3; // 52.67;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
         public static final class Mod3 {
             public static final int DRIVE_MOTOR_ID = 3;
             public static final int ANGLE_MOTOR_ID = 2;
-            public static final double ANGLE_OFFSET = 224.08 - 90;
+            public static final double ANGLE_OFFSET =  91 - 90 + 131 - 5; // 224.08 - 90;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
@@ -190,8 +190,14 @@ public final class Constants {
         public static final int ARM_MOTOR_FOLLOWER_ID = 11; 
         public static final int GRIPPER_SOLENOID_ID = 1;
 
-        // Calculated by: 1 / 5 / 5 * 22 / 40
-        public static final double ARM_DEGREES_PER_MOTOR_ROTATION = 0.22 * 360;
+        // Limits in degrees
+        public static final float ARM_LOWER_LIMIT = -20;
+        public static final float ARM_UPPER_LIMIT = 100;
+
+        // Ratio = 1 / 5 / 5 * 22 / 40
+        // 5 to 1 | 5 to 1 | 40 to 22
+        public static final double ARM_GEAR_RATIO = 0.022;
+        public static final double ARM_DEGREES_PER_MOTOR_ROTATION = ARM_GEAR_RATIO * 360;
 
         public enum CONTROL_MODE {
             POSITION,
@@ -201,11 +207,11 @@ public final class Constants {
 
         // TODO: Change these presets to the correct angle!
         public enum PRESETS {
-            HIGH_SCORE (20.0),
-            MID_SCORE (0.0),
-            LOW_SCORE (-10.0),
-            HANDOFF (-40.0),
-            STOWED (-80.0);
+            HIGH_SCORE (90),
+            MID_SCORE (40),
+            LOW_SCORE (16),
+            HANDOFF (16),
+            STOWED (0);
             
             private final double angle;
             PRESETS(double angle) { this.angle = angle; }
@@ -215,9 +221,10 @@ public final class Constants {
         public enum GripState {GRIP_OFF, GRIP_ON}
 
         // Constants for PID
-        public static final double ARM_KP = 0;
+        public static final double ARM_KP = 0.01;
         public static final double ARM_KI = 0;
         public static final double ARM_KD = 0;
+        public static final double ARM_KF = 0;
 
         // Constants for feed forward
         public static final double ARM_KS = 0;

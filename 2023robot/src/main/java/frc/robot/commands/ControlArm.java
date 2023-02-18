@@ -19,6 +19,7 @@ public class ControlArm extends CommandBase {
   private BooleanSupplier setStowed, setHandoff, setHighScore, setMedScore, setLowScore;
 
   private CONTROL_MODE currentMode = CONTROL_MODE.DUTY;
+  private double holdAngle = 0;
   
   public ControlArm(
       DoubleSupplier manualControl, 
@@ -51,7 +52,6 @@ public class ControlArm extends CommandBase {
         || setLowScore.getAsBoolean()) 
         && currentMode != CONTROL_MODE.POSITION) {
           currentMode = CONTROL_MODE.POSITION;
-          arm.setControlMode(CONTROL_MODE.POSITION);
     } 
     // Joystick duty override
     else if (Math.abs(manualControl.getAsDouble()) > 0) {
@@ -60,13 +60,15 @@ public class ControlArm extends CommandBase {
     else {
       if (currentMode == CONTROL_MODE.DUTY) {
         currentMode = CONTROL_MODE.HOLD;
-        arm.setControlMode(CONTROL_MODE.POSITION);
+        holdAngle = arm.getPos();
       }
     }
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    arm.setPos(0);
+  }
 
   @Override
   public void execute() {
@@ -74,32 +76,24 @@ public class ControlArm extends CommandBase {
 
     if(currentMode == CONTROL_MODE.POSITION) {
       if (setStowed.getAsBoolean()) {
-        arm.setGrip(GripState.GRIP_OFF);
         arm.setPreset(ArmConstants.PRESETS.STOWED);
       } 
       else if (setHandoff.getAsBoolean()) {
-        arm.setGrip(GripState.GRIP_OFF);
         arm.setPreset(ArmConstants.PRESETS.HANDOFF);
       } 
       else if (setHighScore.getAsBoolean()) {
-        arm.setGrip(GripState.GRIP_ON);
         arm.setPreset(ArmConstants.PRESETS.HIGH_SCORE);
       } 
       else if (setMedScore.getAsBoolean()) {
-        arm.setGrip(GripState.GRIP_ON);
         arm.setPreset(ArmConstants.PRESETS.MID_SCORE);
       } 
       else if (setLowScore.getAsBoolean()) {
-        arm.setGrip(GripState.GRIP_ON);
         arm.setPreset(ArmConstants.PRESETS.LOW_SCORE);
-      }  else {
-        arm.setGrip(GripState.GRIP_OFF);
-        arm.setPreset(ArmConstants.PRESETS.STOWED);
       }
     }
     else if (currentMode == CONTROL_MODE.HOLD)
-      arm.setPos(arm.getPos());
-    else {
+      arm.setPos(holdAngle);
+    else if(currentMode == CONTROL_MODE.DUTY) {
       arm.setSpeed(manualControl.getAsDouble());
     }
   }

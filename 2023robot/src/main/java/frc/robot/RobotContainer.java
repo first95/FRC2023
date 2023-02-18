@@ -144,14 +144,7 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    // TEST GRIPPER //
-    operatorController.x().onTrue((new InstantCommand(arm::toggleGrip)));
-    operatorController.a().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
-    // operatorController.a().onTrue((new InstantCommand(() -> arm.setPos(0))));
-    // operatorController.b().onTrue((new InstantCommand(() -> arm.setPos(8.5))));
-    // operatorController.y().onTrue((new InstantCommand(() -> arm.setPos(14))));
-    //////////////////
-
+    operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
   }
 

@@ -23,9 +23,6 @@ public class AutoHandoff extends SequentialCommandGroup {
 
         // Simple cone handoff...
         addCommands(new InstantCommand(() -> {
-            intake.setPreset(IntakeConstants.PRESETS.HANDOFF);
-        }));
-        addCommands(new InstantCommand(() -> {
             arm.setPreset(ArmConstants.PRESETS.HANDOFF);
         }));
         addCommands(new InstantCommand(() -> {
