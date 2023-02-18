@@ -4,15 +4,23 @@
 
 package frc.robot;
 
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ControlArm;
+import frc.robot.commands.AutoHandoffCone;
+import frc.robot.commands.AutoHandoffCube;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ControlIntake;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveBase;
+
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,17 +41,16 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveBase drivebase = new SwerveBase();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final Arm arm = new Arm();
   private final Intake intake = new Intake();
 
   private AutoParser autoParser = new AutoParser(drivebase);
-
   private SendableChooser<CommandBase> driveModeSelector;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   CommandJoystick driverController = new CommandJoystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
   CommandJoystick rotationController = new CommandJoystick(1);
   CommandXboxController operatorController = new CommandXboxController(2);
-
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -99,9 +106,7 @@ public class RobotContainer {
     driveModeSelector.addOption("Absolute (Closed)", closedAbsoluteDrive);
     driveModeSelector.addOption("Field Relative (Closed)", closedFieldRel);
     driveModeSelector.addOption("Robot Relative (Closed)", closedRobotRel);
-
     
-
     SmartDashboard.putData(driveModeSelector);
     drivebase.setDefaultCommand(absoluteDrive);
     //intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), () -> (operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), intake));
@@ -114,6 +119,18 @@ public class RobotContainer {
       operatorController.a(),
       operatorController.x(),
       intake));
+
+    arm.setDefaultCommand(new ControlArm(
+      () -> (Math.abs(operatorController.getRightY()) > OperatorConstants.RIGHT_Y_DEADBAND) 
+              ? (Math.pow(operatorController.getRightY(), 3) / 3) 
+              : 0
+      , 
+      operatorController.povDown(),   // STOW
+      operatorController.povUp(),     // middle
+      operatorController.povLeft(),   // low
+      operatorController.povRight(),  // high
+      new BooleanSupplier() { public boolean getAsBoolean() {return false;};}, // HANDOFF
+      arm));   
   }
 
   /**
@@ -130,6 +147,13 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
+    // Hacky solutuon to stow arm on cube intake, doesn't work
+    operatorController.a().onTrue(new InstantCommand(() -> {arm.setPreset(ArmConstants.PRESETS.STOWED);}));
+
+    operatorController.back().onTrue(new AutoHandoffCube(arm, intake));
+    operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake));
+    operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
+    
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
   }
 
@@ -148,6 +172,10 @@ public class RobotContainer {
   }
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
+  }
+
+  public void setArmBrakes(boolean brake) {
+    arm.setBreaks(brake);
   }
 
   public void parseAuto() {

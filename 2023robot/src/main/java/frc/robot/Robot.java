@@ -6,6 +6,9 @@ package frc.robot;
 
 import com.pathplanner.lib.server.PathPlannerServer;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,7 +26,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
+  private Compressor m_compressor;
   private Timer disabledTimer;
 
   /**
@@ -31,11 +34,17 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   @Override
-  public void robotInit() {
+  public void robotInit() { 
     PathPlannerServer.startServer(5811);
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
+        
+    // Instantiate our RobotContainer.  
+    // This will perform all our button bindings, and put our autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_compressor = new Compressor(Constants.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH);
+
+    // Enable fans linked to solenoid
+    Solenoid fans = new Solenoid(Constants.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH, 0);
+    fans.set(true);
 
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
@@ -61,12 +70,16 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // Logging...
+    SmartDashboard.putBoolean("Compressor Status", m_compressor.isEnabled());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
     m_robotContainer.setMotorBrake(true);
+    m_robotContainer.setArmBrakes(false);
     disabledTimer.reset();
     disabledTimer.start();
   }
@@ -106,6 +119,7 @@ public class Robot extends TimedRobot {
     }
     m_robotContainer.setDriveMode();
     m_robotContainer.setMotorBrake(true);
+    m_robotContainer.setArmBrakes(true);
   }
 
   /** This function is called periodically during operator control. */
