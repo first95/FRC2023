@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ControlArm;
+import frc.robot.commands.AutoHandoffCone;
+import frc.robot.commands.AutoHandoffCube;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ControlIntake;
 import frc.robot.commands.ExampleCommand;
@@ -119,14 +122,14 @@ public class RobotContainer {
 
     arm.setDefaultCommand(new ControlArm(
       () -> (Math.abs(operatorController.getRightY()) > OperatorConstants.RIGHT_Y_DEADBAND) 
-              ? (operatorController.getRightY() / 4) 
+              ? (Math.pow(operatorController.getRightY(), 3) / 3) 
               : 0
       , 
       operatorController.povDown(),   // STOW
-      operatorController.povUp(),     // HANDOFF
-      operatorController.povLeft(),   // HIGH
-      operatorController.povRight(),  // MED
-      new BooleanSupplier() { public boolean getAsBoolean() {return false;};}, // LOW
+      operatorController.povUp(),     // middle
+      operatorController.povLeft(),   // low
+      operatorController.povRight(),  // high
+      new BooleanSupplier() { public boolean getAsBoolean() {return false;};}, // HANDOFF
       arm));   
   }
 
@@ -144,7 +147,13 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
+    // Hacky solutuon to stow arm on cube intake, doesn't work
+    operatorController.a().onTrue(new InstantCommand(() -> {arm.setPreset(ArmConstants.PRESETS.STOWED);}));
+
+    operatorController.back().onTrue(new AutoHandoffCube(arm, intake));
+    operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake));
     operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
+    
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
   }
 

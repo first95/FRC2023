@@ -14,23 +14,24 @@ import frc.robot.subsystems.Intake;
 import java.util.Arrays;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
-public class AutoHandoff extends SequentialCommandGroup {
+public class AutoHandoffCube extends SequentialCommandGroup {
 
-    public AutoHandoff(Arm arm, Intake intake) {
+    public AutoHandoffCube(Arm arm, Intake intake) {
         addRequirements(arm, intake);
 
-        // Simple cone handoff...
+        // Simple cube handoff...
         addCommands(new InstantCommand(() -> {
-            arm.setPreset(ArmConstants.PRESETS.HANDOFF);
+            intake.setPreset(IntakeConstants.PRESETS.CONE);
+            intake.grabCone(0.6);
         }));
+        addCommands(new WaitCommand(0.5));
         addCommands(new InstantCommand(() -> {
-            arm.setGrip(GripState.GRIP_ON);
+            arm.setPos(40);
         }));
-        addCommands(new InstantCommand(() -> {
-            intake.grabCone(-0.6);
-        }));
+        addCommands(new WaitUntilCommand(arm.hasReachedReference(40)));
     }
 
 }

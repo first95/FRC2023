@@ -24,10 +24,10 @@ public class ControlArm extends CommandBase {
   public ControlArm(
       DoubleSupplier manualControl, 
       BooleanSupplier setStowed, 
-      BooleanSupplier setHandoff, 
-      BooleanSupplier setHighScore, 
-      BooleanSupplier setMedScore,
+      BooleanSupplier setMedScore, 
       BooleanSupplier setLowScore, 
+      BooleanSupplier setHighScore,
+      BooleanSupplier setHandoff, 
       Arm arm
     ) {
     this.arm = arm;

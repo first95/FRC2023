@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -77,6 +79,10 @@ public class Arm extends SubsystemBase {
     setPos(position.angle());
   }
   
+  public BooleanSupplier hasReachedReference(double reference) {
+    return () -> { return getPos() + 1.5 > (reference); };
+  }
+
   public double getPos(){
     return armEncoder.getPosition();
   }
