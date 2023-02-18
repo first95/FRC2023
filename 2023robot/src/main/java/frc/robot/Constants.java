@@ -202,6 +202,7 @@ public final class Constants {
         public enum CONTROL_MODE {
             POSITION,
             DUTY,
+            VELOCITY,
             HOLD
           }
 

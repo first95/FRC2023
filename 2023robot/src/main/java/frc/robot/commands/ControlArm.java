@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmConstants.CONTROL_MODE;
-import frc.robot.Constants.ArmConstants.GripState;
 import frc.robot.subsystems.Arm;
 
 import java.util.function.BooleanSupplier;
@@ -18,7 +17,7 @@ public class ControlArm extends CommandBase {
   private DoubleSupplier manualControl;
   private BooleanSupplier setStowed, setHandoff, setHighScore, setMedScore, setLowScore;
 
-  private CONTROL_MODE currentMode = CONTROL_MODE.DUTY;
+  private CONTROL_MODE currentMode = CONTROL_MODE.VELOCITY;
   
   public ControlArm(
       DoubleSupplier manualControl, 
@@ -54,10 +53,10 @@ public class ControlArm extends CommandBase {
     } 
     // Joystick duty override
     else if (Math.abs(manualControl.getAsDouble()) > 0) {
-      currentMode = CONTROL_MODE.DUTY;
+      currentMode = CONTROL_MODE.VELOCITY;
     }
     else {
-      if (currentMode == CONTROL_MODE.DUTY) {
+      if (currentMode == CONTROL_MODE.VELOCITY) {
         currentMode = CONTROL_MODE.HOLD;
         arm.setHoldAngle(arm.getPos());
       }
@@ -101,6 +100,9 @@ public class ControlArm extends CommandBase {
     }
     else if(currentMode == CONTROL_MODE.DUTY) {
       arm.setSpeed(manualControl.getAsDouble());
+    }
+    else if(currentMode == CONTROL_MODE.VELOCITY) {
+      arm.setVelocity(manualControl.getAsDouble());
     }
   }
 

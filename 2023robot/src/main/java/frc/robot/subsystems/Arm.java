@@ -50,6 +50,8 @@ public class Arm extends SubsystemBase {
 
     armEncoder = armMotor.getEncoder();
     armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION);
+    armEncoder.setVelocityConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
+
 
     armController = armMotor.getPIDController();
     armController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
@@ -85,6 +87,10 @@ public class Arm extends SubsystemBase {
 
   public void setSpeed(double speed){
     armMotor.set(speed);
+  }
+
+  public void setVelocity(double velocity){
+    armController.setReference(velocity, CANSparkMax.ControlType.kVelocity);
   }
 
   public void setPreset(ArmConstants.PRESETS position){
