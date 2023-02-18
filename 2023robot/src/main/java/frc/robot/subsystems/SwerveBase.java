@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -307,7 +308,8 @@ public class SwerveBase extends SubsystemBase {
   }
 
   public Pose3d getVisionPose(NetworkTable visionData) {
-    if ((visionData.getEntry("tv").getDouble(0) == 0)) {//|| () { Check pipeline number here
+    if ((visionData.getEntry("tv").getDouble(0) == 0 ||
+      visionData.getEntry("getPipe").getDouble(0) != Vision.APRILTAG_PIPELINE_NUMBER)) {
       return null;
     }
     Pose3d robotPose;
@@ -342,18 +344,58 @@ public class SwerveBase extends SubsystemBase {
   public void periodic() {
     // Seed odometry if this has not been done
     if (!wasOdometrySeeded) { 
-      
+      Pose2d portSeed = getVisionPose(portLimelightData).toPose2d();
+      Pose2d starboardSeed = getVisionPose(starboardLimelightData).toPose2d();
+      if (portSeed == null && starboardSeed == null) {
+        DriverStation.reportError("Alliance not set or tag not visible", false);
+      }
+      else if (starboardSeed == null) {
+        resetOdometry(portSeed);
+        setGyro(portSeed.getRotation());
+        wasOdometrySeeded = true;
+      }
+      else if (portSeed == null) {
+        resetOdometry(starboardSeed);
+        setGyro(starboardSeed.getRotation());
+        wasOdometrySeeded = true;
+      }
+      else {
+        // Crude pose average
+        Translation2d translation =
+          portSeed.getTranslation().plus(starboardSeed.getTranslation()).div(2);
+        Rotation2d rotation = 
+          portSeed.getRotation().plus(starboardSeed.getRotation()).div(2);
+        Pose2d seed = new Pose2d(translation, rotation);
+        resetOdometry(seed);
+        setGyro(rotation);
+        wasOdometrySeeded = true;
+      }
     }
     
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
+    double timestamp;
+    Pose2d portPose = getVisionPose(portLimelightData).toPose2d();
+    if (portPose != null) {
+      if (portPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
+        timestamp = Timer.getFPGATimestamp() - (portLimelightData.getEntry("tl").getDouble(0) + 11) / 1000;
+        odometry.addVisionMeasurement(portPose, timestamp);
+      }
+    }
+    Pose2d starboardPose = getVisionPose(starboardLimelightData).toPose2d();
+    if (starboardPose != null) {
+      if (starboardPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
+        timestamp = Timer.getFPGATimestamp() - (starboardLimelightData.getEntry("tl").getDouble(0) + 11) / 1000;
+        odometry.addVisionMeasurement(starboardPose, timestamp);
+      }
+    }
 
     // Update angle accumulator if the robot is simulated
     if (!Robot.isReal()) {
       angle += Drivebase.KINEMATICS.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lasttime);
       lasttime = timer.get();
 
-      field.setRobotPose(odometry.getPoseMeters());
+      field.setRobotPose(odometry.getEstimatedPosition());
       SmartDashboard.putData("Field", field);
     }
 
