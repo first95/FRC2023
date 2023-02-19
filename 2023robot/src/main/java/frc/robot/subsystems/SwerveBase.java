@@ -344,22 +344,26 @@ public class SwerveBase extends SubsystemBase {
   public void periodic() {
     // Seed odometry if this has not been done
     if (!wasOdometrySeeded) { 
-      Pose2d portSeed = getVisionPose(portLimelightData).toPose2d();
-      Pose2d starboardSeed = getVisionPose(starboardLimelightData).toPose2d();
-      if (portSeed == null && starboardSeed == null) {
+      Pose3d portSeed3d = getVisionPose(portLimelightData);
+      Pose3d starboardSeed3d = getVisionPose(starboardLimelightData);
+      if (portSeed3d == null && starboardSeed3d == null) {
         DriverStation.reportError("Alliance not set or tag not visible", false);
       }
-      else if (starboardSeed == null) {
+      else if (starboardSeed3d == null) {
+        Pose2d portSeed = portSeed3d.toPose2d();
         resetOdometry(portSeed);
         setGyro(portSeed.getRotation());
         wasOdometrySeeded = true;
       }
-      else if (portSeed == null) {
+      else if (portSeed3d == null) {
+        Pose2d starboardSeed = starboardSeed3d.toPose2d();
         resetOdometry(starboardSeed);
         setGyro(starboardSeed.getRotation());
         wasOdometrySeeded = true;
       }
       else {
+        Pose2d portSeed = portSeed3d.toPose2d();
+        Pose2d starboardSeed = starboardSeed3d.toPose2d();
         // Crude pose average
         Translation2d translation =
           portSeed.getTranslation().plus(starboardSeed.getTranslation()).div(2);
@@ -375,15 +379,17 @@ public class SwerveBase extends SubsystemBase {
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
     double timestamp;
-    Pose2d portPose = getVisionPose(portLimelightData).toPose2d();
-    if (portPose != null) {
+    Pose3d portPose3d = getVisionPose(portLimelightData);
+    if (portPose3d != null) {
+      Pose2d portPose = portPose3d.toPose2d();
       if (portPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
         timestamp = Timer.getFPGATimestamp() - (portLimelightData.getEntry("tl").getDouble(0) + 11) / 1000;
         odometry.addVisionMeasurement(portPose, timestamp);
       }
     }
-    Pose2d starboardPose = getVisionPose(starboardLimelightData).toPose2d();
-    if (starboardPose != null) {
+    Pose3d starboardPose3d = getVisionPose(starboardLimelightData);
+    if (starboardPose3d != null) {
+      Pose2d starboardPose = starboardPose3d.toPose2d();
       if (starboardPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
         timestamp = Timer.getFPGATimestamp() - (starboardLimelightData.getEntry("tl").getDouble(0) + 11) / 1000;
         odometry.addVisionMeasurement(starboardPose, timestamp);
