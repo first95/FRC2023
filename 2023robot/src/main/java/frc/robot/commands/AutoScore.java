@@ -29,36 +29,36 @@ public class AutoScore extends SequentialCommandGroup {
     public AutoScore(String pose, SwerveBase drive, Arm arm, Intake intake) {
         addRequirements(drive, arm, intake);
 
-        Alliance alliance = DriverStation.getAlliance();
-        Pose2d target = Auton.POSE_MAP.get(DriverStation.getAlliance()).get(pose);
-        String scorePosition = "high";
-        if(pose.contains("Mid"))
-            scorePosition = "mid";
-        else if(pose.contains("Low"))
-            scorePosition = "Low";
+        // Alliance alliance = DriverStation.getAlliance();
+        // Pose2d target = Auton.POSE_MAP.get(DriverStation.getAlliance()).get(pose);
+        // String scorePosition = "high";
+        // if(pose.contains("Mid"))
+        //     scorePosition = "mid";
+        // else if(pose.contains("Low"))
+        //     scorePosition = "Low";
 
-        addCommands(new PrecisionAlign(pose, DriverStation.getAlliance(), drive));
-        addCommands(new AutoHandoffCone(arm, intake));
+        // addCommands(new PrecisionAlign(pose, DriverStation.getAlliance(), drive));
+        // addCommands(new AutoHandoffCone(arm, intake));
 
-        switch (scorePosition) {
-            case "high":
-                addCommands(new InstantCommand(() -> { arm.setPreset(ArmConstants.PRESETS.HIGH_SCORE); }));
-                addCommands(new WaitUntilCommand(arm.hasReachedReference(ArmConstants.PRESETS.HIGH_SCORE.angle())));
-                addCommands(new InstantCommand(() -> { arm.setHoldAngle(ArmConstants.PRESETS.HIGH_SCORE.angle()); }));      
-                break;
-            case "mid":
-                addCommands(new InstantCommand(() -> { arm.setPreset(ArmConstants.PRESETS.MID_SCORE); }));
-                addCommands(new WaitUntilCommand(arm.hasReachedReference(ArmConstants.PRESETS.MID_SCORE.angle())));
-                addCommands(new InstantCommand(() -> { arm.setHoldAngle(ArmConstants.PRESETS.MID_SCORE.angle()); }));     
-                break;
-            case "low":
-                addCommands(new InstantCommand(() -> { arm.setPreset(ArmConstants.PRESETS.LOW_SCORE); }));
-                addCommands(new WaitUntilCommand(arm.hasReachedReference(ArmConstants.PRESETS.LOW_SCORE.angle())));
-                addCommands(new InstantCommand(() -> { arm.setHoldAngle(ArmConstants.PRESETS.LOW_SCORE.angle()); }));     
-                break;
-        }
+        // switch (scorePosition) {
+        //     case "high":
+        //         addCommands(new InstantCommand(() -> { arm.setPreset(ArmConstants.PRESETS.HIGH_SCORE); }));
+        //         addCommands(new WaitUntilCommand(arm.hasReachedReference(ArmConstants.PRESETS.HIGH_SCORE.angle())));
+        //         addCommands(new InstantCommand(() -> { arm.setHoldAngle(ArmConstants.PRESETS.HIGH_SCORE.angle()); }));      
+        //         break;
+        //     case "mid":
+        //         addCommands(new InstantCommand(() -> { arm.setPreset(ArmConstants.PRESETS.MID_SCORE); }));
+        //         addCommands(new WaitUntilCommand(arm.hasReachedReference(ArmConstants.PRESETS.MID_SCORE.angle())));
+        //         addCommands(new InstantCommand(() -> { arm.setHoldAngle(ArmConstants.PRESETS.MID_SCORE.angle()); }));     
+        //         break;
+        //     case "low":
+        //         addCommands(new InstantCommand(() -> { arm.setPreset(ArmConstants.PRESETS.LOW_SCORE); }));
+        //         addCommands(new WaitUntilCommand(arm.hasReachedReference(ArmConstants.PRESETS.LOW_SCORE.angle())));
+        //         addCommands(new InstantCommand(() -> { arm.setHoldAngle(ArmConstants.PRESETS.LOW_SCORE.angle()); }));     
+        //         break;
+        // }
 
-        addCommands(new InstantCommand(() -> {arm.setGrip(GripState.GRIP_OFF);}));
+        // addCommands(new InstantCommand(() -> {arm.setGrip(GripState.GRIP_OFF);}));
     }
 
 }

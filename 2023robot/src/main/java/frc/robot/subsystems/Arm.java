@@ -62,6 +62,7 @@ public class Arm extends SubsystemBase {
     applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
     armController.setFF(ArmConstants.ARM_KF);
     armController.setOutputRange(-0.5, 0.5);
+    // armController.setOutputRange(-1, 1);
 
     armMotor.setSmartCurrentLimit(30);
     armMotor.setIdleMode(IdleMode.kCoast);
@@ -90,6 +91,8 @@ public class Arm extends SubsystemBase {
   }
 
   public void setVelocity(double velocity){
+    SmartDashboard.putNumber("Commanded Velocity: ", velocity);
+    applyPID(0.01, ArmConstants.ARM_KI, 0.001);
     armController.setReference(velocity, CANSparkMax.ControlType.kVelocity);
   }
 
@@ -146,6 +149,7 @@ public class Arm extends SubsystemBase {
     // Logging...
     SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
+    SmartDashboard.putNumber("Arm Motor Encoder Velocity", armEncoder.getVelocity());
   }
 
   @Override

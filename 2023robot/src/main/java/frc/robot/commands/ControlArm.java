@@ -56,10 +56,10 @@ public class ControlArm extends CommandBase {
       currentMode = CONTROL_MODE.VELOCITY;
     }
     else {
-      if (currentMode == CONTROL_MODE.VELOCITY) {
-        currentMode = CONTROL_MODE.HOLD;
-        arm.setHoldAngle(arm.getPos());
-      }
+      // if (currentMode == CONTROL_MODE.VELOCITY) {
+      //   currentMode = CONTROL_MODE.HOLD;
+      //   arm.setHoldAngle(arm.getPos());
+      // }
     }
   }
 

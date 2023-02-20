@@ -122,7 +122,7 @@ public class RobotContainer {
 
     arm.setDefaultCommand(new ControlArm(
       () -> (Math.abs(operatorController.getRightY()) > OperatorConstants.RIGHT_Y_DEADBAND) 
-              ? (Math.pow(operatorController.getRightY(), 3) / 3) 
+              ? ((Math.pow(operatorController.getRightY(), 3) * 360) / 3) 
               : 0
       , 
       operatorController.povDown(),   // STOW
