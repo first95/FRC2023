@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -91,6 +93,11 @@ public class Intake extends SubsystemBase {
   public void setPreset(PRESETS preset) {
     setPosition(preset.position());
   }
+
+  public BooleanSupplier rackHasReachedReference(double reference) {
+    return () -> { return rackEncoder.getPosition() + 3 > (reference)
+      && rackEncoder.getPosition() -3 < (reference); };  
+    }
 
   public void moveIntake(double speed) {
     gearRack.set(speed * 0.3);
