@@ -29,7 +29,7 @@ import frc.robot.Constants.ArmConstants.GripState;
 import frc.robot.Constants.ArmConstants.PRESETS;
 
 public class Arm extends SubsystemBase {
-  private GripState currentGrip = GripState.GRIP_OFF;
+  private GripState currentGrip = GripState.GRIP_ON;
   private PRESETS currentPosition;
   private double holdAngle = 0;
 
