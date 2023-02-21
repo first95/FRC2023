@@ -95,8 +95,8 @@ public class Intake extends SubsystemBase {
   }
 
   public BooleanSupplier rackHasReachedReference(double reference) {
-    return () -> { return rackEncoder.getPosition() + 3 > (reference)
-      && rackEncoder.getPosition() -3 < (reference); };  
+    return () -> { return rackEncoder.getPosition() + 0.025 > (reference)
+      && rackEncoder.getPosition() - 0.025 < (reference); };  
     }
 
   public void moveIntake(double speed) {

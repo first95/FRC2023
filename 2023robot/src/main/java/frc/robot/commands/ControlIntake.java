@@ -62,7 +62,8 @@ public class ControlIntake extends CommandBase {
     } 
     else if (setCube.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.CUBE);
-      subsystem.grabCube(0.6);
+      if(subsystem.rackHasReachedReference(IntakeConstants.PRESETS.CUBE.position()).getAsBoolean())
+        subsystem.grabCube(0.6);
     } else {
       subsystem.setPreset(IntakeConstants.PRESETS.STOWED);
       subsystem.runRollers(0, 0);

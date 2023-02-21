@@ -29,16 +29,15 @@ import frc.robot.Constants.ArmConstants.GripState;
 import frc.robot.Constants.ArmConstants.PRESETS;
 
 public class Arm extends SubsystemBase {
-  private GripState currentGrip = GripState.GRIP_ON;
-  private PRESETS currentPosition;
   private double holdAngle = 0;
+  private PRESETS currentPreset;
 
   private CANSparkMax armMotor;
   private CANSparkMax armMotorFollow;
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
 
-  private Solenoid gripper;
+  private Solenoid gripper; // FALSE is CLOSE || TRUE is OPEN
   private SparkMaxLimitSwitch bottomLimitSwitch;
 
   public Arm() {
@@ -50,16 +49,20 @@ public class Arm extends SubsystemBase {
 
     armEncoder = armMotor.getEncoder();
     armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION);
+    // armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
 
     armController = armMotor.getPIDController();
-    armController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+    // armController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+    // armController.setSmartMotionMaxVelocity(1, 0);
+    // armController.setSmartMotionMaxAccel(1, 0);
+    // armController.setSmartMotionAllowedClosedLoopError(5, 0);
 
     armMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.ARM_UPPER_LIMIT);
     armMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.ARM_LOWER_LIMIT);
     
     applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
     armController.setFF(ArmConstants.ARM_KF);
-    armController.setOutputRange(-0.5, 0.5);
+    armController.setOutputRange(-0.2, 0.2);
 
     armMotor.setSmartCurrentLimit(30);
     armMotor.setIdleMode(IdleMode.kCoast);
@@ -90,7 +93,7 @@ public class Arm extends SubsystemBase {
   public void setPreset(ArmConstants.PRESETS position){
     setHoldAngle(position.angle());
     setPos(position.angle());
-    currentPosition = position;
+    currentPreset = position;
   }
   
   public BooleanSupplier hasReachedReference(double reference) {
@@ -113,24 +116,20 @@ public class Arm extends SubsystemBase {
   public void setHoldAngle(double newHoldAngle) {
     holdAngle = newHoldAngle;
   }
-  
-  public GripState getGrip(){
-    return currentGrip;
-  }
-
-  public void setGrip(GripState state){
-    if(currentGrip == GripState.GRIP_ON)
-      gripper.set(true);
-    else if(currentGrip == GripState.GRIP_OFF)
-      gripper.set(false);
-    currentGrip = state;
-  }
 
   public void toggleGrip() {
-    if(currentGrip == GripState.GRIP_OFF)
-      setGrip(GripState.GRIP_ON);
+    if(gripper.get())
+      gripper.set(false);
     else
-      setGrip(GripState.GRIP_OFF);
+      gripper.set(true);
+  }
+
+  public boolean getGrip(){
+    return gripper.get();
+  }
+
+  public void setGrip(Boolean isOpen){
+    gripper.set(isOpen);
   }
 
   @Override
@@ -138,6 +137,7 @@ public class Arm extends SubsystemBase {
     if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(0);
 
     // Logging...
+    SmartDashboard.putBoolean("Gripper Status", gripper.get());
     SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
   }
