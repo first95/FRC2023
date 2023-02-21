@@ -41,32 +41,76 @@ public class Arm extends SubsystemBase {
   private Solenoid gripper;
   private SparkMaxLimitSwitch bottomLimitSwitch;
 
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
+
   public Arm() {
     gripper = new Solenoid(Constants.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH, ArmConstants.GRIPPER_SOLENOID_ID);
     armMotor = new CANSparkMax(ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless);
     armMotorFollow = new CANSparkMax(ArmConstants.ARM_MOTOR_FOLLOWER_ID, MotorType.kBrushless);
+
     armMotorFollow.follow(armMotor, true);
     armMotor.restoreFactoryDefaults();
+    armMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.ARM_UPPER_LIMIT);
+    armMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.ARM_LOWER_LIMIT);
 
     armEncoder = armMotor.getEncoder();
     armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION);
-    armEncoder.setVelocityConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
+    armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
 
 
     armController = armMotor.getPIDController();
-    armController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
-
-    armMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.ARM_UPPER_LIMIT);
-    armMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.ARM_LOWER_LIMIT);
     
-    applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
-    armController.setFF(ArmConstants.ARM_KF);
-    armController.setOutputRange(-0.5, 0.5);
-    // armController.setOutputRange(-1, 1);
+    // TESTING SMART MOTION //
+    kP = 5e-5; 
+    kI = 1e-6;
+    kD = 0; 
+    kIz = 0; 
+    kFF = 0.000156; 
+    kMaxOutput = 0.05; 
+    kMinOutput = -0.05;
+    maxRPM = 5700;
+
+    // Smart Motion Coefficients
+    maxVel = 60;    // Degrees per minute
+    maxAcc = 45;    // Degrees per minute per second
+    allowedErr = 2; // Degrees
+
+    armController.setP(kP);
+    armController.setI(kI);
+    armController.setD(kD);
+    armController.setIZone(kIz);
+    armController.setFF(kFF);
+    armController.setOutputRange(kMinOutput, kMaxOutput);
+
+    armController.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
+    armController.setSmartMotionMaxVelocity(maxVel, 0);
+    armController.setSmartMotionMinOutputVelocity(minVel, 0);
+    armController.setSmartMotionMaxAccel(maxAcc, 0);
+    armController.setSmartMotionAllowedClosedLoopError(allowedErr, 0);
+
+    // display PID coefficients on SmartDashboard
+    SmartDashboard.putNumber("ARM P Gain", kP);
+    SmartDashboard.putNumber("ARM I Gain", kI);
+    SmartDashboard.putNumber("ARM D Gain", kD);
+    SmartDashboard.putNumber("ARM I Zone", kIz);
+    SmartDashboard.putNumber("ARM Feed Forward", kFF);
+    SmartDashboard.putNumber("ARM Max Output", kMaxOutput);
+    SmartDashboard.putNumber("ARM Min Output", kMinOutput);
+
+    // display Smart Motion coefficients
+    SmartDashboard.putNumber("ARM Max Velocity", maxVel);
+    SmartDashboard.putNumber("ARM Min Velocity", minVel);
+    SmartDashboard.putNumber("ARM Max Acceleration", maxAcc);
+    SmartDashboard.putNumber("ARM Allowed Closed Loop Error", allowedErr);
+    SmartDashboard.putNumber("ARM Set Position", 0);
+    SmartDashboard.putNumber("ARM Set Velocity", 0);
+    /////////////////////////
+
+    // applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
+    // armController.setOutputRange(-0.2, 0.2);
 
     armMotor.setSmartCurrentLimit(30);
     armMotor.setIdleMode(IdleMode.kCoast);
-
     bottomLimitSwitch = armMotor.getReverseLimitSwitch(Type.kNormallyOpen);
 
     armMotor.burnFlash();  
@@ -146,10 +190,36 @@ public class Arm extends SubsystemBase {
   public void periodic() {
     if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(0);
 
+    // read PID coefficients from SmartDashboard
+    double p = SmartDashboard.getNumber("ARM P Gain", 0);
+    double i = SmartDashboard.getNumber("ARM I Gain", 0);
+    double d = SmartDashboard.getNumber("ARM D Gain", 0);
+    double iz = SmartDashboard.getNumber("ARM I Zone", 0);
+    double ff = SmartDashboard.getNumber("ARM Feed Forward", 0);
+    double max = SmartDashboard.getNumber("ARM Max Output", 0);
+    double min = SmartDashboard.getNumber("ARM Min Output", 0);
+    double maxV = SmartDashboard.getNumber("ARM Max Velocity", 0);
+    double minV = SmartDashboard.getNumber("ARM Min Velocity", 0);
+    double maxA = SmartDashboard.getNumber("ARM Max Acceleration", 0);
+    double allE = SmartDashboard.getNumber("ARM Allowed Closed Loop Error", 0);
+
+    // if PID coefficients on SmartDashboard have changed, write new values to controller
+    if((p != kP)) { armController.setP(p); kP = p; }
+    if((i != kI)) { armController.setI(i); kI = i; }
+    if((d != kD)) { armController.setD(d); kD = d; }
+    if((iz != kIz)) { armController.setIZone(iz); kIz = iz; }
+    if((ff != kFF)) { armController.setFF(ff); kFF = ff; }
+    if((max != kMaxOutput) || (min != kMinOutput)) { armController.setOutputRange(min, max); kMinOutput = min; kMaxOutput = max; }
+
+    if((maxV != maxVel)) { armController.setSmartMotionMaxVelocity(maxV,0); maxVel = maxV; }
+    if((minV != minVel)) { armController.setSmartMotionMinOutputVelocity(minV,0); minVel = minV; }
+    if((maxA != maxAcc)) { armController.setSmartMotionMaxAccel(maxA,0); maxAcc = maxA; }
+    if((allE != allowedErr)) { armController.setSmartMotionAllowedClosedLoopError(allE,0); allowedErr = allE; }
+
     // Logging...
     SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
-    SmartDashboard.putNumber("Arm Motor Encoder Velocity", armEncoder.getVelocity());
+    SmartDashboard.putNumber("Arm Motor Encoder Velocity: ", armEncoder.getVelocity());
   }
 
   @Override
@@ -157,5 +227,3 @@ public class Arm extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 }
-
-// See intake retracted, then move arm at the same time (For cones only)
