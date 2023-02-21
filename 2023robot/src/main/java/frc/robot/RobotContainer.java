@@ -20,6 +20,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveBase;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -121,8 +122,8 @@ public class RobotContainer {
       intake));
 
     arm.setDefaultCommand(new ControlArm(
-      () -> (Math.abs(operatorController.getRightY()) > OperatorConstants.RIGHT_Y_DEADBAND) 
-              ? ((Math.pow(operatorController.getRightY(), 3) * 360) / 3) 
+      () -> (Math.abs(Math.pow(operatorController.getRightY(), 3)) > OperatorConstants.RIGHT_Y_DEADBAND) 
+              ? ((Math.pow(operatorController.getRightY(), 3)) / 3) 
               : 0
       , 
       operatorController.povDown(),   // STOW

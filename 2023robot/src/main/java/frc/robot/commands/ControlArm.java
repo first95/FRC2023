@@ -76,6 +76,7 @@ public class ControlArm extends CommandBase {
         // Another approach would first allow the motors to coast to ~16 before returning to 0
         arm.applyPID(0.005, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
         arm.setPreset(ArmConstants.PRESETS.STOWED);
+        arm.setGrip(true);
       } 
       else if (setHandoff.getAsBoolean()) {
         arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);

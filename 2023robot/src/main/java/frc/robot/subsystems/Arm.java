@@ -29,16 +29,15 @@ import frc.robot.Constants.ArmConstants.GripState;
 import frc.robot.Constants.ArmConstants.PRESETS;
 
 public class Arm extends SubsystemBase {
-  private GripState currentGrip = GripState.GRIP_ON;
-  private PRESETS currentPosition;
   private double holdAngle = 0;
+  private PRESETS currentPreset;
 
   private CANSparkMax armMotor;
   private CANSparkMax armMotorFollow;
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
 
-  private Solenoid gripper;
+  private Solenoid gripper; // FALSE is CLOSE || TRUE is OPEN
   private SparkMaxLimitSwitch bottomLimitSwitch;
 
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
@@ -143,7 +142,7 @@ public class Arm extends SubsystemBase {
   public void setPreset(ArmConstants.PRESETS position){
     setHoldAngle(position.angle());
     setPos(position.angle());
-    currentPosition = position;
+    currentPreset = position;
   }
   
   public BooleanSupplier hasReachedReference(double reference) {
@@ -166,24 +165,20 @@ public class Arm extends SubsystemBase {
   public void setHoldAngle(double newHoldAngle) {
     holdAngle = newHoldAngle;
   }
-  
-  public GripState getGrip(){
-    return currentGrip;
-  }
-
-  public void setGrip(GripState state){
-    if(currentGrip == GripState.GRIP_ON)
-      gripper.set(true);
-    else if(currentGrip == GripState.GRIP_OFF)
-      gripper.set(false);
-    currentGrip = state;
-  }
 
   public void toggleGrip() {
-    if(currentGrip == GripState.GRIP_OFF)
-      setGrip(GripState.GRIP_ON);
+    if(gripper.get())
+      gripper.set(false);
     else
-      setGrip(GripState.GRIP_OFF);
+      gripper.set(true);
+  }
+
+  public boolean getGrip(){
+    return gripper.get();
+  }
+
+  public void setGrip(Boolean isOpen){
+    gripper.set(isOpen);
   }
 
   @Override
@@ -217,6 +212,7 @@ public class Arm extends SubsystemBase {
     if((allE != allowedErr)) { armController.setSmartMotionAllowedClosedLoopError(allE,0); allowedErr = allE; }
 
     // Logging...
+    SmartDashboard.putBoolean("Gripper Status", gripper.get());
     SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
     SmartDashboard.putNumber("Arm Motor Encoder Velocity: ", armEncoder.getVelocity());

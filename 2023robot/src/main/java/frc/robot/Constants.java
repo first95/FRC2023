@@ -182,7 +182,7 @@ public final class Constants {
 
         // Joystick Deadband
         public static final double RIGHT_X_DEADBAND = 0.05;
-        public static final double RIGHT_Y_DEADBAND = 0.05;
+        public static final double RIGHT_Y_DEADBAND = 0.1;
     }
 
     public static final class ArmConstants {
@@ -194,8 +194,8 @@ public final class Constants {
         public static final float ARM_LOWER_LIMIT = -10;
         public static final float ARM_UPPER_LIMIT = 160;
 
-        // Ratio = 1 / 5 / 5 * 22 / 40
-        // 5 to 1 | 5 to 1 | 40 to 22
+        // Ratio = 1 / 5 / 5 * 22 / 40 
+        // 5 to 1 | 5 to 1 | 40 to 22 -> To be 22 to 60
         public static final double ARM_GEAR_RATIO = 0.022;
         public static final double ARM_DEGREES_PER_MOTOR_ROTATION = ARM_GEAR_RATIO * 360;
 
@@ -211,7 +211,7 @@ public final class Constants {
             HIGH_SCORE (122),
             MID_SCORE (105.7),
             LOW_SCORE (16),
-            HANDOFF (13),
+            HANDOFF (17),
             STOWED (0);
             
             private final double angle;
