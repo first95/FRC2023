@@ -65,15 +65,15 @@ public final class Constants {
         public static final double MAX_ACCELERATION = 2;
 
         private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(
-            Map.entry("Node1High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node2High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node3High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node4High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(85.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node5High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node6High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(129.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node7High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node8High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node9High", new Pose2d(new Translation2d(1.582 + 1, Units.inchesToMeters(195.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node1High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node2High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node3High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node4High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(85.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node5High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node6High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(129.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node7High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node8High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(195.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Node1Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
             Map.entry("Node2Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
             Map.entry("Node3Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
@@ -337,7 +337,7 @@ public final class Constants {
     public class Vision {
         public static final int APRILTAG_PIPELINE_NUMBER = 0;
         public static final String PORT_LIMELIGHT_NAME = "port";
-        public static final String STARBOARD_LIMELIGHT_NAME = "starboard";
+        public static final String STARBOARD_LIMELIGHT_NAME = "sboard";
         public static final double POSE_ERROR_TOLERANCE = 0.5;
     }
 }

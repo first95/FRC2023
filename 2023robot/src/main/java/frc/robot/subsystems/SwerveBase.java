@@ -14,7 +14,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -41,13 +40,13 @@ public class SwerveBase extends SubsystemBase {
   private SwerveDrivePoseEstimator odometry;
   public Field2d field = new Field2d();
 
-  private double angle, lasttime;
+  private double angle, lasttime, visionLatency;
 
   private Timer timer;
 
   private boolean wasGyroReset;
 
-  private Alliance alliance;
+  private Alliance alliance = Alliance.Invalid;
 
   /** Creates a new swerve drivebase subsystem.  Robot is controlled via the drive() method,
    * or via the setModuleStates() method.  The drive() method incorporates kinematics— it takes a 
@@ -258,7 +257,7 @@ public class SwerveBase extends SubsystemBase {
     if (Robot.isReal()) {
       imu.setYaw(angle.getDegrees());
     } else {
-      this.angle = angle.getDegrees();
+      this.angle = angle.getRadians();
     }
     wasGyroReset = true;
     resetOdometry(new Pose2d(getPose().getTranslation(), angle));
@@ -310,23 +309,19 @@ public class SwerveBase extends SubsystemBase {
   public Pose3d getVisionPose(NetworkTable visionData) {
     if ((visionData.getEntry("tv").getDouble(0) == 0 ||
       visionData.getEntry("getPipe").getDouble(0) != Vision.APRILTAG_PIPELINE_NUMBER)) {
+      DriverStation.reportWarning("Limelight no target" + visionData.getPath(), false);
       return null;
     }
-    Pose3d robotPose;
     double[] poseComponents;
-    if (alliance== Alliance.Blue) {
-      poseComponents = visionData.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
-      robotPose = new Pose3d(
-        poseComponents[0],
-        poseComponents[1],
-        poseComponents[2],
-        new Rotation3d(
-          poseComponents[3],
-          poseComponents[4],
-          poseComponents[5]));
+    if (alliance == Alliance.Blue) {
+      poseComponents = visionData.getEntry("botpose_wpiblue").getDoubleArray(new double[7]);
     } else if (alliance == Alliance.Red) {
-      poseComponents = visionData.getEntry("botpose_wpired").getDoubleArray(new double[6]);
-      robotPose = new Pose3d(
+      poseComponents = visionData.getEntry("botpose_wpired").getDoubleArray(new double[7]);
+    } else {
+      return null;
+    }
+    visionLatency = poseComponents[6];
+    return new Pose3d(
         poseComponents[0],
         poseComponents[1],
         poseComponents[2],
@@ -334,45 +329,41 @@ public class SwerveBase extends SubsystemBase {
           Math.toRadians(poseComponents[3]),
           Math.toRadians(poseComponents[4]),
           Math.toRadians(poseComponents[5])));
-    } else {
-      return null;
-    }
-    return robotPose;
   }
 
   @Override
   public void periodic() {
+    SmartDashboard.putString("Gyro", getYaw().toString());
+    SmartDashboard.putString("alliance", alliance.toString());
+    SmartDashboard.putBoolean("seeded", wasOdometrySeeded);
     // Seed odometry if this has not been done
     if (!wasOdometrySeeded) { 
       Pose3d portSeed3d = getVisionPose(portLimelightData);
       Pose3d starboardSeed3d = getVisionPose(starboardLimelightData);
-      if (portSeed3d == null && starboardSeed3d == null) {
+      if ((portSeed3d == null) && (starboardSeed3d == null)) {
         DriverStation.reportError("Alliance not set or tag not visible", false);
       }
       else if (starboardSeed3d == null) {
-        Pose2d portSeed = portSeed3d.toPose2d();
+        Pose2d portSeed = new Pose2d(
+          new Translation2d(
+            portSeed3d.getX(),
+            portSeed3d.getY()),
+          new Rotation2d(portSeed3d.getRotation().getZ()));
+        imu.setYaw(portSeed.getRotation().getDegrees());
         resetOdometry(portSeed);
-        setGyro(portSeed.getRotation());
         wasOdometrySeeded = true;
-      }
-      else if (portSeed3d == null) {
-        Pose2d starboardSeed = starboardSeed3d.toPose2d();
-        resetOdometry(starboardSeed);
-        setGyro(starboardSeed.getRotation());
-        wasOdometrySeeded = true;
+        wasGyroReset = true;
       }
       else {
-        Pose2d portSeed = portSeed3d.toPose2d();
-        Pose2d starboardSeed = starboardSeed3d.toPose2d();
-        // Crude pose average
-        Translation2d translation =
-          portSeed.getTranslation().plus(starboardSeed.getTranslation()).div(2);
-        Rotation2d rotation = 
-          portSeed.getRotation().plus(starboardSeed.getRotation()).div(2);
-        Pose2d seed = new Pose2d(translation, rotation);
-        resetOdometry(seed);
-        setGyro(rotation);
+        Pose2d starboardSeed = new Pose2d(
+          new Translation2d(
+            starboardSeed3d.getX(),
+            starboardSeed3d.getY()),
+          new Rotation2d(starboardSeed3d.getRotation().getZ()));
+        imu.setYaw(starboardSeed.getRotation().getDegrees());
+        resetOdometry(starboardSeed);
         wasOdometrySeeded = true;
+        wasGyroReset = true;
       }
     }
     
@@ -380,22 +371,25 @@ public class SwerveBase extends SubsystemBase {
     odometry.update(getYaw(), getModulePositions());
     double timestamp;
     Pose3d portPose3d = getVisionPose(portLimelightData);
+    double portTime = visionLatency;
     if (portPose3d != null) {
       Pose2d portPose = portPose3d.toPose2d();
       if (portPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
-        timestamp = Timer.getFPGATimestamp() - (portLimelightData.getEntry("tl").getDouble(0) + 11) / 1000;
+        timestamp = Timer.getFPGATimestamp() - portTime / 1000;
         odometry.addVisionMeasurement(portPose, timestamp);
       }
     }
     Pose3d starboardPose3d = getVisionPose(starboardLimelightData);
+    double starboardTime = visionLatency;
     if (starboardPose3d != null) {
       Pose2d starboardPose = starboardPose3d.toPose2d();
       if (starboardPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
-        timestamp = Timer.getFPGATimestamp() - (starboardLimelightData.getEntry("tl").getDouble(0) + 11) / 1000;
+        timestamp = Timer.getFPGATimestamp() - starboardTime / 1000;
         odometry.addVisionMeasurement(starboardPose, timestamp);
       }
     }
 
+    SmartDashboard.putString("Odometry", odometry.getEstimatedPosition().toString());
     // Update angle accumulator if the robot is simulated
     if (!Robot.isReal()) {
       angle += Drivebase.KINEMATICS.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lasttime);
