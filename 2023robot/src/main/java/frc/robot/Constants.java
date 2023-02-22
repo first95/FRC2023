@@ -207,9 +207,9 @@ public final class Constants {
 
         // TODO: Change these presets to the correct angle!
         public enum PRESETS {
-            HIGH_SCORE (122),
+            HIGH_SCORE (132),
             MID_SCORE (105.7),
-            LOW_SCORE (16),
+            LOW_SCORE (35),
             HANDOFF (17),
             STOWED (0);
             

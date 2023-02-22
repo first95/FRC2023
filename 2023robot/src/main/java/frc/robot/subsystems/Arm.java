@@ -62,7 +62,7 @@ public class Arm extends SubsystemBase {
     
     applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
     armController.setFF(ArmConstants.ARM_KF);
-    armController.setOutputRange(-0.2, 0.2);
+    armController.setOutputRange(-0.5, 0.5);
 
     armMotor.setSmartCurrentLimit(30);
     armMotor.setIdleMode(IdleMode.kCoast);
@@ -87,10 +87,12 @@ public class Arm extends SubsystemBase {
   }
 
   public void setSpeed(double speed){
+    armController.setOutputRange(-0.5, 0.5);
     armMotor.set(speed);
   }
 
   public void setPreset(ArmConstants.PRESETS position){
+    armController.setOutputRange(-0.2, 0.2);
     setHoldAngle(position.angle());
     setPos(position.angle());
     currentPreset = position;
