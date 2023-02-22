@@ -23,6 +23,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -153,6 +154,7 @@ public class RobotContainer {
     operatorController.x().onTrue(new InstantCommand(() -> {arm.setPreset(ArmConstants.PRESETS.STOWED);}));
 
     operatorController.back().onTrue(new AutoHandoffCube(arm, intake));
+    // operatorController.start().onTrue(new PrecisionAlign("Node1High", Alliance.Red, drivebase));
     operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake));
     operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
     

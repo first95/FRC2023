@@ -210,7 +210,7 @@ public final class Constants {
             HIGH_SCORE (132),
             MID_SCORE (105.7),
             LOW_SCORE (35),
-            HANDOFF (17),
+            HANDOFF (19),
             STOWED (0);
             
             private final double angle;

@@ -92,7 +92,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setPreset(ArmConstants.PRESETS position){
-    armController.setOutputRange(-0.2, 0.2);
+    armController.setOutputRange(-0.3, 0.3);
     setHoldAngle(position.angle());
     setPos(position.angle());
     currentPreset = position;
