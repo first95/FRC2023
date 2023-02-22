@@ -54,13 +54,11 @@ public class Arm extends SubsystemBase {
 
     armEncoder = armMotor.getEncoder();
     armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION);
-    armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
-
-
+    armEncoder.setVelocityConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
     armController = armMotor.getPIDController();
     
     // TESTING SMART MOTION //
-    kP = 5e-5; 
+    kP = 5e-6; 
     kI = 1e-6;
     kD = 0; 
     kIz = 0; 
@@ -155,6 +153,10 @@ public class Arm extends SubsystemBase {
   }
 
   public void setPos(double angleDegree){
+    armController.setReference(angleDegree, CANSparkMax.ControlType.kSmartMotion);
+  }
+
+  public void setHold(double angleDegree){
     armController.setReference(angleDegree, CANSparkMax.ControlType.kPosition);
   }
 

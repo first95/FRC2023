@@ -210,7 +210,7 @@ public final class Constants {
         public enum PRESETS {
             HIGH_SCORE (122),
             MID_SCORE (105.7),
-            LOW_SCORE (16),
+            LOW_SCORE (20),
             HANDOFF (17),
             STOWED (0);
             

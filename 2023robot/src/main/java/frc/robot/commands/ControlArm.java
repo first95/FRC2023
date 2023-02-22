@@ -17,7 +17,7 @@ public class ControlArm extends CommandBase {
   private DoubleSupplier manualControl;
   private BooleanSupplier setStowed, setHandoff, setHighScore, setMedScore, setLowScore;
 
-  private CONTROL_MODE currentMode = CONTROL_MODE.VELOCITY;
+  private CONTROL_MODE currentMode = CONTROL_MODE.DUTY;
   
   public ControlArm(
       DoubleSupplier manualControl, 
@@ -53,13 +53,13 @@ public class ControlArm extends CommandBase {
     } 
     // Joystick duty override
     else if (Math.abs(manualControl.getAsDouble()) > 0) {
-      currentMode = CONTROL_MODE.VELOCITY;
+      currentMode = CONTROL_MODE.DUTY;
     }
     else {
-      // if (currentMode == CONTROL_MODE.VELOCITY) {
-      //   currentMode = CONTROL_MODE.HOLD;
-      //   arm.setHoldAngle(arm.getPos());
-      // }
+      if (currentMode == CONTROL_MODE.DUTY) {
+        currentMode = CONTROL_MODE.HOLD;
+        arm.setHoldAngle(arm.getPos());
+      }
     }
   }
 
@@ -97,7 +97,7 @@ public class ControlArm extends CommandBase {
     }
     else if (currentMode == CONTROL_MODE.HOLD){
       arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
-      arm.setPos(arm.getHoldAngle());
+      arm.setHold(arm.getHoldAngle());
     }
     else if(currentMode == CONTROL_MODE.DUTY) {
       arm.setSpeed(manualControl.getAsDouble());
