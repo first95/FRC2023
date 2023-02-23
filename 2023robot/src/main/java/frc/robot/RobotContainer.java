@@ -50,6 +50,7 @@ public class RobotContainer {
 
   private final AbsoluteDrive absoluteDrive, closedAbsoluteDrive;
   private final TeleopDrive openFieldRel, openRobotRel, closedFieldRel, closedRobotRel;
+  private final ControlArm controlArm;
 
   private AutoParser autoParser = new AutoParser(drivebase, arm);
   private SendableChooser<CommandBase> driveModeSelector;
@@ -132,7 +133,7 @@ public class RobotContainer {
       operatorController.x(),
       intake));
 
-    arm.setDefaultCommand(new ControlArm(
+    controlArm = new ControlArm(
       () -> (Math.abs(Math.pow(operatorController.getRightY(), 3)) > OperatorConstants.RIGHT_Y_DEADBAND) 
               ? ((Math.pow(operatorController.getRightY(), 3)) / 3) 
               : 0
@@ -142,7 +143,7 @@ public class RobotContainer {
       operatorController.povLeft(),   // low
       operatorController.povRight(),  // high
       new BooleanSupplier() { public boolean getAsBoolean() {return false;};}, // HANDOFF
-      arm));   
+      arm);   
   }
 
   /**
@@ -186,10 +187,12 @@ public class RobotContainer {
   }
   public void prepareDriveForTeleop() {
     drivebase.setDefaultCommand(absoluteDrive);
+    arm.setDefaultCommand(controlArm);
     absoluteDrive.setHeading(drivebase.getYaw());
     closedAbsoluteDrive.setHeading(drivebase.getYaw());
   }
   public void prepareDriveForAuto() {
+    arm.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, arm))); // these feel so wrong
     drivebase.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, drivebase)));
   }
   public void setMotorBrake(boolean brake) {
