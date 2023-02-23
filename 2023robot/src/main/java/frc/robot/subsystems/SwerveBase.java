@@ -340,21 +340,18 @@ public class SwerveBase extends SubsystemBase {
     if (!wasOdometrySeeded) { 
       Pose3d portSeed3d = getVisionPose(portLimelightData);
       Pose3d starboardSeed3d = getVisionPose(starboardLimelightData);
-      if ((portSeed3d == null) && (starboardSeed3d == null)) {
-        DriverStation.reportError("Alliance not set or tag not visible", false);
-      }
-      else if (starboardSeed3d == null) {
-        Pose2d portSeed = new Pose2d(
-          new Translation2d(
-            portSeed3d.getX(),
-            portSeed3d.getY()),
-          new Rotation2d(portSeed3d.getRotation().getZ()));
-        imu.setYaw(portSeed.getRotation().getDegrees());
-        resetOdometry(portSeed);
+      if ((portSeed3d != null) && (starboardSeed3d != null)) {
+        // Average position, pick a camera for rotation
+        Pose2d portSeed = portSeed3d.toPose2d();
+        Pose2d starboardSeed = starboardSeed3d.toPose2d();
+        Translation2d translation = portSeed.getTranslation().plus(starboardSeed.getTranslation()).div(2);
+        Rotation2d rotation = starboardSeed.getRotation();
+        imu.setYaw(rotation.getDegrees());
+        resetOdometry(new Pose2d(translation, rotation));
         wasOdometrySeeded = true;
         wasGyroReset = true;
       }
-      else {
+      else if (starboardSeed3d != null) {
         Pose2d starboardSeed = new Pose2d(
           new Translation2d(
             starboardSeed3d.getX(),
@@ -364,6 +361,19 @@ public class SwerveBase extends SubsystemBase {
         resetOdometry(starboardSeed);
         wasOdometrySeeded = true;
         wasGyroReset = true;
+      }
+      else if (portSeed3d != null) {
+        Pose2d portSeed = new Pose2d(
+          new Translation2d(
+            portSeed3d.getX(),
+            portSeed3d.getY()),
+          new Rotation2d(portSeed3d.getRotation().getZ()));
+        imu.setYaw(portSeed.getRotation().getDegrees());
+        resetOdometry(portSeed);
+        wasOdometrySeeded = true;
+        wasGyroReset = true;
+      } else {
+        DriverStation.reportError("Alliance not set or tag not visible", false);
       }
     }
     
