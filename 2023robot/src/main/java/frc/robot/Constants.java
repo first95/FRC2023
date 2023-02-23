@@ -49,13 +49,13 @@ public final class Constants {
 
     public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
     public static final class Auton {
-        public static final double X_KP = 0.5;
+        public static final double X_KP = 1.4;
         public static final double X_KI = 0;
-        public static final double X_KD = 0;
+        public static final double X_KD = 0.05;
 
-        public static final double Y_KP = 0.5;
+        public static final double Y_KP = 1.4;
         public static final double Y_KI = 0;
-        public static final double Y_KD = 0;
+        public static final double Y_KD = 0.05;
 
         public static final double ANG_KP = 0.4;
         public static final double ANG_KI = 0;
@@ -95,7 +95,7 @@ public final class Constants {
             Map.entry("Node8Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
             Map.entry("Node9Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
             Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.12, 2.6), Rotation2d.fromDegrees(180))),
-            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.88, 2.6), Rotation2d.fromDegrees(180)))
+            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.77, 2.6), Rotation2d.fromDegrees(180)))
         );
         private static final Map<String, Pose2d> RED_MAP =
             BLUE_MAP.entrySet().stream().collect(Collectors.toMap(
@@ -112,8 +112,8 @@ public final class Constants {
         );
 
         // meters and degrees
-        public static final double X_TOLERANCE = 0.02;
-        public static final double Y_TOLERANCE = 0.02;
+        public static final double X_TOLERANCE = 0.04;
+        public static final double Y_TOLERANCE = 0.04;
         public static final double ANG_TOLERANCE = 0.5;
 
         public static final double BALANCE_TOLERANCE = 1;
@@ -199,6 +199,7 @@ public final class Constants {
         public static final double KS = 0;
         public static final double KV = 12 / MAX_SPEED; // Volt-seconds per meter (max voltage divided by max speed)
         public static final double KA = 12 / MAX_ACCELERATION; // Volt-seconds^2 per meter (max voltage divided by max accel)
+        public static final double KG = (KA / KV) * 0.25;
 
         // Encoder conversion values.  Drive converts motor rotations to linear wheel distance
         // and steering converts motor rotations to module azimuth

@@ -61,9 +61,9 @@ public class PrecisionAlign extends CommandBase {
     sineRoll = drive.getRoll().getSin();
     sinePitch = drive.getPitch().getSin();
     xVel = xController.calculate(currentPose.getX()) +
-      (Drivebase.KA / Drivebase.KV) * Constants.GRAVITY * sinePitch;
+      Drivebase.KG * Constants.GRAVITY * sinePitch;
     yVel = yController.calculate(currentPose.getY()) + 
-      (Drivebase.KA / Drivebase.KV) * Constants.GRAVITY * sineRoll;
+      Drivebase.KG * Constants.GRAVITY * sineRoll;
     omega = angController.calculate(currentPose.getRotation().getRadians());
     
     drive.drive(new Translation2d(xVel, yVel), omega, true, false);
