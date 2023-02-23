@@ -64,6 +64,8 @@ public final class Constants {
         public static final double MAX_SPEED = 4;
         public static final double MAX_ACCELERATION = 2;
 
+        public static final double CHARGE_STATION_DISTANCE = 3.88; // meters
+
         private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(
             Map.entry("Node1High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Node2High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
@@ -91,7 +93,9 @@ public final class Constants {
             Map.entry("Node6Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
             Map.entry("Node7Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
             Map.entry("Node8Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node9Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180)))
+            Map.entry("Node9Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
+            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.12, 2.6), Rotation2d.fromDegrees(180))),
+            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.88, 2.6), Rotation2d.fromDegrees(180)))
         );
         private static final Map<String, Pose2d> RED_MAP =
             BLUE_MAP.entrySet().stream().collect(Collectors.toMap(
@@ -107,10 +111,19 @@ public final class Constants {
             Alliance.Red, RED_MAP
         );
 
-        // meters and radians
+        // meters and degrees
         public static final double X_TOLERANCE = 0.02;
         public static final double Y_TOLERANCE = 0.02;
         public static final double ANG_TOLERANCE = 0.5;
+
+        public static final double BALANCE_TOLERANCE = 1;
+        public static final double BALANCE_ANG_RATE_LIMIT = 30;
+
+        public static final double BALANCE_KP = 1;
+        public static final double BALANCE_KI = 0;
+        public static final double BALANCE_KD = 0;
+
+        public static final double BALANCE_MAX_SPEED = 1; // m/s
     }
     
     public static final class Drivebase {

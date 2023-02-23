@@ -96,6 +96,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_robotContainer.setMotorBrake(true);
+    m_robotContainer.prepareDriveForAuto();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -117,10 +118,9 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    m_robotContainer.setDriveMode();
     m_robotContainer.setMotorBrake(true);
     m_robotContainer.setArmBrakes(true);
-    m_robotContainer.prepareDrive();
+    m_robotContainer.prepareDriveForTeleop();
   }
 
   /** This function is called periodically during operator control. */

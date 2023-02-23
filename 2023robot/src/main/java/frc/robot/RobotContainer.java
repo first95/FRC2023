@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -183,9 +184,13 @@ public class RobotContainer {
   public void setDriveMode() {
     //drivebase.setDefaultCommand();
   }
-  public void prepareDrive() {
+  public void prepareDriveForTeleop() {
+    drivebase.setDefaultCommand(absoluteDrive);
     absoluteDrive.setHeading(drivebase.getYaw());
     closedAbsoluteDrive.setHeading(drivebase.getYaw());
+  }
+  public void prepareDriveForAuto() {
+    drivebase.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, drivebase)));
   }
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
