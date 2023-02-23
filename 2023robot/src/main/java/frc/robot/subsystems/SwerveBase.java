@@ -281,6 +281,10 @@ public class SwerveBase extends SubsystemBase {
     return Rotation2d.fromDegrees(imu.getPitch());
   }
 
+  public Rotation2d getRoll() {
+    return Rotation2d.fromDegrees(imu.getRoll());
+  }
+
   /**
    * Sets the drive motors to brake/coast mode.
    * @param brake True to set motors to brake mode, false for coast.

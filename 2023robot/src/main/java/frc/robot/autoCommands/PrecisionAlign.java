@@ -4,10 +4,13 @@
 
 package frc.robot.autoCommands;
 
+import frc.robot.Constants;
 import frc.robot.Constants.Auton;
+import frc.robot.Constants.Drivebase;
 import frc.robot.subsystems.SwerveBase;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -19,7 +22,7 @@ public class PrecisionAlign extends CommandBase {
   private final PIDController xController, yController, angController;
 
   private Pose2d currentPose;
-  private double xVel, yVel, omega;
+  private double xVel, yVel, omega, sineRoll, sinePitch;
 
   /**
    * Creates a new ExampleCommand.
@@ -55,9 +58,14 @@ public class PrecisionAlign extends CommandBase {
   @Override
   public void execute() {
     currentPose = drive.getPose();
-    xVel = xController.calculate(currentPose.getX());
-    yVel = yController.calculate(currentPose.getY());
+    sineRoll = drive.getRoll().getSin();
+    sinePitch = drive.getPitch().getSin();
+    xVel = xController.calculate(currentPose.getX()) +
+      (Drivebase.KA / Drivebase.KV) * Constants.GRAVITY * sinePitch;
+    yVel = yController.calculate(currentPose.getY()) + 
+      (Drivebase.KA / Drivebase.KV) * Constants.GRAVITY * sineRoll;
     omega = angController.calculate(currentPose.getRotation().getRadians());
+    
     drive.drive(new Translation2d(xVel, yVel), omega, true, false);
   }
 
