@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.Auton;
-import frc.robot.autoCommands.Balance;
 import frc.robot.autoCommands.DriveToPose;
 import frc.robot.autoCommands.FollowTrajectory;
 import frc.robot.autoCommands.PrecisionAlign;
@@ -194,12 +193,6 @@ public class AutoParser {
                     return new PrecisionAlign(parameters[0], currentAlliance, drive);
                 } catch (NullPointerException e) {
                     throw new AutoParseException("AlignTo", "Pose not recognized", e); 
-                }
-            case "balance":
-                try {
-                    return new Balance(currentAlliance, drive);
-                } catch (Exception e) {
-                    throw new AutoParseException("Balance", "What did you do!?", e);
                 }
             default:
                 // If none of the preceeding cases apply, the command is invalid.
