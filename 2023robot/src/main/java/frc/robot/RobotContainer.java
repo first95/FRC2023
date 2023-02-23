@@ -51,13 +51,13 @@ public class RobotContainer {
   private final AbsoluteDrive absoluteDrive, closedAbsoluteDrive;
   private final TeleopDrive openFieldRel, openRobotRel, closedFieldRel, closedRobotRel;
 
-  private AutoParser autoParser = new AutoParser(drivebase);
+  private AutoParser autoParser = new AutoParser(drivebase, arm);
   private SendableChooser<CommandBase> driveModeSelector;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  CommandJoystick driverController = new CommandJoystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
-  CommandJoystick rotationController = new CommandJoystick(1);
-  CommandXboxController operatorController = new CommandXboxController(2);
+  CommandJoystick driverController = new CommandJoystick(OperatorConstants.DRIVE_CONTROLLER_PORT);
+  CommandJoystick rotationController = new CommandJoystick(OperatorConstants.ANGLE_CONTROLLER_PORT);
+  CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

@@ -49,15 +49,15 @@ public final class Constants {
 
     public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
     public static final class Auton {
-        public static final double X_KP = 1.4;
+        public static final double X_KP = 2;
         public static final double X_KI = 0;
-        public static final double X_KD = 0.05;
+        public static final double X_KD = 0.08;
 
-        public static final double Y_KP = 1.4;
+        public static final double Y_KP = 2;
         public static final double Y_KI = 0;
-        public static final double Y_KD = 0.05;
+        public static final double Y_KD = 0.08;
 
-        public static final double ANG_KP = 0.4;
+        public static final double ANG_KP = 0.8;
         public static final double ANG_KI = 0;
         public static final double ANG_KD = 0.01;
 
@@ -67,35 +67,39 @@ public final class Constants {
         public static final double CHARGE_STATION_DISTANCE = 3.88; // meters
 
         private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(
-            Map.entry("Node1High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node2High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node3High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node4High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(85.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node5High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node6High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(129.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node7High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node8High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node9High", new Pose2d(new Translation2d(1.582, Units.inchesToMeters(195.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node1Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node2Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node3Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node4Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node5Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node6Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node7Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node8Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node9Mid", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node1Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node2Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node3Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node4Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node5Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node6Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node7Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node8Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("Node9Low", new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180))),
-            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.12, 2.6), Rotation2d.fromDegrees(180))),
-            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.77, 2.6), Rotation2d.fromDegrees(180)))
+            Map.entry("Node1High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node2High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node3High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node4High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(85.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node5High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(107.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node6High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(129.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node7High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(151.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node8High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(173.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node9High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(195.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node1Mid", new Pose2d(new Translation2d(2.117, Units.inchesToMeters(19.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node2Mid", new Pose2d(new Translation2d(2.117, Units.inchesToMeters(41.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node3Mid", new Pose2d(new Translation2d(2.117, Units.inchesToMeters(63.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node4Mid", new Pose2d(new Translation2d(2.117, Units.inchesToMeters(85.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node5Mid", new Pose2d(new Translation2d(2.117, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node6Mid", new Pose2d(new Translation2d(2.117, Units.inchesToMeters(129.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node7Mid", new Pose2d(new Translation2d(2.117, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node8Mid", new Pose2d(new Translation2d(2.117, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9Mid", new Pose2d(new Translation2d(2.117, Units.inchesToMeters(195.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node1Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(19.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node2Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(41.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node3Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(63.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node4Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(85.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node5Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node6Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(129.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node7Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node8Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(195.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Gamepiece1", new Pose2d(new Translation2d(6.95, 0.908), new Rotation2d(0))),
+            Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
+            Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
+            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.95, 4.566), new Rotation2d(0))),
+            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.12, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
+            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.77, 2.6), Rotation2d.fromDegrees(180))) // will need to change y
         );
         private static final Map<String, Pose2d> RED_MAP =
             BLUE_MAP.entrySet().stream().collect(Collectors.toMap(
@@ -243,7 +247,9 @@ public final class Constants {
     }
 
     public class OperatorConstants {
-        public static final int DRIVER_CONTROLLER_PORT = 0;
+        public static final int DRIVE_CONTROLLER_PORT = 0;
+        public static final int ANGLE_CONTROLLER_PORT = 1;
+        public static final int OPERATOR_CONTROLLER_PORT = 2;
 
         // Joystick Deadband
         public static final double LEFT_X_DEADBAND = 0.05;
@@ -276,11 +282,11 @@ public final class Constants {
 
         // TODO: Change these presets to the correct angle!
         public enum PRESETS {
-            HIGH_SCORE (132),
-            MID_SCORE (105.7),
-            LOW_SCORE (35),
-            HANDOFF (19),
-            STOWED (0);
+            HIGH_SCORE (108),
+            MID_SCORE (93),
+            LOW_SCORE (5.7),
+            HANDOFF (4.4),
+            STOWED (-17.5);
             
             private final double angle;
             PRESETS(double angle) { this.angle = angle; }

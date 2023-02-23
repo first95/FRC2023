@@ -29,6 +29,7 @@ public class AutoHandoffCone extends SequentialCommandGroup {
         addCommands(new InstantCommand(() -> { arm.setHoldAngle(ArmConstants.PRESETS.HANDOFF.angle()); }));      
 
         addCommands(new InstantCommand(() -> {arm.setGrip(false);}));
+        addCommands(new WaitCommand(0.2));
         addCommands(new InstantCommand(() -> {intake.grabCone(-0.3);}));
         addCommands(new WaitCommand(0.5));
         addCommands(new InstantCommand(() -> {intake.grabCone(0);}));

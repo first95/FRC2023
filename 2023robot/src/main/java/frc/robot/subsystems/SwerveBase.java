@@ -305,7 +305,8 @@ public class SwerveBase extends SubsystemBase {
           0,
           Drivebase.MODULE_LOCATIONS[swerveModule.moduleNumber].getAngle(),
           0),
-        true);
+        true,
+        false);
     }
   }
 

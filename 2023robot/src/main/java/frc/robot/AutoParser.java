@@ -10,14 +10,17 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.Auton;
 import frc.robot.autoCommands.DriveToPose;
 import frc.robot.autoCommands.FollowTrajectory;
 import frc.robot.autoCommands.PrecisionAlign;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.SwerveBase;
 
 public class AutoParser {
     private SwerveBase drive;
+    private Arm arm;
     private CommandBase AutoMove;
     private Alliance currentAlliance;
 
@@ -49,8 +52,9 @@ public class AutoParser {
      * </pre></p>
      * @param drive The robot's drivebase subsystem
      */
-    public AutoParser(SwerveBase drive) {
+    public AutoParser(SwerveBase drive, Arm arm) {
         this.drive = drive;
+        this.arm = arm;
     }
 
     /**
@@ -175,10 +179,12 @@ public class AutoParser {
                     return new WaitCommand(Double.parseDouble(parameters[0]));
                 } catch (NumberFormatException e) {
                     throw new AutoParseException("Wait", "Argument must be a number", e);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    throw new AutoParseException("Wait", "Missing parameters", e);
                 }
             case "stop":
                 try {
-                    return new InstantCommand(drive::setDriveBrake);
+                    return new InstantCommand(drive::setDriveBrake, drive);
                 } catch (Exception e) {
                     throw new AutoParseException("Stop", "What did you do!?", e);
                 }
@@ -187,12 +193,24 @@ public class AutoParser {
                     return new DriveToPose(parameters[0], currentAlliance, drive);
                 } catch (NullPointerException e) {
                     throw new AutoParseException("DriveToPose", "Pose not recognized", e);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    throw new AutoParseException("DriveToPose", "Missing parameters", e);
                 }
             case "alignto":
                 try {
                     return new PrecisionAlign(parameters[0], currentAlliance, drive);
                 } catch (NullPointerException e) {
                     throw new AutoParseException("AlignTo", "Pose not recognized", e); 
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    throw new AutoParseException("PrecisionAlign", "Missing parameters", e);
+                }
+            case "movearm":
+                try {
+                    return new InstantCommand(() -> arm.setPreset(ArmConstants.PRESETS.valueOf(parameters[0])), arm);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    throw new AutoParseException("MoveArm", "Missing parameters", e);
+                } catch (IllegalArgumentException e) {
+                    throw new AutoParseException("MoveArm", "Invalid preset position", e);
                 }
             default:
                 // If none of the preceeding cases apply, the command is invalid.

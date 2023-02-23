@@ -14,23 +14,17 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
-import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.ArmConstants.CONTROL_MODE;
-import frc.robot.Constants.ArmConstants.GripState;
 import frc.robot.Constants.ArmConstants.PRESETS;
 
 public class Arm extends SubsystemBase {
   private double holdAngle = 0;
-  private PRESETS currentPreset;
 
   private CANSparkMax armMotor;
   private CANSparkMax armMotorFollow;
@@ -49,7 +43,7 @@ public class Arm extends SubsystemBase {
 
     armEncoder = armMotor.getEncoder();
     armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION);
-    // armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
+    armEncoder.setVelocityConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
 
     armController = armMotor.getPIDController();
     // armController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
@@ -95,7 +89,6 @@ public class Arm extends SubsystemBase {
     armController.setOutputRange(-0.3, 0.3);
     setHoldAngle(position.angle());
     setPos(position.angle());
-    currentPreset = position;
   }
   
   public BooleanSupplier hasReachedReference(double reference) {
@@ -136,7 +129,7 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(0);
+    if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(PRESETS.STOWED.angle());
 
     // Logging...
     SmartDashboard.putBoolean("Gripper Status", gripper.get());
