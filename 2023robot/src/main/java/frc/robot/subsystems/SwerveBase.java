@@ -7,13 +7,19 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,20 +28,25 @@ import frc.lib.util.BetterSwerveModuleState;
 import frc.robot.Robot;
 import frc.robot.SwerveModule;
 import frc.robot.Constants.Drivebase;
+import frc.robot.Constants.Vision;
 
 public class SwerveBase extends SubsystemBase {
 
   private SwerveModule[] swerveModules;
   private Pigeon2 imu;
+  private NetworkTable portLimelightData, starboardLimelightData;
+  private boolean wasOdometrySeeded;
   
-  private SwerveDriveOdometry odometry;
+  private SwerveDrivePoseEstimator odometry;
   public Field2d field = new Field2d();
 
-  private double angle, lasttime;
+  private double angle, lasttime, visionLatency;
 
   private Timer timer;
 
   private boolean wasGyroReset;
+
+  private Alliance alliance = Alliance.Invalid;
 
   /** Creates a new swerve drivebase subsystem.  Robot is controlled via the drive() method,
    * or via the setModuleStates() method.  The drive() method incorporates kinematics— it takes a 
@@ -68,8 +79,11 @@ public class SwerveBase extends SubsystemBase {
       new SwerveModule(3, Drivebase.Mod3.CONSTANTS),
     };
 
-    odometry = new SwerveDriveOdometry(Drivebase.KINEMATICS, getYaw(), getModulePositions());
-    zeroGyro();
+    portLimelightData = NetworkTableInstance.getDefault().getTable("limelight-" + Vision.PORT_LIMELIGHT_NAME);
+    starboardLimelightData = NetworkTableInstance.getDefault().getTable("limelight-" + Vision.STARBOARD_LIMELIGHT_NAME);
+
+    odometry = new SwerveDrivePoseEstimator(Drivebase.KINEMATICS, getYaw(), getModulePositions(), new Pose2d());
+    wasOdometrySeeded = false;
   }
 
   /**
@@ -135,13 +149,12 @@ public class SwerveBase extends SubsystemBase {
   }
 
   /**
-   * Set field-relative chassis speeds with closed-loop velocity control.
-   * @param chassisSpeeds Field-relative.
+   * Set robot-relative chassis speeds with closed-loop velocity control.
+   * @param chassisSpeeds Robot-relative.
    */
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
     setModuleStates(
-      Drivebase.KINEMATICS.toSwerveModuleStates(
-        ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getYaw())));
+      Drivebase.KINEMATICS.toSwerveModuleStates(chassisSpeeds));
   }
 
   
@@ -150,7 +163,7 @@ public class SwerveBase extends SubsystemBase {
    * @return The robot's pose
    */
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
+    return odometry.getEstimatedPosition();
   }
 
   /**
@@ -239,6 +252,17 @@ public class SwerveBase extends SubsystemBase {
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
 
+  public void setGyro(Rotation2d angle) {
+    // Resets the real gyro or the angle accumulator, depending on whether the robot is being simulated
+    if (Robot.isReal()) {
+      imu.setYaw(angle.getDegrees());
+    } else {
+      this.angle = angle.getRadians();
+    }
+    wasGyroReset = true;
+    resetOdometry(new Pose2d(getPose().getTranslation(), angle));
+  }
+
   /**
    * Gets the current yaw angle of the robot, as reported by the imu.  CCW positive, not wrapped.
    * @return The yaw angle
@@ -277,17 +301,111 @@ public class SwerveBase extends SubsystemBase {
     }
   }
 
+  public void setAlliance(Alliance alliance) {
+    this.alliance = alliance;
+    wasOdometrySeeded = false;
+  }
+
+  public Pose3d getVisionPose(NetworkTable visionData) {
+    if ((visionData.getEntry("tv").getDouble(0) == 0 ||
+      visionData.getEntry("getPipe").getDouble(0) != Vision.APRILTAG_PIPELINE_NUMBER)) {
+      DriverStation.reportWarning("Limelight no target" + visionData.getPath(), false);
+      return null;
+    }
+    double[] poseComponents;
+    if (alliance == Alliance.Blue) {
+      poseComponents = visionData.getEntry("botpose_wpiblue").getDoubleArray(new double[7]);
+    } else if (alliance == Alliance.Red) {
+      poseComponents = visionData.getEntry("botpose_wpired").getDoubleArray(new double[7]);
+    } else {
+      return null;
+    }
+    visionLatency = poseComponents[6];
+    return new Pose3d(
+        poseComponents[0],
+        poseComponents[1],
+        poseComponents[2],
+        new Rotation3d(
+          Math.toRadians(poseComponents[3]),
+          Math.toRadians(poseComponents[4]),
+          Math.toRadians(poseComponents[5])));
+  }
+
   @Override
   public void periodic() {
+    SmartDashboard.putString("Gyro", getYaw().toString());
+    SmartDashboard.putString("alliance", alliance.toString());
+    SmartDashboard.putBoolean("seeded", wasOdometrySeeded);
+    // Seed odometry if this has not been done
+    if (!wasOdometrySeeded) { 
+      Pose3d portSeed3d = getVisionPose(portLimelightData);
+      Pose3d starboardSeed3d = getVisionPose(starboardLimelightData);
+      if ((portSeed3d != null) && (starboardSeed3d != null)) {
+        // Average position, pick a camera for rotation
+        Pose2d portSeed = portSeed3d.toPose2d();
+        Pose2d starboardSeed = starboardSeed3d.toPose2d();
+        Translation2d translation = portSeed.getTranslation().plus(starboardSeed.getTranslation()).div(2);
+        Rotation2d rotation = starboardSeed.getRotation();
+        imu.setYaw(rotation.getDegrees());
+        resetOdometry(new Pose2d(translation, rotation));
+        wasOdometrySeeded = true;
+        wasGyroReset = true;
+      }
+      else if (starboardSeed3d != null) {
+        Pose2d starboardSeed = new Pose2d(
+          new Translation2d(
+            starboardSeed3d.getX(),
+            starboardSeed3d.getY()),
+          new Rotation2d(starboardSeed3d.getRotation().getZ()));
+        imu.setYaw(starboardSeed.getRotation().getDegrees());
+        resetOdometry(starboardSeed);
+        wasOdometrySeeded = true;
+        wasGyroReset = true;
+      }
+      else if (portSeed3d != null) {
+        Pose2d portSeed = new Pose2d(
+          new Translation2d(
+            portSeed3d.getX(),
+            portSeed3d.getY()),
+          new Rotation2d(portSeed3d.getRotation().getZ()));
+        imu.setYaw(portSeed.getRotation().getDegrees());
+        resetOdometry(portSeed);
+        wasOdometrySeeded = true;
+        wasGyroReset = true;
+      } else {
+        DriverStation.reportError("Alliance not set or tag not visible", false);
+      }
+    }
+    
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
+    double timestamp;
+    Pose3d portPose3d = getVisionPose(portLimelightData);
+    double portTime = visionLatency;
+    if (portPose3d != null) {
+      Pose2d portPose = portPose3d.toPose2d();
+      if (portPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
+        timestamp = Timer.getFPGATimestamp() - portTime / 1000;
+        odometry.addVisionMeasurement(portPose, timestamp);
+      }
+    }
+    Pose3d starboardPose3d = getVisionPose(starboardLimelightData);
+    double starboardTime = visionLatency;
+    if (starboardPose3d != null) {
+      Pose2d starboardPose = starboardPose3d.toPose2d();
+      if (starboardPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
+        timestamp = Timer.getFPGATimestamp() - starboardTime / 1000;
+        odometry.addVisionMeasurement(starboardPose, timestamp);
+      }
+    }
 
+    SmartDashboard.putString("Odometry", odometry.getEstimatedPosition().toString());
     // Update angle accumulator if the robot is simulated
     if (!Robot.isReal()) {
       angle += Drivebase.KINEMATICS.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lasttime);
       lasttime = timer.get();
 
-      field.setRobotPose(odometry.getPoseMeters());
+      field.setRobotPose(odometry.getEstimatedPosition());
       SmartDashboard.putData("Field", field);
     }
 

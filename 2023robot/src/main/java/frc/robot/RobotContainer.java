@@ -22,6 +22,7 @@ import frc.robot.subsystems.SwerveBase;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -46,6 +47,9 @@ public class RobotContainer {
   private final Arm arm = new Arm();
   private final Intake intake = new Intake();
 
+  private final AbsoluteDrive absoluteDrive, closedAbsoluteDrive;
+  private final TeleopDrive openFieldRel, openRobotRel, closedFieldRel, closedRobotRel;
+
   private AutoParser autoParser = new AutoParser(drivebase);
   private SendableChooser<CommandBase> driveModeSelector;
 
@@ -59,7 +63,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    AbsoluteDrive absoluteDrive = new AbsoluteDrive(
+    absoluteDrive = new AbsoluteDrive(
       drivebase,
       // Applies deadbands and inverts controls because joysticks are back-right positive while robot
       // controls are front-left positive
@@ -68,7 +72,7 @@ public class RobotContainer {
       () -> -rotationController.getX(),
       () -> -rotationController.getY(), true);
 
-    AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(
+    closedAbsoluteDrive = new AbsoluteDrive(
       drivebase,
       // Applies deadbands and inverts controls because joysticks are back-right positive while robot
       // controls are front-left positive
@@ -77,25 +81,25 @@ public class RobotContainer {
       () -> -rotationController.getX(),
       () -> -rotationController.getY(), false);
 
-    TeleopDrive openRobotRel = new TeleopDrive(
+    openRobotRel = new TeleopDrive(
       drivebase,
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
       () -> -driverController.getTwist(), () -> false, true);
     
-    TeleopDrive closedRobotRel = new TeleopDrive(
+    closedRobotRel = new TeleopDrive(
       drivebase,
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
       () -> -driverController.getTwist(), () -> false, false);
     
-    TeleopDrive openFieldRel = new TeleopDrive(
+    openFieldRel = new TeleopDrive(
       drivebase,
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
       () -> -driverController.getTwist(), () -> true, true);
 
-    TeleopDrive closedFieldRel = new TeleopDrive(
+    closedFieldRel = new TeleopDrive(
       drivebase,
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
@@ -111,6 +115,11 @@ public class RobotContainer {
     
     SmartDashboard.putData(driveModeSelector);
     drivebase.setDefaultCommand(absoluteDrive);
+
+    SmartDashboard.putNumber("ANGLE", 0);
+    SmartDashboard.putData("setAngle", new InstantCommand(() -> drivebase.setGyro(new Rotation2d(SmartDashboard.getNumber("ANGLE", 0)))).ignoringDisable(true));
+    SmartDashboard.putData("sendAlliance", new InstantCommand(() -> drivebase.setAlliance(DriverStation.getAlliance())).ignoringDisable(true));
+
     //intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), () -> (operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), intake));
     intake.setDefaultCommand(new ControlIntake(
       () -> operatorController.getLeftX(), 
@@ -173,6 +182,10 @@ public class RobotContainer {
 
   public void setDriveMode() {
     //drivebase.setDefaultCommand();
+  }
+  public void prepareDrive() {
+    absoluteDrive.setHeading(drivebase.getYaw());
+    closedAbsoluteDrive.setHeading(drivebase.getYaw());
   }
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);

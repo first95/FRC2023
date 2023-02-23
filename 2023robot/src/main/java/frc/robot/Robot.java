@@ -120,6 +120,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.setDriveMode();
     m_robotContainer.setMotorBrake(true);
     m_robotContainer.setArmBrakes(true);
+    m_robotContainer.prepareDrive();
   }
 
   /** This function is called periodically during operator control. */
