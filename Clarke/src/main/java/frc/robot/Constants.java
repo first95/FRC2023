@@ -258,27 +258,20 @@ public final class Constants {
         public static final int GRIPPER_SOLENOID_ID = 1;
 
         // Limits in degrees
-        public static final float ARM_LOWER_LIMIT = -10;
-        public static final float ARM_UPPER_LIMIT = 160;
+        public static final float ARM_LOWER_LIMIT = (float) -107.5;
+        public static final float ARM_UPPER_LIMIT = 24;
 
         // Ratio = 1 / 5 / 5 * 22 / 40 
         // 5 to 1 | 5 to 1 | 40 to 22 -> To be 22 to 60
         public static final double ARM_GEAR_RATIO = 0.022;
         public static final double ARM_DEGREES_PER_MOTOR_ROTATION = ARM_GEAR_RATIO * 360;
 
-        public enum CONTROL_MODE {
-            POSITION,
-            DUTY,
-            HOLD
-          }
-
-        // TODO: Change these presets to the correct angle!
         public enum PRESETS {
-            HIGH_SCORE (108),
-            MID_SCORE (93),
-            LOW_SCORE (5.7),
-            HANDOFF (4.4),
-            STOWED (-17.5);
+            HIGH_SCORE (18),
+            MID_SCORE (3),
+            LOW_SCORE (5.7 - 90),
+            HANDOFF (4.4 - 90),
+            STOWED (ARM_LOWER_LIMIT);
             
             private final double angle;
             PRESETS(double angle) { this.angle = angle; }
@@ -289,6 +282,11 @@ public final class Constants {
 
         public enum GripState {GRIP_OFF, GRIP_ON}
 
+        public static final double MAX_CONTROL_EFFORT = 0.5;
+
+        public static final double THEORETICAL_MAX_ARM_SPEED = (NEO_FREE_SPEED / 60) * 2 * Math.PI * ARM_GEAR_RATIO; // rad/s
+        public static final double ARM_SPEED_LIMIT_DEG_PER_S = Math.toDegrees(THEORETICAL_MAX_ARM_SPEED * 0.25);
+
         // Constants for PID
         public static final double ARM_KP = 0.008;
         public static final double ARM_KI = 0;
@@ -297,8 +295,8 @@ public final class Constants {
 
         // Constants for feed forward
         public static final double ARM_KS = 0;
-        public static final double ARM_KG = 0;
-        public static final double ARM_KV = 0;
+        public static final double ARM_KG = 0.05 * 12;
+        public static final double ARM_KV = 12 / THEORETICAL_MAX_ARM_SPEED;
      }
 
     public static final class IntakeConstants {

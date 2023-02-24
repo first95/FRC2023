@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.ArmConstants.CONTROL_MODE;
 import frc.robot.Constants.ArmConstants.GripState;
 import frc.robot.subsystems.Arm;
 
@@ -17,8 +16,7 @@ public class ControlArm extends CommandBase {
   private Arm arm;
   private DoubleSupplier manualControl;
   private BooleanSupplier setStowed, setHandoff, setHighScore, setMedScore, setLowScore;
-
-  private CONTROL_MODE currentMode = CONTROL_MODE.DUTY;
+  private boolean wasVelocityControlled;
   
   public ControlArm(
       DoubleSupplier manualControl, 
@@ -42,66 +40,30 @@ public class ControlArm extends CommandBase {
     addRequirements(arm);
   }
 
-  private void monitorMode() {
-    // Setpoints
-    if ((setStowed.getAsBoolean() 
-        || setHandoff.getAsBoolean() 
-        || setHighScore.getAsBoolean() 
-        || setMedScore.getAsBoolean() 
-        || setLowScore.getAsBoolean()) 
-        && currentMode != CONTROL_MODE.POSITION) {
-          currentMode = CONTROL_MODE.POSITION;
-    } 
-    // Joystick duty override
-    else if (Math.abs(manualControl.getAsDouble()) > 0) {
-      currentMode = CONTROL_MODE.DUTY;
-    }
-    else {
-      if (currentMode == CONTROL_MODE.DUTY) {
-        currentMode = CONTROL_MODE.HOLD;
-        arm.setHoldAngle(arm.getPos());
-      }
-    }
-  }
-
   @Override
   public void initialize() {}
 
   @Override
   public void execute() {
-    monitorMode();
-
-    if(currentMode == CONTROL_MODE.POSITION) {
+    double velocity = manualControl.getAsDouble() * ArmConstants.ARM_SPEED_LIMIT_DEG_PER_S;
+    if (velocity != 0) {
+      arm.setVelocity(velocity);
+      wasVelocityControlled = true;
+    } else {
       if (setStowed.getAsBoolean()) {
-        // When running return to stow, alter P value to slow return.
-        // Another approach would first allow the motors to coast to ~16 before returning to 0
-        arm.applyPID(0.005, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
         arm.setPreset(ArmConstants.PRESETS.STOWED);
-        arm.setGrip(true);
-      } 
-      else if (setHandoff.getAsBoolean()) {
-        arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
+      } else if (setHandoff.getAsBoolean()) {
         arm.setPreset(ArmConstants.PRESETS.HANDOFF);
-      } 
-      else if (setHighScore.getAsBoolean()) {
-        arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
-        arm.setPreset(ArmConstants.PRESETS.HIGH_SCORE);
-      } 
-      else if (setMedScore.getAsBoolean()) {
-        arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
-        arm.setPreset(ArmConstants.PRESETS.MID_SCORE);
-      } 
-      else if (setLowScore.getAsBoolean()) {
-        arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
+      } else if (setLowScore.getAsBoolean()) {
         arm.setPreset(ArmConstants.PRESETS.LOW_SCORE);
+      } else if (setMedScore.getAsBoolean()) {
+        arm.setPreset(ArmConstants.PRESETS.MID_SCORE);
+      } else if (setHighScore.getAsBoolean()) {
+        arm.setPreset(ArmConstants.PRESETS.HIGH_SCORE);
+      } else if (wasVelocityControlled) {
+        arm.setPos(arm.getPos());
+        wasVelocityControlled = false;
       }
-    }
-    else if (currentMode == CONTROL_MODE.HOLD){
-      arm.applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
-      arm.setPos(arm.getHoldAngle());
-    }
-    else if(currentMode == CONTROL_MODE.DUTY) {
-      arm.setSpeed(manualControl.getAsDouble());
     }
   }
 

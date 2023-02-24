@@ -10,13 +10,17 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -24,12 +28,16 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmConstants.PRESETS;
 
 public class Arm extends SubsystemBase {
-  private double holdAngle = 0;
+  private double setPoint = ArmConstants.PRESETS.STOWED.angle();
+  private double dt, lastTime;
 
   private CANSparkMax armMotor;
   private CANSparkMax armMotorFollow;
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
+  private ArmFeedforward feedforward;
+
+  private Timer time = new Timer();
 
   private Solenoid gripper; // FALSE is CLOSE || TRUE is OPEN
   private SparkMaxLimitSwitch bottomLimitSwitch;
@@ -46,70 +54,62 @@ public class Arm extends SubsystemBase {
     armEncoder.setVelocityConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
 
     armController = armMotor.getPIDController();
-    // armController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
-    // armController.setSmartMotionMaxVelocity(1, 0);
-    // armController.setSmartMotionMaxAccel(1, 0);
-    // armController.setSmartMotionAllowedClosedLoopError(5, 0);
 
     armMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.ARM_UPPER_LIMIT);
     armMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.ARM_LOWER_LIMIT);
     
-    applyPID(ArmConstants.ARM_KP, ArmConstants.ARM_KI, ArmConstants.ARM_KD);
+    armController.setP(ArmConstants.ARM_KP);
+    armController.setI(ArmConstants.ARM_KI);
+    armController.setD(ArmConstants.ARM_KD);
     armController.setFF(ArmConstants.ARM_KF);
-    armController.setOutputRange(-0.5, 0.5);
+    armController.setOutputRange(-ArmConstants.MAX_CONTROL_EFFORT, ArmConstants.MAX_CONTROL_EFFORT);
 
     armMotor.setSmartCurrentLimit(30);
     armMotor.setIdleMode(IdleMode.kCoast);
 
     bottomLimitSwitch = armMotor.getReverseLimitSwitch(Type.kNormallyOpen);
 
-    armMotor.burnFlash();  
-  }
+    armMotor.burnFlash();
 
-  // Allow for setting special PID for certain operations
-  // Example: When setting arm to stowed position set P value lower
-  //          to prevent slamming into back.
-  public void applyPID(double p, double I, double D) {
-    armController.setP(p);
-    armController.setI(I);
-    armController.setD(D);
-    armMotor.burnFlash();  
+    feedforward = new ArmFeedforward(
+      ArmConstants.ARM_KS,
+      ArmConstants.ARM_KG,
+      ArmConstants.ARM_KV);
+    
+    time.start();
   }
-
-  public void setBreaks(boolean enabled) {
-    armMotor.setIdleMode(enabled ? IdleMode.kBrake : IdleMode.kCoast);
-  }
-
-  public void setSpeed(double speed){
-    armController.setOutputRange(-0.5, 0.5);
-    armMotor.set(speed);
-  }
-
-  public void setPreset(ArmConstants.PRESETS position){
-    armController.setOutputRange(-0.3, 0.3);
-    setHoldAngle(position.angle());
-    setPos(position.angle());
-  }
-  
-  public BooleanSupplier hasReachedReference(double reference) {
-    return () -> { return armMotor.getEncoder().getPosition() + ArmConstants.ANGLE_TOLERANCE > (reference)
-      && armMotor.getEncoder().getPosition() - ArmConstants.ANGLE_TOLERANCE < (reference); };  
-    }
 
   public double getPos(){
     return armEncoder.getPosition();
   }
 
-  public void setPos(double angleDegree){
-    armController.setReference(angleDegree, CANSparkMax.ControlType.kPosition);
+  public void setPos(double angleDegree) {
+    setPoint = angleDegree;
+    armController.setReference(
+      angleDegree,
+      CANSparkMax.ControlType.kPosition,
+      0,
+      feedforward.calculate(Math.toRadians(setPoint), 0));
   }
 
-  public double getHoldAngle() {
-    return holdAngle;
+  /**
+   * Sets velocity by moving position setpoint. Be careful with this- make sure to prevent
+   * the setpoint being changed overmuch due to mechanical obstruction.
+   * @param velocityDegPerSecond
+   */
+  public void setVelocity(double velocityDegPerSecond) {
+    setPoint = MathUtil.clamp(setPoint + (velocityDegPerSecond * dt),
+      ArmConstants.ARM_LOWER_LIMIT,
+      ArmConstants.ARM_UPPER_LIMIT);
+    armController.setReference(
+      setPoint,
+      ControlType.kPosition,
+      0,
+      feedforward.calculate(Math.toRadians(setPoint), Math.toRadians(velocityDegPerSecond)));
   }
-
-  public void setHoldAngle(double newHoldAngle) {
-    holdAngle = newHoldAngle;
+  
+  public void setPreset(PRESETS preset) {
+    setPos(preset.angle());
   }
 
   public void toggleGrip() {
@@ -127,6 +127,11 @@ public class Arm extends SubsystemBase {
     gripper.set(isOpen);
   }
 
+  public void setBrakes(boolean brake) {
+    armMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+    armMotorFollow.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+  }
+
   @Override
   public void periodic() {
     if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(PRESETS.STOWED.angle());
@@ -135,11 +140,18 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putBoolean("Gripper Status", gripper.get());
     SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
+
+    dt = time.get() - lastTime;
+    lastTime = time.get();
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+  }
+
+  public boolean hasReachedReference(double angle) {
+    return Boolean.valueOf(Math.abs(getPos() - angle) <= ArmConstants.ANGLE_TOLERANCE);
   }
 }
 

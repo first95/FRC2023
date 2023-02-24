@@ -136,7 +136,7 @@ public class RobotContainer {
 
     controlArm = new ControlArm(
       () -> (Math.abs(Math.pow(operatorController.getRightY(), 3)) > OperatorConstants.RIGHT_Y_DEADBAND) 
-              ? ((Math.pow(operatorController.getRightY(), 3)) / 3) 
+              ? ((Math.pow(operatorController.getRightY(), 3))) 
               : 0
       , 
       operatorController.povDown(),   // STOW
@@ -203,7 +203,7 @@ public class RobotContainer {
   }
 
   public void setArmBrakes(boolean brake) {
-    arm.setBreaks(brake);
+    arm.setBrakes(brake);
   }
 
   public void parseAuto() {
