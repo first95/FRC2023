@@ -15,12 +15,15 @@ import frc.robot.Constants.Auton;
 import frc.robot.autoCommands.DriveToPose;
 import frc.robot.autoCommands.FollowTrajectory;
 import frc.robot.autoCommands.PrecisionAlign;
+import frc.robot.commands.AutoHandoffCone;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveBase;
 
 public class AutoParser {
     private SwerveBase drive;
     private Arm arm;
+    private Intake intake;
     private CommandBase AutoMove;
     private Alliance currentAlliance;
 
@@ -52,9 +55,10 @@ public class AutoParser {
      * </pre></p>
      * @param drive The robot's drivebase subsystem
      */
-    public AutoParser(SwerveBase drive, Arm arm) {
+    public AutoParser(SwerveBase drive, Arm arm, Intake intake) {
         this.drive = drive;
         this.arm = arm;
+        this.intake = intake;
     }
 
     /**
@@ -211,6 +215,18 @@ public class AutoParser {
                     throw new AutoParseException("MoveArm", "Missing parameters", e);
                 } catch (IllegalArgumentException e) {
                     throw new AutoParseException("MoveArm", "Invalid preset position", e);
+                }
+            case "score":
+                try {
+                    return new InstantCommand(() -> arm.setGrip(true));
+                } catch (Exception e) {
+                    throw new AutoParseException("Score", "What did you do!?", e);
+                }
+            case "conehandoff":
+                try {
+                    return new AutoHandoffCone(arm, intake);
+                } catch (Exception e) {
+                    throw new AutoParseException("ConeHandoff", "What did you do!?", e);
                 }
             default:
                 // If none of the preceeding cases apply, the command is invalid.

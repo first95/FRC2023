@@ -52,7 +52,7 @@ public class RobotContainer {
   private final TeleopDrive openFieldRel, openRobotRel, closedFieldRel, closedRobotRel;
   private final ControlArm controlArm;
 
-  private AutoParser autoParser = new AutoParser(drivebase, arm);
+  private AutoParser autoParser = new AutoParser(drivebase, arm, intake);
   private SendableChooser<CommandBase> driveModeSelector;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
