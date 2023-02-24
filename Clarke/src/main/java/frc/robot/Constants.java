@@ -116,10 +116,10 @@ public final class Constants {
             Alliance.Red, RED_MAP
         );
 
-        // meters and degrees
+        // meters and radians
         public static final double X_TOLERANCE = 0.04;
         public static final double Y_TOLERANCE = 0.04;
-        public static final double ANG_TOLERANCE = 0.5;
+        public static final double ANG_TOLERANCE = Math.toRadians(3);
     }
     
     public static final class Drivebase {
@@ -284,6 +284,8 @@ public final class Constants {
             PRESETS(double angle) { this.angle = angle; }
             public double angle() { return angle; }
         }
+
+        public static final double ANGLE_TOLERANCE = 4; // degrees
 
         public enum GripState {GRIP_OFF, GRIP_ON}
 

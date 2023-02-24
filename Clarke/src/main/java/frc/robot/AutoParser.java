@@ -244,6 +244,12 @@ public class AutoParser {
                 } catch (Exception e) {
                     throw new AutoParseException("GrabCone", "What did you do!?", e);
                 }
+            case "grip":
+                try {
+                    return new InstantCommand(() -> arm.setGrip(false), arm);
+                } catch (Exception e) {
+                    throw new AutoParseException("Grip", "What did you do!?", e);
+                }
             default:
                 // If none of the preceeding cases apply, the command is invalid.
                 throw new AutoParseException("Unrecognized Command", "Command is not valid");

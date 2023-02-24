@@ -92,8 +92,8 @@ public class Arm extends SubsystemBase {
   }
   
   public BooleanSupplier hasReachedReference(double reference) {
-    return () -> { return armMotor.getEncoder().getPosition() + 3 > (reference)
-      && armMotor.getEncoder().getPosition() -3 < (reference); };  
+    return () -> { return armMotor.getEncoder().getPosition() + ArmConstants.ANGLE_TOLERANCE > (reference)
+      && armMotor.getEncoder().getPosition() - ArmConstants.ANGLE_TOLERANCE < (reference); };  
     }
 
   public double getPos(){
