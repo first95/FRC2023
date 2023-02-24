@@ -14,10 +14,12 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.Auton;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.IntakeConstants.PRESETS;
 import frc.robot.autoCommands.DriveToPose;
 import frc.robot.autoCommands.FollowTrajectory;
 import frc.robot.autoCommands.PrecisionAlign;
 import frc.robot.commands.AutoHandoffCone;
+import frc.robot.commands.AutoHandoffCube;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveBase;
@@ -249,6 +251,26 @@ public class AutoParser {
                     return new InstantCommand(() -> arm.setGrip(false), arm);
                 } catch (Exception e) {
                     throw new AutoParseException("Grip", "What did you do!?", e);
+                }
+            case "grabcube":
+                try {
+                    return new InstantCommand(() -> {
+                        intake.setPreset(IntakeConstants.PRESETS.CUBE);
+                        intake.grabCube(0.6);
+                    }, intake)
+                    .andThen(new WaitCommand(1))
+                    .andThen(new InstantCommand(() -> {
+                        intake.setPreset(IntakeConstants.PRESETS.STOWED);
+                        intake.grabCube(0);
+                    }, intake));
+                } catch (Exception e) {
+                    throw new AutoParseException("GrabCube", "What did you do!?", e);
+                }
+            case "cubehandoff":
+                try {
+                    return new AutoHandoffCube(arm, intake);
+                } catch (Exception e) {
+                    throw new AutoParseException("CubeHandoff", "What did you do!?", e);
                 }
             default:
                 // If none of the preceeding cases apply, the command is invalid.

@@ -100,7 +100,7 @@ public final class Constants {
             Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.95, 4.566), new Rotation2d(0))),
             Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
             Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.77, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
-            Map.entry("Waypoint1", new Pose2d(new Translation2d(2.3, 4), Rotation2d.fromDegrees(180))) // temporary
+            Map.entry("NavPoint1", new Pose2d(new Translation2d(2.38, 4.54), Rotation2d.fromDegrees(180))) // temporary
         );
         private static final Map<String, Pose2d> RED_MAP =
             BLUE_MAP.entrySet().stream().collect(Collectors.toMap(
