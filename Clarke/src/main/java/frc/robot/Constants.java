@@ -98,7 +98,7 @@ public final class Constants {
             Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
             Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
             Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.95, 4.566), new Rotation2d(0))),
-            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.12, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
+            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
             Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.77, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
             Map.entry("Waypoint1", new Pose2d(new Translation2d(2.3, 4), Rotation2d.fromDegrees(180))) // temporary
         );
@@ -268,9 +268,9 @@ public final class Constants {
 
         public enum PRESETS {
             HIGH_SCORE (18),
-            MID_SCORE (3),
+            MID_SCORE (-7),
             LOW_SCORE (5.7 - 90),
-            HANDOFF (4.4 - 90),
+            HANDOFF (-95),
             STOWED (ARM_LOWER_LIMIT);
             
             private final double angle;
