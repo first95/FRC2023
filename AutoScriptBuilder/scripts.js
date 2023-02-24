@@ -1,3 +1,11 @@
+const savedArmPositions = [
+  "HIGH_SCORE",
+  "MID_SCORE",
+  "LOW_SCORE",
+  "HANDOFF",
+  "STOWED"
+];
+
 const commandmap = new Map([
   [
     "followtrajectory",
@@ -14,7 +22,14 @@ const commandmap = new Map([
   [
     "alignto",
     [{ paramname: "robotPose", paramvalue: savedRobotPoses }]
-  ]
+  ],
+  [
+    "movearm",
+    [{ paramname: "arpPresetPosition", paramvalue: savedArmPositions }]
+  ],
+  ["score",[]],
+  ["conehandoff",[]],
+  ["grabcone",[]]
 ]);
 
 function buildForm() {
