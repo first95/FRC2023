@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     m_robotContainer.setMotorBrake(true);
-    m_robotContainer.setArmBrakes(false);
+    m_robotContainer.setArmBrakes(true);
     disabledTimer.reset();
     disabledTimer.start();
   }
@@ -88,6 +88,7 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     if (disabledTimer.hasElapsed(Constants.Drivebase.WHEEL_LOCK_TIME)) {
       m_robotContainer.setMotorBrake(false);
+      m_robotContainer.setArmBrakes(false);
       disabledTimer.stop();
     }
   }

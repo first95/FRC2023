@@ -187,6 +187,7 @@ public class RobotContainer {
     //drivebase.setDefaultCommand();
   }
   public void prepareDriveForTeleop() {
+    arm.setPreset(ArmConstants.PRESETS.STOWED);
     drivebase.setDefaultCommand(absoluteDrive);
     arm.setDefaultCommand(controlArm);
     intake.setDefaultCommand(controlIntake);
@@ -194,6 +195,7 @@ public class RobotContainer {
     closedAbsoluteDrive.setHeading(drivebase.getYaw());
   }
   public void prepareDriveForAuto() {
+    arm.setPreset(ArmConstants.PRESETS.STOWED);
     arm.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, arm))); // these feel so wrong
     intake.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, intake)));
     drivebase.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, drivebase)));
@@ -207,6 +209,7 @@ public class RobotContainer {
   }
 
   public void parseAuto() {
+    SmartDashboard.putString("Compiler Message", "Parsing...");
     String autoText = SmartDashboard.getString("AutoCode", "");
     String parserOutput = "";
     try {

@@ -29,7 +29,8 @@ import frc.robot.Constants.ArmConstants.PRESETS;
 
 public class Arm extends SubsystemBase {
   private double setPoint = ArmConstants.PRESETS.STOWED.angle();
-  private double dt, lastTime;
+  private double dt, lastTime, armStowTime;
+  private boolean waitingForArmReturn = false;
 
   private CANSparkMax armMotor;
   private CANSparkMax armMotorFollow;
@@ -54,9 +55,6 @@ public class Arm extends SubsystemBase {
     armEncoder.setVelocityConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
 
     armController = armMotor.getPIDController();
-
-    armMotor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.ARM_UPPER_LIMIT);
-    armMotor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.ARM_LOWER_LIMIT);
     
     armController.setP(ArmConstants.ARM_KP);
     armController.setI(ArmConstants.ARM_KI);
@@ -76,6 +74,7 @@ public class Arm extends SubsystemBase {
       ArmConstants.ARM_KG,
       ArmConstants.ARM_KV);
     
+    time.reset();
     time.start();
   }
 
@@ -84,7 +83,7 @@ public class Arm extends SubsystemBase {
   }
 
   public void setPos(double angleDegree) {
-    setPoint = angleDegree;
+    setPoint = Math.min(angleDegree, ArmConstants.ARM_UPPER_LIMIT);
     armController.setReference(
       angleDegree,
       CANSparkMax.ControlType.kPosition,
@@ -98,9 +97,11 @@ public class Arm extends SubsystemBase {
    * @param velocityDegPerSecond
    */
   public void setVelocity(double velocityDegPerSecond) {
-    setPoint = MathUtil.clamp(setPoint + (velocityDegPerSecond * dt),
-      ArmConstants.ARM_LOWER_LIMIT,
-      ArmConstants.ARM_UPPER_LIMIT);
+    setPoint += velocityDegPerSecond * dt;
+    if (setPoint > ArmConstants.ARM_UPPER_LIMIT) {
+      setPoint = ArmConstants.ARM_UPPER_LIMIT;
+      velocityDegPerSecond = 0;
+    }
     armController.setReference(
       setPoint,
       ControlType.kPosition,
@@ -109,7 +110,13 @@ public class Arm extends SubsystemBase {
   }
   
   public void setPreset(PRESETS preset) {
-    setPos(preset.angle());
+    if (preset == ArmConstants.PRESETS.STOWED && getPos() > ArmConstants.RETURN_MIDPOINT) {
+      setPos(ArmConstants.RETURN_MIDPOINT);
+      waitingForArmReturn = true;
+      armStowTime = time.get();
+    } else {
+      setPos(preset.angle());
+    }
   }
 
   public void toggleGrip() {
@@ -136,6 +143,11 @@ public class Arm extends SubsystemBase {
   public void periodic() {
     if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(PRESETS.STOWED.angle());
 
+    if (waitingForArmReturn && (time.get() - armStowTime >= ArmConstants.RETURN_TIME_STOWING)) {
+      setPos(ArmConstants.PRESETS.STOWED.angle());
+      waitingForArmReturn = false;
+    }
+
     // Logging...
     SmartDashboard.putBoolean("Gripper Status", gripper.get());
     SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
@@ -154,5 +166,3 @@ public class Arm extends SubsystemBase {
     return Boolean.valueOf(Math.abs(getPos() - angle) <= ArmConstants.ANGLE_TOLERANCE);
   }
 }
-
-// See intake retracted, then move arm at the same time (For cones only)

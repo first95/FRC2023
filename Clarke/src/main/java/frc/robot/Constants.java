@@ -279,6 +279,7 @@ public final class Constants {
         }
 
         public static final double ANGLE_TOLERANCE = 4; // degrees
+        public static final double RETURN_MIDPOINT = -90; // position for arm to seek before stowing
 
         public enum GripState {GRIP_OFF, GRIP_ON}
 
@@ -287,10 +288,12 @@ public final class Constants {
         public static final double THEORETICAL_MAX_ARM_SPEED = (NEO_FREE_SPEED / 60) * 2 * Math.PI * ARM_GEAR_RATIO; // rad/s
         public static final double ARM_SPEED_LIMIT_DEG_PER_S = Math.toDegrees(THEORETICAL_MAX_ARM_SPEED * 0.25);
 
+        public static final double RETURN_TIME_STOWING = 0.4; // seconds
+
         // Constants for PID
-        public static final double ARM_KP = 0.008;
+        public static final double ARM_KP = 0.02;
         public static final double ARM_KI = 0;
-        public static final double ARM_KD = 0;
+        public static final double ARM_KD = 0.02;
         public static final double ARM_KF = 0;
 
         // Constants for feed forward
