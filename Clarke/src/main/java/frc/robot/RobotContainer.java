@@ -9,7 +9,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ControlArm;
 import frc.robot.commands.AutoHandoffCone;
 import frc.robot.commands.AutoHandoffCube;
-import frc.robot.commands.Autos;
 import frc.robot.commands.ControlIntake;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
@@ -20,11 +19,9 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveBase;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;

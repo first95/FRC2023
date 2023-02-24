@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.ArmConstants.GripState;
 import frc.robot.subsystems.Arm;
 
 import java.util.function.BooleanSupplier;
