@@ -93,6 +93,14 @@ public class Intake extends SubsystemBase {
     setPosition(preset.position());
   }
 
+  public double getTopRollerCurrentDraw() {
+    return topRoller.getOutputCurrent();
+  }
+
+  public double getLowRollerCurrentDraw() {
+    return bottomRoller.getOutputCurrent();
+  }
+
   public BooleanSupplier rackHasReachedReference(double reference) {
     return () -> { return rackEncoder.getPosition() + 0.025 > (reference)
       && rackEncoder.getPosition() - 0.025 < (reference); };  

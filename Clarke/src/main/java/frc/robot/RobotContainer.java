@@ -51,6 +51,7 @@ public class RobotContainer {
   private final AbsoluteDrive absoluteDrive, closedAbsoluteDrive;
   private final TeleopDrive openFieldRel, openRobotRel, closedFieldRel, closedRobotRel;
   private final ControlArm controlArm;
+  private final ControlIntake controlIntake;
 
   private AutoParser autoParser = new AutoParser(drivebase, arm, intake);
   private SendableChooser<CommandBase> driveModeSelector;
@@ -123,7 +124,7 @@ public class RobotContainer {
     SmartDashboard.putData("sendAlliance", new InstantCommand(() -> drivebase.setAlliance(DriverStation.getAlliance())).ignoringDisable(true));
 
     //intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), () -> (operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), intake));
-    intake.setDefaultCommand(new ControlIntake(
+    controlIntake = new ControlIntake(
       () -> operatorController.getLeftX(), 
       () -> operatorController.getLeftY(),
       () -> operatorController.getLeftTriggerAxis(),
@@ -131,7 +132,7 @@ public class RobotContainer {
       operatorController.b(),
       operatorController.a(),
       operatorController.x(),
-      intake));
+      intake);
 
     controlArm = new ControlArm(
       () -> (Math.abs(Math.pow(operatorController.getRightY(), 3)) > OperatorConstants.RIGHT_Y_DEADBAND) 
@@ -188,11 +189,13 @@ public class RobotContainer {
   public void prepareDriveForTeleop() {
     drivebase.setDefaultCommand(absoluteDrive);
     arm.setDefaultCommand(controlArm);
+    intake.setDefaultCommand(controlIntake);
     absoluteDrive.setHeading(drivebase.getYaw());
     closedAbsoluteDrive.setHeading(drivebase.getYaw());
   }
   public void prepareDriveForAuto() {
     arm.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, arm))); // these feel so wrong
+    intake.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, intake)));
     drivebase.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, drivebase)));
   }
   public void setMotorBrake(boolean brake) {

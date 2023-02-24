@@ -10,8 +10,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.Auton;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.autoCommands.DriveToPose;
 import frc.robot.autoCommands.FollowTrajectory;
 import frc.robot.autoCommands.PrecisionAlign;
@@ -227,6 +229,20 @@ public class AutoParser {
                     return new AutoHandoffCone(arm, intake);
                 } catch (Exception e) {
                     throw new AutoParseException("ConeHandoff", "What did you do!?", e);
+                }
+            case "grabcone":
+                try {
+                    return new InstantCommand(() -> {
+                        intake.setPreset(IntakeConstants.PRESETS.CONE);
+                        intake.grabCone(0.6);
+                    }, intake)
+                    .andThen(new WaitUntilCommand(() -> (intake.getTopRollerCurrentDraw() > IntakeConstants.GRABBED_CONE_ROLLER_CURRENT)))
+                    .andThen(new InstantCommand(() -> {
+                        intake.setPreset(IntakeConstants.PRESETS.HANDOFF);
+                        intake.grabCone(0);
+                    }, intake));
+                } catch (Exception e) {
+                    throw new AutoParseException("GrabCone", "What did you do!?", e);
                 }
             default:
                 // If none of the preceeding cases apply, the command is invalid.
