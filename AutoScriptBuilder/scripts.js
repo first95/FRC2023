@@ -31,7 +31,7 @@ const commandmap = new Map([
   ["conehandoff",[]],
   ["grabcone",[]],
   ["grip",[]],
-  ["grabecube",[]],
+  ["grabcube",[]],
   ["cubehandoff",[]]
 ]);
 
