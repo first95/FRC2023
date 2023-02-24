@@ -49,11 +49,11 @@ public final class Constants {
 
     public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
     public static final class Auton {
-        public static final double X_KP = 2;
+        public static final double X_KP = 1.8;
         public static final double X_KI = 0;
         public static final double X_KD = 0.08;
 
-        public static final double Y_KP = 2;
+        public static final double Y_KP = 1.8;
         public static final double Y_KI = 0;
         public static final double Y_KD = 0.08;
 
@@ -119,15 +119,6 @@ public final class Constants {
         public static final double X_TOLERANCE = 0.04;
         public static final double Y_TOLERANCE = 0.04;
         public static final double ANG_TOLERANCE = 0.5;
-
-        public static final double BALANCE_TOLERANCE = 1;
-        public static final double BALANCE_ANG_RATE_LIMIT = 30;
-
-        public static final double BALANCE_KP = 1;
-        public static final double BALANCE_KI = 0;
-        public static final double BALANCE_KD = 0;
-
-        public static final double BALANCE_MAX_SPEED = 1; // m/s
     }
     
     public static final class Drivebase {
