@@ -169,7 +169,7 @@ public final class Constants {
         // (NEO stall torque * module gearing * number of modules) / (wheel radius * robot mass) = m/s/s
         // (2.6 * 6.75 * 4) / (Units.inchesToMeters(2) * ROBOT_MASS)
         // However, the drive is traction-limited, so the max accelration is actually (wheel coefficient of friction * gravity)
-        public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
+        public static final double MAX_ACCELERATION = 1.19 * GRAVITY; // COF (blue nitrile on carpet) as reported by Studica
         // max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
         public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(NEO_550_FREE_SPEED * 7 / 372) / 60; // deg/s
 
