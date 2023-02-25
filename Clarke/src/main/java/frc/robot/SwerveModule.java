@@ -96,12 +96,12 @@ public class SwerveModule {
         setDesiredState(desiredState, isOpenLoop, true);
     }
 
-    public void setGains(double kp, double ki, double kd, double ks, double kv, double ka) {
+    /*public void setGains(double kp, double ki, double kd, double ks, double kv, double ka) {
         feedforward = new SimpleMotorFeedforward(ks, kv, ka);
         driveController.setP(kp);
         driveController.setI(ki);
         driveController.setD(kd);
-    }
+    }*/
     
     public void setDesiredState(BetterSwerveModuleState desiredState, boolean isOpenLoop, boolean antijitter) {
         SwerveModuleState simpleState = new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);

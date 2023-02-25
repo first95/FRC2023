@@ -16,6 +16,7 @@ public class FollowTrajectory extends SequentialCommandGroup{
     public FollowTrajectory(SwerveBase drivebase, PathPlannerTrajectory trajectory, boolean resetOdometry) {
         addRequirements(drivebase);
 
+        // fix this
         if(resetOdometry) {
             drivebase.resetOdometry(trajectory.getInitialHolonomicPose());
         }
@@ -24,7 +25,7 @@ public class FollowTrajectory extends SequentialCommandGroup{
             new PPSwerveControllerCommand(
                 trajectory,
                 drivebase::getPose,
-                new PIDController(Auton.X_KP, Auton.X_KI, Auton.X_KD),
+                new PIDController(Auton.X_KP, Auton.ANG_KI, Auton.ANG_KD),
                 new PIDController(Auton.Y_KP, Auton.Y_KI, Auton.Y_KD),
                 new PIDController(Auton.ANG_KP, Auton.ANG_KI, Auton.ANG_KD),
                 drivebase::setChassisSpeeds,

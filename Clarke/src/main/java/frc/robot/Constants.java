@@ -49,17 +49,17 @@ public final class Constants {
 
     public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
     public static final class Auton {
-        public static final double X_KP = 2.5;
+        public static final double X_KP = 1.5;
         public static final double X_KI = 0;
-        public static final double X_KD = 0.2;
+        public static final double X_KD = 0;
 
-        public static final double Y_KP = 2.5;
+        public static final double Y_KP = 1.5;
         public static final double Y_KI = 0;
-        public static final double Y_KD = 0.2;
+        public static final double Y_KD = 0;
 
-        public static final double ANG_KP = 1.8;
+        public static final double ANG_KP = 1;
         public static final double ANG_KI = 0;
-        public static final double ANG_KD = 0.08;
+        public static final double ANG_KD = 0;
 
         public static final double MAX_SPEED = 4;
         public static final double MAX_ACCELERATION = 2;
@@ -100,7 +100,8 @@ public final class Constants {
             Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.6, 4.566), new Rotation2d(0))),
             Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
             Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.77, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
-            Map.entry("NavPoint1", new Pose2d(new Translation2d(4.38, 4.54), Rotation2d.fromDegrees(180)))
+            Map.entry("NavPoint1", new Pose2d(new Translation2d(4.38, 4.54), Rotation2d.fromDegrees(180))),
+            Map.entry("testPoint", new Pose2d(new Translation2d(1, 0), new Rotation2d()))
         );
         private static final Map<String, Pose2d> RED_MAP =
             BLUE_MAP.entrySet().stream().collect(Collectors.toMap(

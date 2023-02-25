@@ -340,7 +340,7 @@ public class SwerveBase extends SubsystemBase {
           Math.toRadians(poseComponents[5])));
   }
 
-  public void setVelocityModuleGains() {
+  /*public void setVelocityModuleGains() {
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.setGains(
         SmartDashboard.getNumber("KP", Drivebase.VELOCITY_KP),
@@ -350,7 +350,7 @@ public class SwerveBase extends SubsystemBase {
         SmartDashboard.getNumber("KV", Drivebase.KV),
         SmartDashboard.getNumber("KA", Drivebase.KA));
     }
-  }
+  }*/
 
   @Override
   public void periodic() {
@@ -426,12 +426,14 @@ public class SwerveBase extends SubsystemBase {
       }
     }
 
-    ChassisSpeeds robotVelocity = getRobotVelocity();
+    /*ChassisSpeeds robotVelocity = getRobotVelocity();
     SmartDashboard.putNumber("Robot X Vel", robotVelocity.vxMetersPerSecond);
     SmartDashboard.putNumber("Robot Y Vel", robotVelocity.vyMetersPerSecond);
-    SmartDashboard.putNumber("Robot Ang Vel", robotVelocity.omegaRadiansPerSecond);
+    SmartDashboard.putNumber("Robot Ang Vel", robotVelocity.omegaRadiansPerSecond);*/
 
-    SmartDashboard.putString("Odometry", odometry.getEstimatedPosition().toString());
+    Pose2d pose = odometry.getEstimatedPosition();
+    SmartDashboard.putNumber("Robot X Vel", pose.getX());
+    SmartDashboard.putString("Odometry", pose.toString());
     // Update angle accumulator if the robot is simulated
     if (!Robot.isReal()) {
       angle += Drivebase.KINEMATICS.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lasttime);
