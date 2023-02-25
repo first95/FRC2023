@@ -48,6 +48,12 @@ public final class Constants {
     public static final double dummyArmHieght = Units.inchesToMeters(27);
 
     public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
+
+    public enum ROW {
+        HIGH,
+        MIDDLE,
+        LOW
+    }
     public static final class Auton {
         public static final double X_KP = 3;
         public static final double X_KI = 0;
