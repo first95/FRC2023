@@ -163,13 +163,13 @@ public final class Constants {
         public static final double IMU_MOUNT_ROLL = 0;
 
         // Drivetrain limitations
-        public static final double MAX_SPEED = Units.feetToMeters(15.76); // meters per second
+        public static final double MAX_SPEED = 1;//Units.feetToMeters(15.76); // meters per second
         public static final double MAX_ANGULAR_VELOCITY = MAX_SPEED / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y); // rad/s
         // Theoretical max acceleration should be as follows:
         // (NEO stall torque * module gearing * number of modules) / (wheel radius * robot mass) = m/s/s
         // (2.6 * 6.75 * 4) / (Units.inchesToMeters(2) * ROBOT_MASS)
         // However, the drive is traction-limited, so the max accelration is actually (wheel coefficient of friction * gravity)
-        public static final double MAX_ACCELERATION = 1.19 * GRAVITY; // COF (blue nitrile on carpet) as reported by Studica
+        public static final double MAX_ACCELERATION = 1 * GRAVITY; // COF is 1.1 but careful
         // max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
         public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(NEO_550_FREE_SPEED * 7 / 372) / 60; // deg/s
 
@@ -185,14 +185,14 @@ public final class Constants {
         // Volt * seconds / degree.  Equal to (maxVolts) / ((degreesPerRotation) * (maxMotorSpeedRPM / gearRatio) * (minutesPerSecond))
         public static final double MODULE_KV = 12 / MAX_MODULE_ANGULAR_SPEED;
 
-        public static final double VELOCITY_KP = 0.0020645; // kp from SysId, eventually
+        public static final double VELOCITY_KP = 0.1; // kp from SysId, eventually
         public static final double VELOCITY_KI = 0; // Leave all of these zero to disable them
         public static final double VELOCITY_KD = 0;
         public static final double VELOCITY_IZ = 0;
         public static final double VELOCITY_KF = 0;
 
         // Drive feedforward gains
-        public static final double KS = 0.08; // Volts
+        public static final double KS = 0.25; // Volts
         public static final double KV = 12 / MAX_SPEED; // Volt-seconds per meter (max voltage divided by max speed)
         public static final double KA = 12 / MAX_ACCELERATION; // Volt-seconds^2 per meter (max voltage divided by max accel)
         public static final double KG = (KA / KV) * 0.25;

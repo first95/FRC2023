@@ -19,16 +19,16 @@ import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants.Drivebase;
 
 public class SwerveModule {
-    public int moduleNumber;
-    private double angleOffset, lastAngle;
-    private CANSparkMax angleMotor, driveMotor;
-    private AbsoluteEncoder absoluteEncoder;
-    private RelativeEncoder driveEncoder;
-    private SparkMaxPIDController angleController, driveController;
-    private double angle, omega, speed, fakePos, lastTime, dt;
+    public final int moduleNumber;
+    private final double angleOffset;
+    private final CANSparkMax angleMotor, driveMotor;
+    private final AbsoluteEncoder absoluteEncoder;
+    private final RelativeEncoder driveEncoder;
+    private final SparkMaxPIDController angleController, driveController;
     private Timer time;
+    private double angle, lastAngle, omega, speed, fakePos, lastTime, dt;
 
-    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Drivebase.KS, Drivebase.KV, Drivebase.KA);
+    private SimpleMotorFeedforward feedforward;
 
     public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants) {
         angle = 0;
@@ -81,6 +81,8 @@ public class SwerveModule {
         driveMotor.burnFlash();
         angleMotor.burnFlash();
 
+        feedforward = new SimpleMotorFeedforward(Drivebase.KS, Drivebase.KV, Drivebase.KA);
+
         lastAngle = getState().angle.getDegrees();
 
         if (!Robot.isReal()) {
@@ -92,6 +94,13 @@ public class SwerveModule {
 
     public void setDesiredState(BetterSwerveModuleState desiredState, boolean isOpenLoop) {
         setDesiredState(desiredState, isOpenLoop, true);
+    }
+
+    public void setGains(double kp, double ki, double kd, double ks, double kv, double ka) {
+        feedforward = new SimpleMotorFeedforward(ks, kv, ka);
+        driveController.setP(kp);
+        driveController.setI(ki);
+        driveController.setD(kd);
     }
     
     public void setDesiredState(BetterSwerveModuleState desiredState, boolean isOpenLoop, boolean antijitter) {

@@ -114,8 +114,8 @@ public class RobotContainer {
     driveModeSelector.addOption("Robot Relative (Closed)", closedRobotRel);
     
     SmartDashboard.putData(driveModeSelector);
-    drivebase.setDefaultCommand(absoluteDrive);
 
+    SmartDashboard.putData("SetModuleGains", new InstantCommand(drivebase::setVelocityModuleGains).ignoringDisable(true));
     SmartDashboard.putNumber("ANGLE", 0);
     SmartDashboard.putData("setAngle", new InstantCommand(() -> drivebase.setGyro(new Rotation2d(SmartDashboard.getNumber("ANGLE", 0)))).ignoringDisable(true));
     SmartDashboard.putData("sendAlliance", new InstantCommand(() -> drivebase.setAlliance(DriverStation.getAlliance())).ignoringDisable(true));
@@ -185,7 +185,7 @@ public class RobotContainer {
   }
   public void prepareDriveForTeleop() {
     arm.setPreset(ArmConstants.PRESETS.STOWED);
-    drivebase.setDefaultCommand(absoluteDrive);
+    drivebase.setDefaultCommand(closedRobotRel);//absoluteDrive);
     arm.setDefaultCommand(controlArm);
     intake.setDefaultCommand(controlIntake);
     absoluteDrive.setHeading(drivebase.getYaw());
