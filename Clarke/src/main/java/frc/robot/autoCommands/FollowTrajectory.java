@@ -16,10 +16,11 @@ public class FollowTrajectory extends SequentialCommandGroup{
     public FollowTrajectory(SwerveBase drivebase, PathPlannerTrajectory trajectory, boolean resetOdometry) {
         addRequirements(drivebase);
 
-        // fix this
-        if(resetOdometry) {
-            drivebase.resetOdometry(trajectory.getInitialHolonomicPose());
-        }
+        addCommands(new InstantCommand(() -> {
+            if(resetOdometry) {
+                drivebase.resetOdometry(trajectory.getInitialHolonomicPose());
+            }
+        }));
         
         addCommands(
             new PPSwerveControllerCommand(
@@ -36,9 +37,11 @@ public class FollowTrajectory extends SequentialCommandGroup{
     public FollowTrajectory(SwerveBase drivebase, Supplier<PathPlannerTrajectory> trajectoryGen, boolean resetOdometry) {
         addRequirements(drivebase);
         
-        if(resetOdometry) {
-            addCommands(new InstantCommand(() -> drivebase.resetOdometry(trajectoryGen.get().getInitialHolonomicPose())));
-        }
+        addCommands(new InstantCommand(() -> {
+            if(resetOdometry) {
+                addCommands(new InstantCommand(() -> drivebase.resetOdometry(trajectoryGen.get().getInitialHolonomicPose())));
+            }
+        }));
 
         addCommands(new FunctionalSwerveController(
                 trajectoryGen,

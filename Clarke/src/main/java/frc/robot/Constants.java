@@ -49,11 +49,11 @@ public final class Constants {
 
     public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
     public static final class Auton {
-        public static final double X_KP = 1.5;
+        public static final double X_KP = 0.5;//1.5;
         public static final double X_KI = 0;
         public static final double X_KD = 0;
 
-        public static final double Y_KP = 1.5;
+        public static final double Y_KP = 0.5;//1.5;
         public static final double Y_KI = 0;
         public static final double Y_KD = 0;
 
@@ -61,7 +61,7 @@ public final class Constants {
         public static final double ANG_KI = 0;
         public static final double ANG_KD = 0;
 
-        public static final double MAX_SPEED = 4;
+        public static final double MAX_SPEED = 1;
         public static final double MAX_ACCELERATION = 2;
 
         public static final double CHARGE_STATION_DISTANCE = 3.88; // meters
@@ -98,10 +98,9 @@ public final class Constants {
             Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
             Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
             Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.6, 4.566), new Rotation2d(0))),
-            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
-            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.77, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
-            Map.entry("NavPoint1", new Pose2d(new Translation2d(4.38, 4.54), Rotation2d.fromDegrees(180))),
-            Map.entry("testPoint", new Pose2d(new Translation2d(1, 0), new Rotation2d()))
+            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 3.35), Rotation2d.fromDegrees(180))),
+            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.82, 3.35), Rotation2d.fromDegrees(180))),
+            Map.entry("NavPoint1", new Pose2d(new Translation2d(5.38, 4.54), Rotation2d.fromDegrees(180)))
         );
         private static final Map<String, Pose2d> RED_MAP =
             BLUE_MAP.entrySet().stream().collect(Collectors.toMap(
@@ -118,8 +117,8 @@ public final class Constants {
         );
 
         // meters and radians
-        public static final double X_TOLERANCE = 0.06;
-        public static final double Y_TOLERANCE = 0.06;
+        public static final double X_TOLERANCE = 0.04;
+        public static final double Y_TOLERANCE = 0.04;
         public static final double ANG_TOLERANCE = Math.toRadians(2);
     }
     
