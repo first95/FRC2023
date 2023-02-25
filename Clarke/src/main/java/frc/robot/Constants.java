@@ -49,15 +49,15 @@ public final class Constants {
 
     public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
     public static final class Auton {
-        public static final double X_KP = 3;
+        public static final double X_KP = 2.5;
         public static final double X_KI = 0;
         public static final double X_KD = 0.2;
 
-        public static final double Y_KP = 3;
+        public static final double Y_KP = 2.5;
         public static final double Y_KI = 0;
         public static final double Y_KD = 0.2;
 
-        public static final double ANG_KP = 2;
+        public static final double ANG_KP = 1.8;
         public static final double ANG_KI = 0;
         public static final double ANG_KD = 0.08;
 
@@ -192,7 +192,7 @@ public final class Constants {
         public static final double VELOCITY_KF = 0;
 
         // Drive feedforward gains
-        public static final double KS = 0.8; // Volts
+        public static final double KS = 0.08; // Volts
         public static final double KV = 12 / MAX_SPEED; // Volt-seconds per meter (max voltage divided by max speed)
         public static final double KA = 12 / MAX_ACCELERATION; // Volt-seconds^2 per meter (max voltage divided by max accel)
         public static final double KG = (KA / KV) * 0.25;
@@ -262,7 +262,7 @@ public final class Constants {
         public static final float ARM_UPPER_LIMIT = 24;
 
         // 5 to 1 | 5 to 1 | 56 to 26
-        public static final double ARM_GEAR_RATIO = (26 / (56 * 25));
+        public static final double ARM_GEAR_RATIO = 0.0187;
         public static final double ARM_DEGREES_PER_MOTOR_ROTATION = ARM_GEAR_RATIO * 360;
 
         public enum PRESETS {
