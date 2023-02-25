@@ -97,10 +97,10 @@ public final class Constants {
             Map.entry("Gamepiece1", new Pose2d(new Translation2d(6.95, 0.908), new Rotation2d(0))),
             Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
             Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
-            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.95, 4.566), new Rotation2d(0))),
+            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.6, 4.566), new Rotation2d(0))),
             Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
             Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.77, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
-            Map.entry("NavPoint1", new Pose2d(new Translation2d(2.38, 4.54), Rotation2d.fromDegrees(180))) // temporary
+            Map.entry("NavPoint1", new Pose2d(new Translation2d(4.38, 4.54), Rotation2d.fromDegrees(180)))
         );
         private static final Map<String, Pose2d> RED_MAP =
             BLUE_MAP.entrySet().stream().collect(Collectors.toMap(
@@ -117,9 +117,9 @@ public final class Constants {
         );
 
         // meters and radians
-        public static final double X_TOLERANCE = 0.04;
-        public static final double Y_TOLERANCE = 0.04;
-        public static final double ANG_TOLERANCE = Math.toRadians(1.5);
+        public static final double X_TOLERANCE = 0.06;
+        public static final double Y_TOLERANCE = 0.06;
+        public static final double ANG_TOLERANCE = Math.toRadians(2);
     }
     
     public static final class Drivebase {
@@ -192,7 +192,7 @@ public final class Constants {
         public static final double VELOCITY_KF = 0;
 
         // Drive feedforward gains
-        public static final double KS = 0;
+        public static final double KS = 0.8; // Volts
         public static final double KV = 12 / MAX_SPEED; // Volt-seconds per meter (max voltage divided by max speed)
         public static final double KA = 12 / MAX_ACCELERATION; // Volt-seconds^2 per meter (max voltage divided by max accel)
         public static final double KG = (KA / KV) * 0.25;
@@ -261,9 +261,8 @@ public final class Constants {
         public static final float ARM_LOWER_LIMIT = (float) -107.5;
         public static final float ARM_UPPER_LIMIT = 24;
 
-        // Ratio = 1 / 5 / 5 * 22 / 40 
-        // 5 to 1 | 5 to 1 | 40 to 22 -> To be 22 to 60
-        public static final double ARM_GEAR_RATIO = 0.022;
+        // 5 to 1 | 5 to 1 | 56 to 26
+        public static final double ARM_GEAR_RATIO = (26 / (56 * 25));
         public static final double ARM_DEGREES_PER_MOTOR_ROTATION = ARM_GEAR_RATIO * 360;
 
         public enum PRESETS {

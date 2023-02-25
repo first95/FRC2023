@@ -255,6 +255,7 @@ public class AutoParser {
             case "grabcube":
                 try {
                     return new InstantCommand(() -> {
+                        arm.setGrip(true);
                         intake.setPreset(IntakeConstants.PRESETS.CUBE);
                         intake.grabCube(0.6);
                     }, intake)
@@ -262,6 +263,7 @@ public class AutoParser {
                     .andThen(new InstantCommand(() -> {
                         intake.setPreset(IntakeConstants.PRESETS.STOWED);
                         intake.grabCube(0);
+                        arm.setGrip(false);
                     }, intake));
                 } catch (Exception e) {
                     throw new AutoParseException("GrabCube", "What did you do!?", e);

@@ -354,7 +354,13 @@ public class SwerveBase extends SubsystemBase {
         Pose2d portSeed = portSeed3d.toPose2d();
         Pose2d starboardSeed = starboardSeed3d.toPose2d();
         Translation2d translation = portSeed.getTranslation().plus(starboardSeed.getTranslation()).div(2);
-        Rotation2d rotation = starboardSeed.getRotation();
+        //Rotation2d rotation = starboardSeed.getRotation();
+        // Rotation average:
+        Rotation2d rotation = 
+          new Translation2d(
+            (portSeed.getRotation().getCos() + starboardSeed.getRotation().getCos()) / 2,
+            (portSeed.getRotation().getSin() + starboardSeed.getRotation().getSin()) / 2)
+          .getAngle();
         imu.setYaw(rotation.getDegrees());
         resetOdometry(new Pose2d(translation, rotation));
         wasOdometrySeeded = true;
