@@ -7,7 +7,7 @@ package frc.robot.commands;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -32,6 +32,7 @@ public class AutoHandoffCube extends SequentialCommandGroup {
             intake.grabCube(0);
             intake.setPreset(IntakeConstants.PRESETS.STOWED);
         }));
+        addCommands(new InstantCommand(() -> SmartDashboard.putString("LastHandoff", "CUBE")));
 
     }
 
