@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
@@ -148,6 +149,16 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putBoolean("Gripper Status", gripper.get());
     SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
+
+    // Report arm position
+    Rotation2d currentPosition = Rotation2d.fromDegrees(getPos());
+    SmartDashboard.putNumber("armHeight", 
+      ArmConstants.SHOULDER_LOCATION.getZ()
+      - currentPosition.getSin() * ArmConstants.ARM_LENGTH);
+    
+    SmartDashboard.putNumber("armExtension",
+      ArmConstants.SHOULDER_LOCATION.getX()
+      - currentPosition.getCos() * ArmConstants.ARM_LENGTH);
 
     dt = time.get() - lastTime;
     lastTime = time.get();
