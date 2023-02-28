@@ -63,7 +63,6 @@ public class AbsoluteDrive extends CommandBase {
   public void initialize() {
     thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    thetaController.setTolerance(Auton.ANG_TOLERANCE);
     lastAngle = swerve.getYaw().getRadians();
   }
 
@@ -89,7 +88,10 @@ public class AbsoluteDrive extends CommandBase {
     }
     // Calculates an angular rate using a PIDController and the commanded angle.  This is then scaled by
     // the drivebase's maximum angular velocity.
-    omega = thetaController.calculate(swerve.getYaw().getRadians(), angle) * Drivebase.MAX_ANGULAR_VELOCITY;
+    double currentHeading = swerve.getYaw().getRadians();
+    omega = (Math.abs(currentHeading - angle) > Drivebase.HEADING_TOLERANCE) ?
+      thetaController.calculate(currentHeading, angle) * Drivebase.MAX_ANGULAR_VELOCITY :
+      0;
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.
     x = Math.pow(vX.getAsDouble(), 3) * Drivebase.MAX_SPEED;
