@@ -21,6 +21,7 @@ public class AutoScore extends SequentialCommandGroup {
         this.drive = drive;
         this.arm = arm;
         this.alliance = alliance.get();
+        addRequirements(drive, arm);
         addCommands(new PrecisionAlign(this::pickNode, drive));
         addCommands(new InstantCommand(arm::toggleGrip));
     }
@@ -81,10 +82,30 @@ public class AutoScore extends SequentialCommandGroup {
         }
         switch (nearestRow) {
             case HIGH_SCORE:
-                nodeList = (gamepiece == "CONE") ? highConeNodes : highCubeNodes;
+                switch (gamepiece) {
+                    case "CONE":
+                        nodeList = highConeNodes;
+                    break;
+                    case "CUBE":
+                        nodeList = highCubeNodes;
+                    break;
+                    default:
+                        nodeList = highConeNodes;
+                    break;
+                }
             break;
             case MID_SCORE:
-                nodeList = (gamepiece == "CONE") ? midConeNodes : midCubeNodes;
+            switch (gamepiece) {
+                case "CONE":
+                    nodeList = midConeNodes;
+                break;
+                case "CUBE":
+                    nodeList = midCubeNodes;
+                break;
+                default:
+                    nodeList = midConeNodes;
+                break;
+            }
             break;
             case LOW_SCORE:
                 nodeList = lowNodes;

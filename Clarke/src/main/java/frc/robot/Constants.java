@@ -33,13 +33,13 @@ public final class Constants {
     public static final double NEO_STALL_TORQUE = 2.6; // N * m
     public static final double NEO_550_FREE_SPEED = 11000; // RPM
     
-    public static final double MANIPULATOR_MASS = 6 * KG_PER_LB;
-    public static final double ROBOT_MASS = (95 * KG_PER_LB) - MANIPULATOR_MASS;
+    public static final double MANIPULATOR_MASS = 5 * KG_PER_LB;
+    public static final double ROBOT_MASS = (100 * KG_PER_LB) - MANIPULATOR_MASS;
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         -0.035,
         0.0026,
-        Units.inchesToMeters(8));
+        Units.inchesToMeters(10.55));
     public static final double ARM_Y_POS = 0; // centered on robot
     public static final double GRAVITY = 9.81; // m/s/s
     public static final double LOOP_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
@@ -47,11 +47,11 @@ public final class Constants {
     public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
 
     public static final class Auton {
-        public static final double X_KP = 0.5;//1.5;
+        public static final double X_KP = 1.5;
         public static final double X_KI = 0;
         public static final double X_KD = 0;
 
-        public static final double Y_KP = 0.5;//1.5;
+        public static final double Y_KP = 1.5;
         public static final double Y_KI = 0;
         public static final double Y_KD = 0;
 
@@ -270,7 +270,7 @@ public final class Constants {
             HIGH_SCORE (18),
             MID_SCORE (-7),
             LOW_SCORE (5.7 - 90),
-            HANDOFF (-95),
+            HANDOFF (-88),
             STOWED (ARM_LOWER_LIMIT);
             
             private final double angle;
@@ -304,7 +304,7 @@ public final class Constants {
         public static final Translation3d SHOULDER_LOCATION = new Translation3d(
             Units.inchesToMeters(9),
             0,
-            Units.inchesToMeters(51));
+            Units.inchesToMeters(51.5));
         
         public static final double ARM_LENGTH = 1.1;
      }

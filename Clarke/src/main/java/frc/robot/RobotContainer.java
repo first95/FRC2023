@@ -123,8 +123,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("ANGLE", 0);
     //SmartDashboard.putData("setAngle", new InstantCommand(() -> drivebase.setGyro(new Rotation2d(SmartDashboard.getNumber("ANGLE", 0)))).ignoringDisable(true));
     SmartDashboard.putData("sendAlliance", new InstantCommand(() -> {
-      alliance = DriverStation.getAlliance();
-      drivebase.setAlliance(alliance);
+      drivebase.setAlliance(DriverStation.getAlliance());
     }).ignoringDisable(true));
 
     //intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), () -> (operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), intake));
@@ -174,7 +173,7 @@ public class RobotContainer {
     operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake));
     operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
     
-    driverController.button(1).onTrue(new AutoScore(() -> alliance, arm, drivebase));
+    driverController.button(1).whileTrue(new AutoScore(DriverStation::getAlliance, arm, drivebase));
     driverController.button(2).onTrue((new InstantCommand(drivebase::zeroGyro)));
   }
 
