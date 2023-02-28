@@ -173,7 +173,7 @@ public class RobotContainer {
     operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake));
     operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
     
-    driverController.button(1).whileTrue(new AutoScore(DriverStation::getAlliance, arm, drivebase));
+    //driverController.button(1).whileTrue(new AutoScore(DriverStation::getAlliance, arm, drivebase));
     driverController.button(2).onTrue((new InstantCommand(drivebase::zeroGyro)));
   }
 
