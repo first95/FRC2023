@@ -129,9 +129,10 @@ public final class Constants {
         // Robot heading control gains
         public static final double HEADING_KP = 0.4;
         public static final double HEADING_KI = 0;
-        public static final double HEADING_KD = 0.02;
+        public static final double HEADING_KD = 0.01;
 
-        public static final double HEADING_TOLERANCE = Math.toRadians(2);
+        public static final double HEADING_TOLERANCE = Math.toRadians(1);
+        public static final double VISION_NOISE = Math.toRadians(2);
 
         // Motor and encoder inversions
         public static final boolean ABSOLUTE_ENCODER_INVERT = true;

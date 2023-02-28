@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.Constants.Auton;
 import frc.robot.Constants.Drivebase;
 import frc.robot.subsystems.SwerveBase;
 
@@ -22,7 +21,7 @@ public class AbsoluteDrive extends CommandBase {
   private SwerveBase swerve;
   private PIDController thetaController;
   private DoubleSupplier vX, vY, headingHorizontal, headingVertical;
-  private double omega, angle, lastAngle, x, y;
+  private double omega, angle, lastAngle, x, y, lastMeasuredAngle;
   private boolean isOpenLoop;
 
   /**
@@ -64,6 +63,7 @@ public class AbsoluteDrive extends CommandBase {
     thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     lastAngle = swerve.getYaw().getRadians();
+    lastMeasuredAngle = swerve.getYaw().getRadians();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -89,6 +89,8 @@ public class AbsoluteDrive extends CommandBase {
     // Calculates an angular rate using a PIDController and the commanded angle.  This is then scaled by
     // the drivebase's maximum angular velocity.
     double currentHeading = swerve.getYaw().getRadians();
+    currentHeading = (Math.abs(currentHeading - lastMeasuredAngle) > Drivebase.VISION_NOISE) ?
+      currentHeading : lastMeasuredAngle;
     omega = (Math.abs(currentHeading - angle) > Drivebase.HEADING_TOLERANCE) ?
       thetaController.calculate(currentHeading, angle) * Drivebase.MAX_ANGULAR_VELOCITY :
       0;
@@ -107,6 +109,7 @@ public class AbsoluteDrive extends CommandBase {
     
     // Used for the position hold feature
     lastAngle = angle;
+    lastMeasuredAngle = currentHeading;
   }
 
   // Called once the command ends or is interrupted.
