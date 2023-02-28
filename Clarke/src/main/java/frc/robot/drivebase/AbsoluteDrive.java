@@ -124,8 +124,8 @@ public class AbsoluteDrive extends CommandBase {
    */
   private double calcMaxAccel(Rotation2d angle) {
     // Get the position of the arm from NetworkTables 
-    double armHeight = SmartDashboard.getNumber("armHeight", Constants.dummyArmHieght);
-    double armExtension = SmartDashboard.getNumber("armExtension", Constants.dummyArmX);
+    double armHeight = SmartDashboard.getNumber("armHeight", 0);
+    double armExtension = SmartDashboard.getNumber("armExtension", 0);
 
     double xMoment = (armExtension * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getX() * Constants.CHASSIS_MASS);
     double yMoment = (Constants.ARM_Y_POS * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getY() * Constants.CHASSIS_MASS);
@@ -149,23 +149,23 @@ public class AbsoluteDrive extends CommandBase {
     double angDeg = angle.getDegrees();
     if (angDeg <= 45 && angDeg >= -45) {
       projectedWheelbaseEdge = new Translation2d(
-        Drivebase.FRONT_LEFT_X,
-        Drivebase.FRONT_LEFT_X * angle.getTan());
+        Drivebase.FRONT_RIGHT_X,
+        Drivebase.FRONT_RIGHT_X * angle.getTan());
     } else if (135 >= angDeg && angDeg > 45) {
       projectedWheelbaseEdge = new Translation2d(
-        Drivebase.FRONT_LEFT_Y / angle.getTan(),
-        Drivebase.FRONT_LEFT_Y);
+        Drivebase.BACK_LEFT_Y / angle.getTan(),
+        Drivebase.BACK_LEFT_Y);
     } else if (-135 <= angDeg && angDeg < -45) {
       projectedWheelbaseEdge = new Translation2d(
-        Drivebase.FRONT_RIGHT_Y / angle.getTan(),
-        Drivebase.FRONT_RIGHT_Y);
+        Drivebase.BACK_RIGHT_Y / angle.getTan(),
+        Drivebase.BACK_RIGHT_Y);
     } else {
       projectedWheelbaseEdge = new Translation2d(
-        Drivebase.BACK_LEFT_X,
-        Drivebase.BACK_LEFT_X * angle.getTan());
+        Drivebase.BACK_RIGHT_X,
+        Drivebase.BACK_RIGHT_X * angle.getTan());
     }
 
-    double horizontalDistance = projectedHorizontalCg.plus(projectedWheelbaseEdge).getNorm();
+    double horizontalDistance = projectedHorizontalCg.minus(projectedWheelbaseEdge).getNorm();
     double maxAccel = Constants.GRAVITY * horizontalDistance / robotCG.getZ();
 
     SmartDashboard.putNumber("calcMaxAccel", maxAccel);

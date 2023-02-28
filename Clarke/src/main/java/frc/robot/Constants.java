@@ -34,7 +34,7 @@ public final class Constants {
     public static final double NEO_550_FREE_SPEED = 11000; // RPM
     
     public static final double ROBOT_MASS = (148 - 20.3) * KG_PER_LB; // 32lbs * kg per pound
-    public static final double MANIPULATOR_MASS = 0 * 0.453592; // 10lbs * kg per pound
+    public static final double MANIPULATOR_MASS = 0 * KG_PER_LB; // 10lbs * kg per pound
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         0,
@@ -300,6 +300,13 @@ public final class Constants {
         public static final double ARM_KS = 0;
         public static final double ARM_KG = 0.05 * 12;
         public static final double ARM_KV = 12 / THEORETICAL_MAX_ARM_SPEED;
+
+        public static final Translation3d SHOULDER_LOCATION = new Translation3d(
+            Units.inchesToMeters(9),
+            0,
+            Units.inchesToMeters(51));
+        
+        public static final double ARM_LENGTH = 1.1;
      }
 
     public static final class IntakeConstants {
