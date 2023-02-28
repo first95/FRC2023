@@ -49,7 +49,7 @@ public class PrecisionAlign extends CommandBase {
     addRequirements(drive);
   }
 
-  public PrecisionAlign(Supplier<Pose2d> poseSupplier, Alliance alliance, SwerveBase drive) {
+  public PrecisionAlign(Supplier<Pose2d> poseSupplier, SwerveBase drive) {
     this.drive = drive;
     target = null;
     targetSupplier = poseSupplier;

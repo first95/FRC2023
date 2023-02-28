@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,11 +17,11 @@ public class AutoScore extends SequentialCommandGroup {
     private final SwerveBase drive;
     private final Arm arm;
     private final Alliance alliance;
-    public AutoScore(Alliance alliance, Arm arm, SwerveBase drive) {
+    public AutoScore(Supplier<Alliance> alliance, Arm arm, SwerveBase drive) {
         this.drive = drive;
         this.arm = arm;
-        this.alliance = alliance;
-        addCommands(new PrecisionAlign(this::pickNode, alliance, drive));
+        this.alliance = alliance.get();
+        addCommands(new PrecisionAlign(this::pickNode, drive));
         addCommands(new InstantCommand(arm::toggleGrip));
     }
 

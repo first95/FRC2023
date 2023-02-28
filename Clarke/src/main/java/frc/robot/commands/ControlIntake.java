@@ -10,7 +10,6 @@ import frc.robot.subsystems.Intake;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -18,6 +17,7 @@ public class ControlIntake extends CommandBase {
   private final Intake subsystem;
   private DoubleSupplier coneSpeed, cubeSpeed, position;
   private BooleanSupplier setStowed, setHandoff, setCone, setCube;
+  private boolean grabbedCone;
 
   /**
    * Creates a new ExampleCommand.
@@ -50,20 +50,27 @@ public class ControlIntake extends CommandBase {
     if (setStowed.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.STOWED);
       subsystem.runRollers(0, 0);
+      grabbedCone = false;
     } 
     else if (setHandoff.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.HANDOFF);
       subsystem.grabCone(-0.6);
+      grabbedCone = false;
     } 
     else if (setCone.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.CONE);
       if(subsystem.rackHasReachedReference(IntakeConstants.PRESETS.CONE.position()).getAsBoolean())
         subsystem.grabCone(0.6);
+      grabbedCone = true;
     } 
     else if (setCube.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.CUBE);
       if(subsystem.rackHasReachedReference(IntakeConstants.PRESETS.CUBE.position()).getAsBoolean())
         subsystem.grabCube(0.6);
+      grabbedCone = false;
+    } else if (grabbedCone){
+      subsystem.setPreset(IntakeConstants.PRESETS.STOWED);
+      subsystem.grabCone(0.08);
     } else {
       subsystem.setPreset(IntakeConstants.PRESETS.STOWED);
       subsystem.runRollers(0, 0);

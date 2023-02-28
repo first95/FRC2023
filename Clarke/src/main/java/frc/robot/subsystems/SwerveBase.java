@@ -400,7 +400,7 @@ public class SwerveBase extends SubsystemBase {
         wasOdometrySeeded = true;
         wasGyroReset = true;
       } else {
-        DriverStation.reportError("Alliance not set or tag not visible", false);
+        DriverStation.reportWarning("Alliance not set or tag not visible", false);
       }
     }
     
