@@ -51,6 +51,7 @@ public class ControlArm extends CommandBase {
     } else {
       if (setStowed.getAsBoolean()) {
         arm.setPreset(ArmConstants.PRESETS.STOWED);
+        arm.setGrip(true);
       } else if (setHandoff.getAsBoolean()) {
         arm.setPreset(ArmConstants.PRESETS.HANDOFF);
       } else if (setLowScore.getAsBoolean()) {
