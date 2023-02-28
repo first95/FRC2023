@@ -128,7 +128,7 @@ public final class Constants {
         // Robot heading control gains
         public static final double HEADING_KP = 0.4;
         public static final double HEADING_KI = 0;
-        public static final double HEADING_KD = 0.01;
+        public static final double HEADING_KD = 0.02;
 
         // Motor and encoder inversions
         public static final boolean ABSOLUTE_ENCODER_INVERT = true;
@@ -194,7 +194,7 @@ public final class Constants {
         public static final double KS = 0.25; // Volts
         public static final double KV = 12 / MAX_SPEED; // Volt-seconds per meter (max voltage divided by max speed)
         public static final double KA = (12 / MAX_ACCELERATION) / NUM_MODULES; // Volt-seconds^2 per meter (max voltage divided by max accel)
-        public static final double KG = (KA / KV) * 0.25;
+        public static final double KG = (KA / KV);
 
         // Encoder conversion values.  Drive converts motor rotations to linear wheel distance
         // and steering converts motor rotations to module azimuth
