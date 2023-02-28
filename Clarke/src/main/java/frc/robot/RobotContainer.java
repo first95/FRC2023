@@ -9,6 +9,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ControlArm;
 import frc.robot.commands.AutoHandoffCone;
 import frc.robot.commands.AutoHandoffCube;
+import frc.robot.commands.AutoScore;
 import frc.robot.commands.ControlIntake;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
@@ -22,6 +23,7 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -49,6 +51,8 @@ public class RobotContainer {
   private final TeleopDrive openFieldRel, openRobotRel, closedFieldRel, closedRobotRel;
   private final ControlArm controlArm;
   private final ControlIntake controlIntake;
+
+  private Alliance alliance;
 
   private AutoParser autoParser = new AutoParser(drivebase, arm, intake);
   private SendableChooser<CommandBase> driveModeSelector;
@@ -117,8 +121,11 @@ public class RobotContainer {
     drivebase.setDefaultCommand(absoluteDrive);
 
     SmartDashboard.putNumber("ANGLE", 0);
-    SmartDashboard.putData("setAngle", new InstantCommand(() -> drivebase.setGyro(new Rotation2d(SmartDashboard.getNumber("ANGLE", 0)))).ignoringDisable(true));
-    SmartDashboard.putData("sendAlliance", new InstantCommand(() -> drivebase.setAlliance(DriverStation.getAlliance())).ignoringDisable(true));
+    //SmartDashboard.putData("setAngle", new InstantCommand(() -> drivebase.setGyro(new Rotation2d(SmartDashboard.getNumber("ANGLE", 0)))).ignoringDisable(true));
+    SmartDashboard.putData("sendAlliance", new InstantCommand(() -> {
+      alliance = DriverStation.getAlliance();
+      drivebase.setAlliance(alliance);
+    }).ignoringDisable(true));
 
     //intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), () -> (operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), intake));
     controlIntake = new ControlIntake(
@@ -167,7 +174,8 @@ public class RobotContainer {
     operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake));
     operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
     
-    driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
+    driverController.button(1).onTrue(new AutoScore(alliance, arm, drivebase));
+    driverController.button(2).onTrue((new InstantCommand(drivebase::zeroGyro)));
   }
 
   /**

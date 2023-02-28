@@ -5,19 +5,19 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.Auton;
 import frc.robot.autoCommands.PrecisionAlign;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.SwerveBase;
 
 public class AutoScore extends SequentialCommandGroup {
-    private final Constants.ROW row;
     private final SwerveBase drive;
+    private final Arm arm;
     private final Alliance alliance;
-    public AutoScore(Constants.ROW row, Alliance alliance, Arm arm, SwerveBase drive) {
+    public AutoScore(Alliance alliance, Arm arm, SwerveBase drive) {
         this.drive = drive;
-        this.row = row;
+        this.arm = arm;
         this.alliance = alliance;
         addCommands(new PrecisionAlign(this::pickNode, alliance, drive));
         addCommands(new InstantCommand(arm::toggleGrip));
@@ -63,14 +63,28 @@ public class AutoScore extends SequentialCommandGroup {
     private Pose2d pickNode() {
         String[] nodeList;
         String gamepiece = SmartDashboard.getString("LastHandoff", "CONE");
-        switch (row) {
-            case HIGH:
+
+        ArmConstants.PRESETS nearestRow = ArmConstants.PRESETS.LOW_SCORE;
+        double closestAngle = 360; // Arm can't get this far away from any of them
+        double armPos = arm.getPos();
+        ArmConstants.PRESETS[] scoreAngles = {
+            ArmConstants.PRESETS.LOW_SCORE,
+            ArmConstants.PRESETS.MID_SCORE,
+            ArmConstants.PRESETS.HIGH_SCORE
+        };
+        for (ArmConstants.PRESETS preset : scoreAngles) {
+            if (Math.abs(preset.angle() - armPos) < closestAngle) {
+                nearestRow = preset;
+            }
+        }
+        switch (nearestRow) {
+            case HIGH_SCORE:
                 nodeList = (gamepiece == "CONE") ? highConeNodes : highCubeNodes;
             break;
-            case MIDDLE:
+            case MID_SCORE:
                 nodeList = (gamepiece == "CONE") ? midConeNodes : midCubeNodes;
             break;
-            case LOW:
+            case LOW_SCORE:
                 nodeList = lowNodes;
             break;
             default:
