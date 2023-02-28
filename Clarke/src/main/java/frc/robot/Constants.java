@@ -33,8 +33,8 @@ public final class Constants {
     public static final double NEO_STALL_TORQUE = 2.6; // N * m
     public static final double NEO_550_FREE_SPEED = 11000; // RPM
     
-    public static final double ROBOT_MASS = (148 - 20.3) * KG_PER_LB; // 32lbs * kg per pound
-    public static final double MANIPULATOR_MASS = 0 * KG_PER_LB; // 10lbs * kg per pound
+    public static final double MANIPULATOR_MASS = 6 * KG_PER_LB;
+    public static final double ROBOT_MASS = (95 * KG_PER_LB) - MANIPULATOR_MASS;
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         0,
@@ -43,9 +43,6 @@ public final class Constants {
     public static final double ARM_Y_POS = 0; // centered on robot
     public static final double GRAVITY = 9.81; // m/s/s
     public static final double LOOP_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
-
-    public static final double dummyArmX = Units.inchesToMeters(42);
-    public static final double dummyArmHieght = Units.inchesToMeters(27);
 
     public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
     public static final class Auton {
