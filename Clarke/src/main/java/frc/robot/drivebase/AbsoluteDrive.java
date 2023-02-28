@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Auton;
 import frc.robot.Constants.Drivebase;
 import frc.robot.subsystems.SwerveBase;
 
@@ -62,6 +63,7 @@ public class AbsoluteDrive extends CommandBase {
   public void initialize() {
     thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    thetaController.setTolerance(Auton.ANG_TOLERANCE);
     lastAngle = swerve.getYaw().getRadians();
   }
 
