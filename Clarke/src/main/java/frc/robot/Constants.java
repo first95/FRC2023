@@ -163,7 +163,7 @@ public final class Constants {
         public static final double IMU_MOUNT_ROLL = 0;
 
         // Drivetrain limitations
-        public static final double MAX_SPEED = 1;//Units.feetToMeters(15.76); // meters per second
+        public static final double MAX_SPEED = Units.feetToMeters(15.76); // meters per second NOT A LIMIT!!! DO NOT TOUCH!!!
         public static final double MAX_ANGULAR_VELOCITY = MAX_SPEED / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y); // rad/s
         // Theoretical max acceleration should be as follows:
         // (NEO stall torque * module gearing * number of modules) / (wheel radius * robot mass) = m/s/s
@@ -191,10 +191,12 @@ public final class Constants {
         public static final double VELOCITY_IZ = 0;
         public static final double VELOCITY_KF = 0;
 
+        public static final int NUM_MODULES = 4;
+
         // Drive feedforward gains
         public static final double KS = 0.25; // Volts
         public static final double KV = 12 / MAX_SPEED; // Volt-seconds per meter (max voltage divided by max speed)
-        public static final double KA = 12 / MAX_ACCELERATION; // Volt-seconds^2 per meter (max voltage divided by max accel)
+        public static final double KA = (12 / MAX_ACCELERATION) / NUM_MODULES; // Volt-seconds^2 per meter (max voltage divided by max accel)
         public static final double KG = (KA / KV) * 0.25;
 
         // Encoder conversion values.  Drive converts motor rotations to linear wheel distance
@@ -203,8 +205,7 @@ public final class Constants {
             // Calculation: 3in diameter wheels * pi [circumfrence] / gear ratio
         public static final double DEGREES_PER_STEERING_ROTATION = 360;
             // degrees per rotation / gear ratio between module and motor
-        
-        public static final int NUM_MODULES = 4;
+
             // Module specific constants
         public static final class Mod0 {
             public static final int DRIVE_MOTOR_ID = 7;
