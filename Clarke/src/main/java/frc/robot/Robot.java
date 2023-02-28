@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants.Drivebase;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -52,6 +53,14 @@ public class Robot extends TimedRobot {
 
     if (SmartDashboard.getString("AutoCode", null) == null) {
       SmartDashboard.putString("AutoCode", "");
+    }
+    if (SmartDashboard.getNumber("KP", 1000000) == 1000000) {
+      SmartDashboard.putNumber("KP", Drivebase.VELOCITY_KP);
+      SmartDashboard.putNumber("KI", Drivebase.VELOCITY_KI);
+      SmartDashboard.putNumber("KD", Drivebase.VELOCITY_KD);
+      SmartDashboard.putNumber("KS", Drivebase.KS);
+      SmartDashboard.putNumber("KV", Drivebase.KV);
+      SmartDashboard.putNumber("KA", Drivebase.KA);
     }
     SmartDashboard.putData("Compile", new InstantCommand(m_robotContainer::parseAuto).ignoringDisable(true));
   }

@@ -33,8 +33,8 @@ public final class Constants {
     public static final double NEO_STALL_TORQUE = 2.6; // N * m
     public static final double NEO_550_FREE_SPEED = 11000; // RPM
     
-    public static final double ROBOT_MASS = (148 - 20.3) * KG_PER_LB; // 32lbs * kg per pound
-    public static final double MANIPULATOR_MASS = 0 * 0.453592; // 10lbs * kg per pound
+    public static final double MANIPULATOR_MASS = 6 * KG_PER_LB;
+    public static final double ROBOT_MASS = (95 * KG_PER_LB) - MANIPULATOR_MASS;
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         0,
@@ -44,25 +44,22 @@ public final class Constants {
     public static final double GRAVITY = 9.81; // m/s/s
     public static final double LOOP_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
 
-    public static final double dummyArmX = Units.inchesToMeters(42);
-    public static final double dummyArmHieght = Units.inchesToMeters(27);
-
     public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
 
     public static final class Auton {
-        public static final double X_KP = 3;
+        public static final double X_KP = 0.5;//1.5;
         public static final double X_KI = 0;
-        public static final double X_KD = 0.2;
+        public static final double X_KD = 0;
 
-        public static final double Y_KP = 3;
+        public static final double Y_KP = 0.5;//1.5;
         public static final double Y_KI = 0;
-        public static final double Y_KD = 0.2;
+        public static final double Y_KD = 0;
 
-        public static final double ANG_KP = 2;
+        public static final double ANG_KP = 1;
         public static final double ANG_KI = 0;
-        public static final double ANG_KD = 0.08;
+        public static final double ANG_KD = 0;
 
-        public static final double MAX_SPEED = 4;
+        public static final double MAX_SPEED = 1;
         public static final double MAX_ACCELERATION = 2;
 
         public static final double CHARGE_STATION_DISTANCE = 3.88; // meters
@@ -99,9 +96,9 @@ public final class Constants {
             Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
             Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
             Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.6, 4.566), new Rotation2d(0))),
-            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
-            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.77, 2.6), Rotation2d.fromDegrees(180))), // will need to change y
-            Map.entry("NavPoint1", new Pose2d(new Translation2d(4.38, 4.54), Rotation2d.fromDegrees(180)))
+            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 3.35), Rotation2d.fromDegrees(180))),
+            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.82, 3.35), Rotation2d.fromDegrees(180))),
+            Map.entry("NavPoint1", new Pose2d(new Translation2d(5.38, 4.54), Rotation2d.fromDegrees(180)))
         );
         private static final Map<String, Pose2d> RED_MAP =
             BLUE_MAP.entrySet().stream().collect(Collectors.toMap(
@@ -118,8 +115,8 @@ public final class Constants {
         );
 
         // meters and radians
-        public static final double X_TOLERANCE = 0.06;
-        public static final double Y_TOLERANCE = 0.06;
+        public static final double X_TOLERANCE = 0.04;
+        public static final double Y_TOLERANCE = 0.04;
         public static final double ANG_TOLERANCE = Math.toRadians(2);
     }
     
@@ -132,7 +129,7 @@ public final class Constants {
         // Robot heading control gains
         public static final double HEADING_KP = 0.4;
         public static final double HEADING_KI = 0;
-        public static final double HEADING_KD = 0.01;
+        public static final double HEADING_KD = 0.02;
 
         // Motor and encoder inversions
         public static final boolean ABSOLUTE_ENCODER_INVERT = true;
@@ -164,13 +161,13 @@ public final class Constants {
         public static final double IMU_MOUNT_ROLL = 0;
 
         // Drivetrain limitations
-        public static final double MAX_SPEED = Units.feetToMeters(15.76); // meters per second
+        public static final double MAX_SPEED = Units.feetToMeters(15.76); // meters per second NOT A LIMIT!!! DO NOT TOUCH!!!
         public static final double MAX_ANGULAR_VELOCITY = MAX_SPEED / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y); // rad/s
         // Theoretical max acceleration should be as follows:
         // (NEO stall torque * module gearing * number of modules) / (wheel radius * robot mass) = m/s/s
         // (2.6 * 6.75 * 4) / (Units.inchesToMeters(2) * ROBOT_MASS)
         // However, the drive is traction-limited, so the max accelration is actually (wheel coefficient of friction * gravity)
-        public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
+        public static final double MAX_ACCELERATION = 1 * GRAVITY; // COF is 1.1 but careful
         // max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
         public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(NEO_550_FREE_SPEED * 7 / 372) / 60; // deg/s
 
@@ -186,17 +183,19 @@ public final class Constants {
         // Volt * seconds / degree.  Equal to (maxVolts) / ((degreesPerRotation) * (maxMotorSpeedRPM / gearRatio) * (minutesPerSecond))
         public static final double MODULE_KV = 12 / MAX_MODULE_ANGULAR_SPEED;
 
-        public static final double VELOCITY_KP = 0.0020645; // kp from SysId, eventually
+        public static final double VELOCITY_KP = 0.1; // kp from SysId, eventually
         public static final double VELOCITY_KI = 0; // Leave all of these zero to disable them
         public static final double VELOCITY_KD = 0;
         public static final double VELOCITY_IZ = 0;
         public static final double VELOCITY_KF = 0;
 
+        public static final int NUM_MODULES = 4;
+
         // Drive feedforward gains
-        public static final double KS = 0.8; // Volts
+        public static final double KS = 0.25; // Volts
         public static final double KV = 12 / MAX_SPEED; // Volt-seconds per meter (max voltage divided by max speed)
-        public static final double KA = 12 / MAX_ACCELERATION; // Volt-seconds^2 per meter (max voltage divided by max accel)
-        public static final double KG = (KA / KV) * 0.25;
+        public static final double KA = (12 / MAX_ACCELERATION) / NUM_MODULES; // Volt-seconds^2 per meter (max voltage divided by max accel)
+        public static final double KG = (KA / KV);
 
         // Encoder conversion values.  Drive converts motor rotations to linear wheel distance
         // and steering converts motor rotations to module azimuth
@@ -204,8 +203,7 @@ public final class Constants {
             // Calculation: 3in diameter wheels * pi [circumfrence] / gear ratio
         public static final double DEGREES_PER_STEERING_ROTATION = 360;
             // degrees per rotation / gear ratio between module and motor
-        
-        public static final int NUM_MODULES = 4;
+
             // Module specific constants
         public static final class Mod0 {
             public static final int DRIVE_MOTOR_ID = 7;
@@ -263,7 +261,7 @@ public final class Constants {
         public static final float ARM_UPPER_LIMIT = 24;
 
         // 5 to 1 | 5 to 1 | 56 to 26
-        public static final double ARM_GEAR_RATIO = (26 / (56 * 25));
+        public static final double ARM_GEAR_RATIO = 0.0208;
         public static final double ARM_DEGREES_PER_MOTOR_ROTATION = ARM_GEAR_RATIO * 360;
 
         public enum PRESETS {
@@ -300,6 +298,13 @@ public final class Constants {
         public static final double ARM_KS = 0;
         public static final double ARM_KG = 0.05 * 12;
         public static final double ARM_KV = 12 / THEORETICAL_MAX_ARM_SPEED;
+
+        public static final Translation3d SHOULDER_LOCATION = new Translation3d(
+            Units.inchesToMeters(9),
+            0,
+            Units.inchesToMeters(51));
+        
+        public static final double ARM_LENGTH = 1.1;
      }
 
     public static final class IntakeConstants {
