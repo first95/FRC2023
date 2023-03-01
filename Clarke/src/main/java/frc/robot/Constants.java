@@ -55,12 +55,12 @@ public final class Constants {
         public static final double Y_KI = 0;
         public static final double Y_KD = 0;
 
-        public static final double ANG_KP = 1;
+        public static final double ANG_KP = 2;
         public static final double ANG_KI = 0;
         public static final double ANG_KD = 0;
 
-        public static final double MAX_SPEED = 1;
-        public static final double MAX_ACCELERATION = 2;
+        public static final double MAX_SPEED = 4;
+        public static final double MAX_ACCELERATION = 3;
 
         public static final double CHARGE_STATION_DISTANCE = 3.88; // meters
 
@@ -95,11 +95,12 @@ public final class Constants {
             Map.entry("Gamepiece1", new Pose2d(new Translation2d(6.95, 0.908), new Rotation2d(0))),
             Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
             Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
-            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.6, 4.566), new Rotation2d(0))),
+            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.6, 4.3), new Rotation2d(0))),
             Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 3.35), Rotation2d.fromDegrees(180))),
+            Map.entry("StartFarBalance", new Pose2d(new Translation2d(5.6, 3.35), Rotation2d.fromDegrees(180))),
             Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.82, 3.35), Rotation2d.fromDegrees(180))),
             Map.entry("NavPoint1", new Pose2d(new Translation2d(5.38, 4.54), Rotation2d.fromDegrees(180))),
-            Map.entry("NavPoint2", new Pose2d(new Translation2d(3.38, 4.54), Rotation2d.fromDegrees(180)))
+            Map.entry("NavPoint2", new Pose2d(new Translation2d(2.8, 4.54), Rotation2d.fromDegrees(180)))
         );
         private static final Map<String, Pose2d> RED_MAP =
             BLUE_MAP.entrySet().stream().collect(Collectors.toMap(
