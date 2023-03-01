@@ -432,7 +432,7 @@ public class SwerveBase extends SubsystemBase {
     SmartDashboard.putNumber("Robot Ang Vel", robotVelocity.omegaRadiansPerSecond);*/
 
     Pose2d pose = odometry.getEstimatedPosition();
-    SmartDashboard.putNumber("Robot X Vel", pose.getX());
+    SmartDashboard.putNumber("Robot X Vel", pose.getRotation().getDegrees());
     SmartDashboard.putString("Odometry", pose.toString());
     // Update angle accumulator if the robot is simulated
     if (!Robot.isReal()) {

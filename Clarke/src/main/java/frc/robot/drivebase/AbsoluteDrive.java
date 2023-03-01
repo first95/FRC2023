@@ -21,7 +21,7 @@ public class AbsoluteDrive extends CommandBase {
   private SwerveBase swerve;
   private PIDController thetaController;
   private DoubleSupplier vX, vY, headingHorizontal, headingVertical;
-  private double omega, angle, lastAngle, x, y, lastMeasuredAngle;
+  private double omega, angle, lastAngle, x, y;
   private boolean isOpenLoop;
 
   /**
@@ -62,8 +62,7 @@ public class AbsoluteDrive extends CommandBase {
   public void initialize() {
     thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    lastAngle = swerve.getYaw().getRadians();
-    lastMeasuredAngle = swerve.getYaw().getRadians();
+    lastAngle = swerve.getPose().getRotation().getRadians();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -86,14 +85,12 @@ public class AbsoluteDrive extends CommandBase {
     } else {
       angle = Math.atan2(headingHorizontal.getAsDouble(), headingVertical.getAsDouble());
     }
-    // Calculates an angular rate using a PIDController and the commanded angle.  This is then scaled by
-    // the drivebase's maximum angular velocity.
-    double currentHeading = swerve.getYaw().getRadians();
-    currentHeading = (Math.abs(currentHeading - lastMeasuredAngle) > Drivebase.VISION_NOISE) ?
-      currentHeading : lastMeasuredAngle;
-    omega = (Math.abs(currentHeading - angle) > Drivebase.HEADING_TOLERANCE) ?
-      thetaController.calculate(currentHeading, angle) * Drivebase.MAX_ANGULAR_VELOCITY :
+    // Calculates an angular rate using a PIDController and the commanded angle.
+    Rotation2d currentHeading = swerve.getPose().getRotation();
+    omega = (Math.abs(currentHeading.getRadians() - angle) > Drivebase.HEADING_TOLERANCE) ?
+      thetaController.calculate(currentHeading.getRadians(), angle) :
       0;
+    SmartDashboard.putNumber("Robot Y Vel", omega);
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.
     x = Math.pow(vX.getAsDouble(), 3) * Drivebase.MAX_SPEED;
@@ -109,7 +106,6 @@ public class AbsoluteDrive extends CommandBase {
     
     // Used for the position hold feature
     lastAngle = angle;
-    lastMeasuredAngle = currentHeading;
   }
 
   // Called once the command ends or is interrupted.
