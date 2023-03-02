@@ -1,0 +1,40 @@
+One Cube and Balance:
+grip();
+movearm(MID_SCORE);
+drivetopose(Node8High);
+alignto(Node8High);
+score();
+drivetopose(StartNearBalance);
+alignto(ChargerCenter)+movearm(STOWED);
+stop();
+
+One Cube and Leave Community:
+grip();
+movearm(MID_SCORE);
+alignto(Node8High);
+score();
+drivetopose(NavPoint2);
+movearm(STOWED);
+drivetopose(NavPoint1);
+
+
+Not Working
+Double Cube and Balance:
+grip();
+movearm(MID_SCORE);
+alignto(Node8High);
+score();
+drivetopose(NavPoint2);
+movearm(STOWED);
+drivetopose(NavPoint1);
+alignto(Gamepiece4);
+grabcube();
+drivetopose(NavPoint1);
+drivetopose(NavPoint2)+cubehandoff();
+movearm(MID_SCORE);
+alignto(Node8Mid);
+score();
+drivetopose(StartNearBalance);
+alignto(ChargerCenter)+movearm(STOWED);
+stop();
+

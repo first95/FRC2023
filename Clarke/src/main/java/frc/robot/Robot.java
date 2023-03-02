@@ -8,12 +8,14 @@ import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants.Drivebase;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,9 +25,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  private Compressor m_compressor;
-  private RobotContainer m_robotContainer;
 
+  private RobotContainer m_robotContainer;
+  private Compressor m_compressor;
   private Timer disabledTimer;
 
   /**
@@ -33,18 +35,32 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   @Override
-  public void robotInit() {
+  public void robotInit() { 
     PathPlannerServer.startServer(5811);
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
+        
+    // Instantiate our RobotContainer.  
+    // This will perform all our button bindings, and put our autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+    m_compressor = new Compressor(Constants.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH);
+
+    // Enable fans linked to solenoid
+    Solenoid fans = new Solenoid(Constants.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH, 0);
+    fans.set(true);
 
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
+
     if (SmartDashboard.getString("AutoCode", null) == null) {
       SmartDashboard.putString("AutoCode", "");
+    }
+    if (SmartDashboard.getNumber("KP", 1000000) == 1000000) {
+      SmartDashboard.putNumber("KP", Drivebase.VELOCITY_KP);
+      SmartDashboard.putNumber("KI", Drivebase.VELOCITY_KI);
+      SmartDashboard.putNumber("KD", Drivebase.VELOCITY_KD);
+      SmartDashboard.putNumber("KS", Drivebase.KS);
+      SmartDashboard.putNumber("KV", Drivebase.KV);
+      SmartDashboard.putNumber("KA", Drivebase.KA);
     }
     SmartDashboard.putData("Compile", new InstantCommand(m_robotContainer::parseAuto).ignoringDisable(true));
   }
@@ -63,13 +79,16 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // Logging...
+    SmartDashboard.putBoolean("Compressor Status", m_compressor.isEnabled());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
     m_robotContainer.setMotorBrake(true);
-    m_robotContainer.setArmBrakes(false);
+    m_robotContainer.setArmBrakes(true);
     disabledTimer.reset();
     disabledTimer.start();
   }
@@ -78,6 +97,7 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     if (disabledTimer.hasElapsed(Constants.Drivebase.WHEEL_LOCK_TIME)) {
       m_robotContainer.setMotorBrake(false);
+      m_robotContainer.setArmBrakes(false);
       disabledTimer.stop();
     }
   }
@@ -86,7 +106,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_robotContainer.setMotorBrake(true);
-    m_robotContainer.setDriveMode(false);
+    m_robotContainer.prepareDriveForAuto();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -108,9 +128,9 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    m_robotContainer.setDriveMode(true);
     m_robotContainer.setMotorBrake(true);
     m_robotContainer.setArmBrakes(true);
+    m_robotContainer.prepareDriveForTeleop();
   }
 
   /** This function is called periodically during operator control. */

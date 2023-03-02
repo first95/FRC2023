@@ -54,12 +54,15 @@ public class AbsoluteDrive extends CommandBase {
     
     addRequirements(swerve);
   }
+  public void setHeading(Rotation2d heading) {
+    lastAngle = heading.getRadians();
+  }
 
   @Override
   public void initialize() {
     thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    lastAngle = swerve.getYaw().getRadians();
+    lastAngle = swerve.getPose().getRotation().getRadians();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -82,9 +85,12 @@ public class AbsoluteDrive extends CommandBase {
     } else {
       angle = Math.atan2(headingHorizontal.getAsDouble(), headingVertical.getAsDouble());
     }
-    // Calculates an angular rate using a PIDController and the commanded angle.  This is then scaled by
-    // the drivebase's maximum angular velocity.
-    omega = thetaController.calculate(swerve.getYaw().getRadians(), angle) * Drivebase.MAX_ANGULAR_VELOCITY;
+    // Calculates an angular rate using a PIDController and the commanded angle.
+    Rotation2d currentHeading = swerve.getPose().getRotation();
+    omega = (Math.abs(currentHeading.getRadians() - angle) > Drivebase.HEADING_TOLERANCE) ?
+      thetaController.calculate(currentHeading.getRadians(), angle) :
+      0;
+    SmartDashboard.putNumber("Robot Y Vel", omega);
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.
     x = Math.pow(vX.getAsDouble(), 3) * Drivebase.MAX_SPEED;
@@ -111,7 +117,7 @@ public class AbsoluteDrive extends CommandBase {
   public boolean isFinished() {
     return false;
   }
-
+  
   /**
    * Calculates the maximum acceleration allowed in a direction without tipping the robot.
    * Reads arm position from NetworkTables and is passed the direction in question.
@@ -121,8 +127,8 @@ public class AbsoluteDrive extends CommandBase {
    */
   private double calcMaxAccel(Rotation2d angle) {
     // Get the position of the arm from NetworkTables 
-    double armHeight = SmartDashboard.getNumber("armHeight", Constants.dummyArmHieght);
-    double armExtension = SmartDashboard.getNumber("armExtension", Constants.dummyArmX);
+    double armHeight = SmartDashboard.getNumber("armHeight", 0);
+    double armExtension = SmartDashboard.getNumber("armExtension", 0);
 
     double xMoment = (armExtension * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getX() * Constants.CHASSIS_MASS);
     double yMoment = (Constants.ARM_Y_POS * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getY() * Constants.CHASSIS_MASS);
@@ -146,23 +152,23 @@ public class AbsoluteDrive extends CommandBase {
     double angDeg = angle.getDegrees();
     if (angDeg <= 45 && angDeg >= -45) {
       projectedWheelbaseEdge = new Translation2d(
-        Drivebase.FRONT_LEFT_X,
-        Drivebase.FRONT_LEFT_X * angle.getTan());
+        Drivebase.FRONT_RIGHT_X,
+        Drivebase.FRONT_RIGHT_X * angle.getTan());
     } else if (135 >= angDeg && angDeg > 45) {
       projectedWheelbaseEdge = new Translation2d(
-        Drivebase.FRONT_LEFT_Y / angle.getTan(),
-        Drivebase.FRONT_LEFT_Y);
+        Drivebase.BACK_LEFT_Y / angle.getTan(),
+        Drivebase.BACK_LEFT_Y);
     } else if (-135 <= angDeg && angDeg < -45) {
       projectedWheelbaseEdge = new Translation2d(
-        Drivebase.FRONT_RIGHT_Y / angle.getTan(),
-        Drivebase.FRONT_RIGHT_Y);
+        Drivebase.BACK_RIGHT_Y / angle.getTan(),
+        Drivebase.BACK_RIGHT_Y);
     } else {
       projectedWheelbaseEdge = new Translation2d(
-        Drivebase.BACK_LEFT_X,
-        Drivebase.BACK_LEFT_X * angle.getTan());
+        Drivebase.BACK_RIGHT_X,
+        Drivebase.BACK_RIGHT_X * angle.getTan());
     }
 
-    double horizontalDistance = projectedHorizontalCg.plus(projectedWheelbaseEdge).getNorm();
+    double horizontalDistance = projectedHorizontalCg.minus(projectedWheelbaseEdge).getNorm();
     double maxAccel = Constants.GRAVITY * horizontalDistance / robotCG.getZ();
 
     SmartDashboard.putNumber("calcMaxAccel", maxAccel);

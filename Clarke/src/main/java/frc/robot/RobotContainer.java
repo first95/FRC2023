@@ -4,20 +4,26 @@
 
 package frc.robot;
 
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.Constants.ArmConstants.Preset;
-import frc.robot.commands.ArmCommands;
-import frc.robot.autoCommands.DriveToPose;
-import frc.robot.autoCommands.PrecisionAlign;
+import frc.robot.commands.ControlArm;
+import frc.robot.commands.AutoHandoffCone;
+import frc.robot.commands.AutoHandoffCube;
+import frc.robot.commands.AutoScore;
+import frc.robot.commands.ControlIntake;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveBase;
-import edu.wpi.first.math.geometry.Pose2d;
+
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -39,25 +44,30 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveBase drivebase = new SwerveBase();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final AbsoluteDrive absDrive;
-
-  private AutoParser autoParser = new AutoParser(drivebase);
   private final Arm arm = new Arm();
+  private final Intake intake = new Intake();
 
+  private final AbsoluteDrive absoluteDrive, closedAbsoluteDrive;
+  private final TeleopDrive openFieldRel, openRobotRel, closedFieldRel, closedRobotRel;
+  private final ControlArm controlArm;
+  private final ControlIntake controlIntake;
+
+  private Alliance alliance;
+
+  private AutoParser autoParser = new AutoParser(drivebase, arm, intake);
   private SendableChooser<CommandBase> driveModeSelector;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  CommandJoystick driverController = new CommandJoystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
-  CommandJoystick rotationController = new CommandJoystick(1);
-  CommandXboxController operatorController = new CommandXboxController(2);
-
+  CommandJoystick driverController = new CommandJoystick(OperatorConstants.DRIVE_CONTROLLER_PORT);
+  CommandJoystick rotationController = new CommandJoystick(OperatorConstants.ANGLE_CONTROLLER_PORT);
+  CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
 
-    absDrive = new AbsoluteDrive(
+    absoluteDrive = new AbsoluteDrive(
       drivebase,
       // Applies deadbands and inverts controls because joysticks are back-right positive while robot
       // controls are front-left positive
@@ -66,7 +76,7 @@ public class RobotContainer {
       () -> -rotationController.getX(),
       () -> -rotationController.getY(), true);
 
-    AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(
+    closedAbsoluteDrive = new AbsoluteDrive(
       drivebase,
       // Applies deadbands and inverts controls because joysticks are back-right positive while robot
       // controls are front-left positive
@@ -75,45 +85,69 @@ public class RobotContainer {
       () -> -rotationController.getX(),
       () -> -rotationController.getY(), false);
 
-    TeleopDrive openRobotRel = new TeleopDrive(
+    openRobotRel = new TeleopDrive(
       drivebase,
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
       () -> -driverController.getTwist(), () -> false, true);
     
-    TeleopDrive closedRobotRel = new TeleopDrive(
+    closedRobotRel = new TeleopDrive(
       drivebase,
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
       () -> -driverController.getTwist(), () -> false, false);
     
-    TeleopDrive openFieldRel = new TeleopDrive(
+    openFieldRel = new TeleopDrive(
       drivebase,
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
       () -> -driverController.getTwist(), () -> true, true);
 
-    TeleopDrive closedFieldRel = new TeleopDrive(
+    closedFieldRel = new TeleopDrive(
       drivebase,
       () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
       () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
       () -> -driverController.getTwist(), () -> true, false);
-    
-    arm.setDefaultCommand(new ArmCommands(() -> (Math.abs(operatorController.getRightY()) > OperatorConstants.LEFT_Y_DEADBAND) ? (operatorController.getRightY() / 4) : 0, arm));
 
     driveModeSelector = new SendableChooser<>();
-    driveModeSelector.setDefaultOption("AbsoluteDrive", absDrive);
+    driveModeSelector.setDefaultOption("AbsoluteDrive", absoluteDrive);
     driveModeSelector.addOption("Field Relative", openFieldRel);
     driveModeSelector.addOption("Robot Relative", openRobotRel);
     driveModeSelector.addOption("Absolute (Closed)", closedAbsoluteDrive);
     driveModeSelector.addOption("Field Relative (Closed)", closedFieldRel);
     driveModeSelector.addOption("Robot Relative (Closed)", closedRobotRel);
-
+    
     SmartDashboard.putData(driveModeSelector);
-    SmartDashboard.putData("Brake", new InstantCommand(drivebase::setDriveBrake));
-    SmartDashboard.putData("Reset Odometry", new InstantCommand(() -> drivebase.resetOdometry(new Pose2d())));
-    SmartDashboard.putData("SendAlliance", new InstantCommand(() -> drivebase.setAlliance(DriverStation.getAlliance())).ignoringDisable(true));
-    //drivebase.setDefaultCommand(absoluteDrive);
+
+    //SmartDashboard.putData("SetModuleGains", new InstantCommand(drivebase::setVelocityModuleGains).ignoringDisable(true));
+    SmartDashboard.putNumber("ANGLE", 0);
+    //SmartDashboard.putData("setAngle", new InstantCommand(() -> drivebase.setGyro(new Rotation2d(SmartDashboard.getNumber("ANGLE", 0)))).ignoringDisable(true));
+    SmartDashboard.putData("sendAlliance", new InstantCommand(() -> {
+      drivebase.setAlliance(DriverStation.getAlliance());
+    }).ignoringDisable(true));
+
+    //intake.setDefaultCommand(new ControlIntake(() -> operatorController.getLeftX(), () -> operatorController.getLeftY(), () -> (operatorController.getLeftTriggerAxis() - operatorController.getRightTriggerAxis()), intake));
+    controlIntake = new ControlIntake(
+      () -> operatorController.getLeftX(), 
+      () -> operatorController.getLeftY(),
+      () -> operatorController.getLeftTriggerAxis(),
+      operatorController.y(),
+      operatorController.b(),
+      operatorController.a(),
+      operatorController.x(),
+      intake);
+
+    controlArm = new ControlArm(
+      () -> (Math.abs(Math.pow(operatorController.getRightY(), 3)) > OperatorConstants.RIGHT_Y_DEADBAND) 
+              ? ((Math.pow(operatorController.getRightY(), 3))) 
+              : 0
+      , 
+      operatorController.povDown(),   // STOW
+      operatorController.povUp(),     // middle
+      operatorController.povLeft(),   // low
+      operatorController.povRight(),  // high
+      new BooleanSupplier() { public boolean getAsBoolean() {return false;};}, // HANDOFF
+      arm);   
   }
 
   /**
@@ -130,16 +164,17 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    // TEST GRIPPER //
-    operatorController.x().onTrue((new InstantCommand(arm::toggleGrip)));
-    operatorController.a().onTrue((new InstantCommand(() -> arm.setPos(0))));
-    operatorController.b().onTrue((new InstantCommand(() -> arm.setPos(8.5))));
-    operatorController.y().onTrue((new InstantCommand(() -> arm.setPos(14))));
-    //////////////////
+    // Hacky solutuon to stow arm on cube intake //
+    // Could be causing a CommandScheduler loop overrun //
+    operatorController.x().onTrue(new InstantCommand(() -> {arm.setPreset(ArmConstants.PRESETS.STOWED);}));
 
-    driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
-    rotationController.button(1).onTrue(new InstantCommand(drivebase::setDriveBrake));
-    driverController.button(2).onTrue(new DriveToPose("Node2High", DriverStation.getAlliance(), drivebase).andThen(new PrecisionAlign("Node2High", DriverStation.getAlliance(), drivebase)));
+    operatorController.back().onTrue(new AutoHandoffCube(arm, intake));
+    // operatorController.start().onTrue(new PrecisionAlign("Node1High", Alliance.Red, drivebase));
+    operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake));
+    operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
+    
+    //driverController.button(1).whileTrue(new AutoScore(DriverStation::getAlliance, arm, drivebase));
+    driverController.button(2).onTrue((new InstantCommand(drivebase::zeroGyro)));
   }
 
   /**
@@ -152,22 +187,33 @@ public class RobotContainer {
     return autoParser.getAutoCommand();
   }
 
-  public void setDriveMode(boolean drive) {
-    if (drive) {
-      drivebase.setDefaultCommand(absDrive);
-    } else {
-      drivebase.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, drivebase)));
-    }
+  public void setDriveMode() {
+    //drivebase.setDefaultCommand();
+  }
+  public void prepareDriveForTeleop() {
+    arm.setPreset(ArmConstants.PRESETS.STOWED);
+    drivebase.setDefaultCommand(closedAbsoluteDrive);
+    arm.setDefaultCommand(controlArm);
+    intake.setDefaultCommand(controlIntake);
+    absoluteDrive.setHeading(drivebase.getYaw());
+    closedAbsoluteDrive.setHeading(drivebase.getYaw());
+  }
+  public void prepareDriveForAuto() {
+    arm.setPreset(ArmConstants.PRESETS.STOWED);
+    arm.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, arm))); // these feel so wrong
+    intake.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, intake)));
+    drivebase.setDefaultCommand(new RepeatCommand(new InstantCommand(() -> {}, drivebase)));
   }
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
   }
 
   public void setArmBrakes(boolean brake) {
-    arm.setBreaks(brake);
+    arm.setBrakes(brake);
   }
 
   public void parseAuto() {
+    SmartDashboard.putString("Compiler Message", "Parsing...");
     String autoText = SmartDashboard.getString("AutoCode", "");
     String parserOutput = "";
     try {
