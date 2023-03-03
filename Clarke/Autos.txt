@@ -1,5 +1,5 @@
 One Cube and Balance:
-grip();
++grip();
 movearm(MID_SCORE);
 drivetopose(Node8High);
 alignto(Node8High);
@@ -16,6 +16,15 @@ score();
 drivetopose(NavPoint2);
 movearm(STOWED);
 drivetopose(NavPoint1);
+
+Scoring table side One cube and balance:
+grip();
+movearm(MID_SCORE);
+alignto(Node2High);
+score();
+drivetopose(StartNearBalanceTable);
+alignto(ChargerCenterTable)+movearm(STOWED);
+stop();
 
 
 Not Working

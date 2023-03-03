@@ -138,7 +138,7 @@ public class RobotContainer {
       intake);
 
     controlArm = new ControlArm(
-      () -> (Math.abs(Math.pow(operatorController.getRightY(), 3)) > OperatorConstants.RIGHT_Y_DEADBAND) 
+      () -> (Math.abs(operatorController.getRightY()) > OperatorConstants.RIGHT_Y_DEADBAND) 
               ? ((Math.pow(operatorController.getRightY(), 3))) 
               : 0
       , 
@@ -195,8 +195,8 @@ public class RobotContainer {
     drivebase.setDefaultCommand(closedAbsoluteDrive);
     arm.setDefaultCommand(controlArm);
     intake.setDefaultCommand(controlIntake);
-    absoluteDrive.setHeading(drivebase.getYaw());
-    closedAbsoluteDrive.setHeading(drivebase.getYaw());
+    absoluteDrive.setHeading(drivebase.getPose().getRotation());
+    closedAbsoluteDrive.setHeading(drivebase.getPose().getRotation());
   }
   public void prepareDriveForAuto() {
     arm.setPreset(ArmConstants.PRESETS.STOWED);

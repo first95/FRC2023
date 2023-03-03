@@ -218,6 +218,9 @@ public final class Constants {
             Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 3.35), Rotation2d.fromDegrees(180))),
             Map.entry("StartFarBalance", new Pose2d(new Translation2d(5.6, 3.35), Rotation2d.fromDegrees(180))),
             Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.82, 3.35), Rotation2d.fromDegrees(180))),
+            Map.entry("StartNearBalanceTable", new Pose2d(new Translation2d(2.52, 2.13), Rotation2d.fromDegrees(180))),
+            Map.entry("StartFarBalanceTable", new Pose2d(new Translation2d(5.6, 2.13), Rotation2d.fromDegrees(180))),
+            Map.entry("ChargerCenterTable", new Pose2d(new Translation2d(3.82, 2.13), Rotation2d.fromDegrees(180))),
             Map.entry("NavPoint1", new Pose2d(new Translation2d(5.38, 4.54), Rotation2d.fromDegrees(180))),
             Map.entry("NavPoint2", new Pose2d(new Translation2d(2.8, 4.54), Rotation2d.fromDegrees(180)))
         );
@@ -252,7 +255,7 @@ public final class Constants {
 
         // Joystick Deadband
         public static final double RIGHT_X_DEADBAND = 0.05;
-        public static final double RIGHT_Y_DEADBAND = 0.1;
+        public static final double RIGHT_Y_DEADBAND = 0.05;
     }
 
     public static final class ArmConstants {
