@@ -215,12 +215,12 @@ public final class Constants {
             Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
             Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
             Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.6, 4.3), new Rotation2d(0))),
-            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 3.35), Rotation2d.fromDegrees(180))),
-            Map.entry("StartFarBalance", new Pose2d(new Translation2d(5.6, 3.35), Rotation2d.fromDegrees(180))),
-            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.82, 3.35), Rotation2d.fromDegrees(180))),
-            Map.entry("StartNearBalanceTable", new Pose2d(new Translation2d(2.52, 2.13), Rotation2d.fromDegrees(180))),
-            Map.entry("StartFarBalanceTable", new Pose2d(new Translation2d(5.6, 2.13), Rotation2d.fromDegrees(180))),
-            Map.entry("ChargerCenterTable", new Pose2d(new Translation2d(3.82, 2.13), Rotation2d.fromDegrees(180))),
+            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 3.30), Rotation2d.fromDegrees(180))),
+            Map.entry("StartFarBalance", new Pose2d(new Translation2d(5.6, 3.30), Rotation2d.fromDegrees(180))),
+            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.88, 3.30), Rotation2d.fromDegrees(180))),
+            Map.entry("StartNearBalanceTable", new Pose2d(new Translation2d(2.52, 2.55), Rotation2d.fromDegrees(180))),
+            Map.entry("StartFarBalanceTable", new Pose2d(new Translation2d(5.6, 2.55), Rotation2d.fromDegrees(180))),
+            Map.entry("ChargerCenterTable", new Pose2d(new Translation2d(3.88, 2.55), Rotation2d.fromDegrees(180))),
             Map.entry("NavPoint1", new Pose2d(new Translation2d(5.38, 4.54), Rotation2d.fromDegrees(180))),
             Map.entry("NavPoint2", new Pose2d(new Translation2d(2.8, 4.54), Rotation2d.fromDegrees(180)))
         );

@@ -154,11 +154,11 @@ public class Arm extends SubsystemBase {
     Rotation2d currentPosition = Rotation2d.fromDegrees(getPos());
     SmartDashboard.putNumber("armHeight", 
       ArmConstants.SHOULDER_LOCATION.getZ()
-      - currentPosition.getSin() * ArmConstants.ARM_LENGTH);
+      + currentPosition.getSin() * ArmConstants.ARM_LENGTH);
     
     SmartDashboard.putNumber("armExtension",
       ArmConstants.SHOULDER_LOCATION.getX()
-      - currentPosition.getCos() * ArmConstants.ARM_LENGTH);
+      + currentPosition.getCos() * ArmConstants.ARM_LENGTH);
 
     dt = time.get() - lastTime;
     lastTime = time.get();
