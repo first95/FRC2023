@@ -272,9 +272,9 @@ public final class Constants {
         public static final double ARM_DEGREES_PER_MOTOR_ROTATION = ARM_GEAR_RATIO * 360;
 
         public enum PRESETS {
-            HIGH_SCORE (16),
+            HIGH_SCORE (15),
             MID_SCORE (-7),
-            LOW_SCORE (5.7 - 90),
+            LOW_SCORE (5.7 - +90),
             HANDOFF (-88),
             STOWED (ARM_LOWER_LIMIT);
             
