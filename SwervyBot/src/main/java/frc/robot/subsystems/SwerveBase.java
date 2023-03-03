@@ -44,22 +44,14 @@ public class SwerveBase extends SubsystemBase {
   */
   public SwerveBase() {
 
-    // Create an integrator for angle if the robot is being simulated to emulate an IMU
-    // If the robot is real, instantiate the IMU instead.
-    if (!Robot.isReal()) {
-      timer = new Timer();
-      timer.start();
-      lasttime = 0;
-    } else {
-      imu = new PigeonIMU(Drivebase.PIGEON);
-      imu.configFactoryDefault();
-    }
+    imu = new PigeonIMU(Drivebase.PIGEON);
+    imu.configFactoryDefault();
 
     this.swerveModules = new SwerveModule[] {
-      new SwerveModule(0, Drivebase.Mod0.CONSTANTS),
-      new SwerveModule(1, Drivebase.Mod1.CONSTANTS),
-      new SwerveModule(2, Drivebase.Mod2.CONSTANTS),
-      new SwerveModule(3, Drivebase.Mod3.CONSTANTS),
+      new SwerveModule(0, Drivebase.Mod0.CONSTANTS), // FRONT LEFT
+      new SwerveModule(1, Drivebase.Mod1.CONSTANTS), // FRONT RIGHT 
+      new SwerveModule(2, Drivebase.Mod2.CONSTANTS), // BACK LEFT
+      new SwerveModule(3, Drivebase.Mod3.CONSTANTS), // BACK RIGHT
     };
 
     odometry = new SwerveDriveOdometry(Drivebase.KINEMATICS, getYaw(), getModulePositions());
@@ -212,11 +204,7 @@ public class SwerveBase extends SubsystemBase {
    */
   public void zeroGyro() {
     // Resets the real gyro or the angle accumulator, depending on whether the robot is being simulated
-    if (Robot.isReal()) {
-      imu.setYaw(0);
-    } else {
-      angle = 0;
-    }
+    imu.setYaw(0);
     wasGyroReset = true;
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
@@ -226,14 +214,9 @@ public class SwerveBase extends SubsystemBase {
    * @return The yaw angle
    */
   public Rotation2d getYaw() {
-    // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (Robot.isReal()) {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return (Drivebase.INVERT_GYRO) ? Rotation2d.fromDegrees(360 - ypr[0]) : Rotation2d.fromDegrees(ypr[0]);
-    } else {
-      return new Rotation2d(angle);
-    }
+    double[] ypr = new double[3];
+    imu.getYawPitchRoll(ypr);
+    return (Drivebase.INVERT_GYRO) ? Rotation2d.fromDegrees(360 - ypr[0]) : Rotation2d.fromDegrees(ypr[0]);
   }
 
   /**
@@ -263,15 +246,6 @@ public class SwerveBase extends SubsystemBase {
   public void periodic() {
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
-
-    // Update angle accumulator if the robot is simulated
-    if (!Robot.isReal()) {
-      angle += Drivebase.KINEMATICS.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lasttime);
-      lasttime = timer.get();
-
-      field.setRobotPose(odometry.getPoseMeters());
-      SmartDashboard.putData("Field", field);
-    }
 
     for (SwerveModule module : swerveModules) {
       SmartDashboard.putNumber("Module" + module.moduleNumber + "CANCoder", module.getCANCoder());

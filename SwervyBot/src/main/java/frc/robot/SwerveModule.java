@@ -84,12 +84,6 @@ public class SwerveModule {
         driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         lastAngle = getState().angle.getDegrees();
-
-        if (!Robot.isReal()) {
-            time = new Timer();
-            time.start();
-            lastTime = time.get();
-        }
     }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
@@ -111,37 +105,17 @@ public class SwerveModule {
 
         this.angle = desiredState.angle.getDegrees();
         speed = desiredState.speedMetersPerSecond;
-
-        if (!Robot.isReal()) {
-            double dt = time.get() - lastTime;
-            fakePos += (speed * dt);
-            lastTime = time.get();
-        }
     }
 
     public SwerveModuleState getState() {
-        double velocity;
-        Rotation2d azimuth;
-        if (Robot.isReal()) {
-            velocity = driveEncoder.getVelocity();
-            azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
-        } else {
-            velocity = speed;
-            azimuth = Rotation2d.fromDegrees(this.angle);
-        }
+        double velocity = driveEncoder.getVelocity();
+        Rotation2d azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
         return new SwerveModuleState(velocity, azimuth);
     }
 
     public SwerveModulePosition getPosition() {
-        double position;
-        Rotation2d azimuth;
-        if (Robot.isReal()) {
-            position = driveEncoder.getPosition();
-            azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
-        } else {
-            position = fakePos;
-            azimuth = Rotation2d.fromDegrees(angle);
-        }
+        double position = driveEncoder.getPosition();
+        Rotation2d azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
         return new SwerveModulePosition(position, azimuth);
     }
 
