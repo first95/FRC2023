@@ -20,36 +20,13 @@ import frc.lib.util.SwerveModuleConstants;
  */
 public final class Constants {
 
-    public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
-    public static final double MANIPULATOR_MASS = 10 * 0.453592; // 10lbs * kg per pound
-    public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
-    public static final Translation3d CHASSIS_CG = new Translation3d(
-        0,
-        0,
-        Units.inchesToMeters(8));
-    public static final double ARM_Y_POS = 0; // centered on robot
+    // public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
+    // public static final double MANIPULATOR_MASS = 10 * 0.453592; // 10lbs * kg per pound
+    // public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
+    // public static final Translation3d CHASSIS_CG = new Translation3d(0,0,Units.inchesToMeters(8));
     public static final double GRAVITY = 9.81; // m/s/s
     public static final double LOOP_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
 
-    public static final double dummyArmX = Units.inchesToMeters(42);
-    public static final double dummyArmHieght = Units.inchesToMeters(27);
-
-    public static final class Auton {
-        public static final double X_KP = 0.7;
-        public static final double X_KI = 0;
-        public static final double X_KD = 0;
-
-        public static final double Y_KP = 0.7;
-        public static final double Y_KI = 0;
-        public static final double Y_KD = 0;
-
-        public static final double ANG_KP = 0.4;
-        public static final double ANG_KI = 0;
-        public static final double ANG_KD = 0.01;
-
-        public static final double MAX_SPEED = 4;
-        public static final double MAX_ACCELERATION = 2;
-    }
     public static final class Drivebase {
         // Hold time on motor brakes when disabled
         public static final double WHEEL_LOCK_TIME = 10; // seconds
@@ -67,14 +44,14 @@ public final class Constants {
 
         // Module locations, in meters, as distances to the center of the robot.
         // Positive x is torwards the robot front, and +y is torwards robot left.
-        public static final double FRONT_LEFT_X = Units.inchesToMeters(11);
-        public static final double FRONT_LEFT_Y = Units.inchesToMeters(11);
-        public static final double FRONT_RIGHT_X = Units.inchesToMeters(11);
-        public static final double FRONT_RIGHT_Y = Units.inchesToMeters(-11);
-        public static final double BACK_LEFT_X = Units.inchesToMeters(-11);
-        public static final double BACK_LEFT_Y = Units.inchesToMeters(11);
-        public static final double BACK_RIGHT_X = Units.inchesToMeters(-11);
-        public static final double BACK_RIGHT_Y = Units.inchesToMeters(-11);
+        public static final double FRONT_LEFT_X = Units.inchesToMeters(10);
+        public static final double FRONT_LEFT_Y = Units.inchesToMeters(13);
+        public static final double FRONT_RIGHT_X = Units.inchesToMeters(10);
+        public static final double FRONT_RIGHT_Y = Units.inchesToMeters(-13);
+        public static final double BACK_LEFT_X = Units.inchesToMeters(-10);
+        public static final double BACK_LEFT_Y = Units.inchesToMeters(13);
+        public static final double BACK_RIGHT_X = Units.inchesToMeters(-10);
+        public static final double BACK_RIGHT_Y = Units.inchesToMeters(-13);
 
         public static final Translation2d[] MODULE_LOCATIONS = {
             new Translation2d(Drivebase.FRONT_LEFT_X, Drivebase.FRONT_LEFT_Y),
@@ -84,13 +61,14 @@ public final class Constants {
         };
 
         // Drivetrain limitations
-        public static final double MAX_SPEED = Units.feetToMeters(14.5); // meters per second
-        public static final double MAX_ANGULAR_VELOCITY = MAX_SPEED / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y); // rad/s
+        // public static final double MAX_SPEED = Units.feetToMeters(14.5); // meters per second
+        // public static final double MAX_ANGULAR_VELOCITY = MAX_SPEED / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y); // rad/s
+
         // Theoretical max acceleration should be as follows:
         // (NEO stall torque * module gearing * number of modules) / (wheel radius * robot mass) = m/s/s
         // (2.6 * 6.75 * 4) / (Units.inchesToMeters(2) * ROBOT_MASS)
         // However, the drive is traction-limited, so the max accelration is actually (wheel coefficient of friction * gravity)
-        public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
+        // public static final double MAX_ACCELERATION = 1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
 
         // Swerve base kinematics object
         public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(MODULE_LOCATIONS);
@@ -110,8 +88,10 @@ public final class Constants {
 
         // Drive feedforward gains
         public static final double KS = 0;
-        public static final double KV = 12 / MAX_SPEED; // Volt-seconds per meter (max voltage divided by max speed)
-        public static final double KA = 12 / MAX_ACCELERATION; // Volt-seconds^2 per meter (max voltage divided by max accel)
+        // public static final double KV = 12 / MAX_SPEED; // Volt-seconds per meter (max voltage divided by max speed)
+        // public static final double KA = 12 / MAX_ACCELERATION; // Volt-seconds^2 per meter (max voltage divided by max accel)
+        public static final double KV = 12; // SHOULD BE LIMITED
+        public static final double KA = 12; // SHOULD BE LIMITED
 
         // Encoder conversion values.  Drive converts motor rotations to linear wheel distance
         // and steering converts motor rotations to module azimuth
@@ -121,7 +101,8 @@ public final class Constants {
             // degrees per rotation / gear ratio between module and motor
         
         public static final int NUM_MODULES = 4;
-            // Module specific constants
+        
+        // Module specific constants
         public static final class Mod0 {
             public static final int DRIVE_MOTOR_ID = 3;
             public static final int ANGLE_MOTOR_ID = 2;
@@ -154,15 +135,5 @@ public final class Constants {
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
         }
-
-        public static final int PIGEON = 14;
-    }
-
-    public class OperatorConstants {
-        public static final int DRIVER_CONTROLLER_PORT = 0;
-
-        // Joystick Deadband
-        public static final double LEFT_X_DEADBAND = 0.01;
-        public static final double LEFT_Y_DEADBAND = 0.01;
     }
 }
