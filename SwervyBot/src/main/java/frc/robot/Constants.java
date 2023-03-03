@@ -95,15 +95,15 @@ public final class Constants {
 
         // Encoder conversion values.  Drive converts motor rotations to linear wheel distance
         // and steering converts motor rotations to module azimuth
-        public static final double METERS_PER_MOTOR_ROTATION = (Math.PI * Units.inchesToMeters(4)) / 6.75;
+        public static final double METERS_PER_MOTOR_ROTATION = (Math.PI * Units.inchesToMeters(4)) / 6.75; // TODO: Find wheel diameter, gear ratio
             // Calculation: 4in diameter wheels * pi [circumfrence] / gear ratio
-        public static final double DEGREES_PER_STEERING_ROTATION = 360 / 12.8;
+        public static final double DEGREES_PER_STEERING_ROTATION = 360 / 12.8; // TODO: Find gear ratio
             // degrees per rotation / gear ratio between module and motor
         
         public static final int NUM_MODULES = 4;
         
         // Module specific constants
-        public static final class Mod0 {
+        public static final class Mod0 { // Front left
             public static final int DRIVE_MOTOR_ID = 3;
             public static final int ANGLE_MOTOR_ID = 2;
             public static final int CANCODER_ID = 10;
@@ -111,7 +111,7 @@ public final class Constants {
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
         }
-        public static final class Mod1 {
+        public static final class Mod1 { // Front right
             public static final int DRIVE_MOTOR_ID = 5;
             public static final int ANGLE_MOTOR_ID = 4;
             public static final int CANCODER_ID = 11;
@@ -119,7 +119,7 @@ public final class Constants {
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
         }
-        public static final class Mod2 {
+        public static final class Mod2 { // Back left
             public static final int DRIVE_MOTOR_ID = 7;
             public static final int ANGLE_MOTOR_ID = 6;
             public static final int CANCODER_ID = 12;
@@ -127,7 +127,7 @@ public final class Constants {
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
         }
-        public static final class Mod3 {
+        public static final class Mod3 { // Back right
             public static final int DRIVE_MOTOR_ID = 9;
             public static final int ANGLE_MOTOR_ID = 8;
             public static final int CANCODER_ID = 13;
