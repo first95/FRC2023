@@ -61,8 +61,8 @@ public final class Constants {
         };
 
         // Drivetrain limitations
-        // public static final double MAX_SPEED = Units.feetToMeters(14.5); // meters per second
-        // public static final double MAX_ANGULAR_VELOCITY = MAX_SPEED / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y); // rad/s
+        public static final double MAX_SPEED = Units.feetToMeters(14.5); // meters per second
+        public static final double MAX_ANGULAR_VELOCITY = MAX_SPEED / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y); // rad/s
 
         // Theoretical max acceleration should be as follows:
         // (NEO stall torque * module gearing * number of modules) / (wheel radius * robot mass) = m/s/s

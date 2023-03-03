@@ -26,13 +26,10 @@ public class SwerveBase extends SubsystemBase {
 
   private SwerveModule[] swerveModules;
   private PigeonIMU imu;
+  // private AHRS imu;
   
   private SwerveDriveOdometry odometry;
   public Field2d field = new Field2d();
-
-  private double angle, lasttime;
-
-  private Timer timer;
 
   private boolean wasGyroReset;
 
@@ -44,7 +41,7 @@ public class SwerveBase extends SubsystemBase {
   */
   public SwerveBase() {
 
-    imu = new PigeonIMU(Drivebase.PIGEON);
+    imu = new PigeonIMU(0);
     imu.configFactoryDefault();
 
     this.swerveModules = new SwerveModule[] {
@@ -93,6 +90,7 @@ public class SwerveBase extends SubsystemBase {
       Drivebase.KINEMATICS.toSwerveModuleStates(
         velocity
       );
+
     // Desaturate calculated speeds
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Drivebase.MAX_SPEED);
 
@@ -109,6 +107,7 @@ public class SwerveBase extends SubsystemBase {
    * @param desiredStates  A list of SwerveModuleStates to send to the modules.
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
+    
     // Desaturates wheel speeds
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Drivebase.MAX_SPEED);
 

@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveBase;
@@ -28,10 +26,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveBase drivebase = new SwerveBase();
 
-  private SendableChooser<CommandBase> driveModeSelector;
-
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  CommandXboxController driverController = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+  CommandXboxController driverController = new CommandXboxController(0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -58,14 +54,14 @@ public class RobotContainer {
 
     TeleopDrive openRobotRel = new TeleopDrive(
       drivebase,
-      () -> (Math.abs(driverController.getLeftX()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getLeftX() : 0,
-      () -> (Math.abs(driverController.getLeftY()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getLeftY() : 0,
+      () -> (Math.abs(driverController.getLeftX()) > 0.05) ? -driverController.getLeftX() : 0,
+      () -> (Math.abs(driverController.getLeftY()) > 0.05) ? -driverController.getLeftY() : 0,
       () -> -driverController.getRightX(), () -> false, true);
     
     TeleopDrive closedRobotRel = new TeleopDrive(
       drivebase,
-      () -> (Math.abs(driverController.getLeftX()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getLeftX() : 0,
-      () -> (Math.abs(driverController.getLeftY()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getLeftY() : 0,
+      () -> (Math.abs(driverController.getLeftX()) > 0.05) ? -driverController.getLeftX() : 0,
+      () -> (Math.abs(driverController.getLeftY()) > 0.05) ? -driverController.getLeftY() : 0,
       () -> -driverController.getRightX(), () -> false, false);
     
     // TeleopDrive openFieldRel = new TeleopDrive(
