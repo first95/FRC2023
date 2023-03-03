@@ -34,12 +34,12 @@ public final class Constants {
     public static final double NEO_550_FREE_SPEED = 11000; // RPM
     
     public static final double MANIPULATOR_MASS = 5 * KG_PER_LB;
-    public static final double ROBOT_MASS = (100 * KG_PER_LB) - MANIPULATOR_MASS;
+    public static final double ROBOT_MASS = (108 * KG_PER_LB) - MANIPULATOR_MASS;
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         -0.035,
         0.0026,
-        Units.inchesToMeters(9.6));
+        Units.inchesToMeters(8.8));
     public static final double ARM_Y_POS = 0; // centered on robot
     public static final double GRAVITY = 9.81; // m/s/s
     public static final double LOOP_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
