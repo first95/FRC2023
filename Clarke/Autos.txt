@@ -1,5 +1,5 @@
 One Cube and Balance:
-+grip();
+grip();
 movearm(MID_SCORE);
 drivetopose(Node8High);
 alignto(Node8High);
