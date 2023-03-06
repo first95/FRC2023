@@ -278,11 +278,19 @@ public class SwerveBase extends SubsystemBase {
   }
 
   public Rotation2d getPitch() {
-    return Rotation2d.fromDegrees(imu.getPitch());
+    if (Robot.isReal()) {
+      return Rotation2d.fromDegrees(imu.getPitch());
+    } else {
+      return new Rotation2d();
+    }
   }
 
   public Rotation2d getRoll() {
-    return Rotation2d.fromDegrees(imu.getRoll());
+    if (Robot.isReal()) {
+      return Rotation2d.fromDegrees(imu.getRoll());
+    } else {
+      return new Rotation2d();
+    }
   }
 
   /**

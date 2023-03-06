@@ -35,6 +35,7 @@ public class PrecisionAlign extends CommandBase {
   public PrecisionAlign(String pose, Alliance alliance, SwerveBase drive) {
     this.drive = drive;
     this.target = Auton.POSE_MAP.get(alliance).get(pose);
+    targetSupplier = null;
     xController = new PIDController(Auton.X_KP, Auton.X_KI, Auton.X_KD);
     yController = new PIDController(Auton.Y_KP, Auton.Y_KI, Auton.Y_KD);
     angController = new PIDController(Auton.ANG_KP, Auton.ANG_KI, Auton.ANG_KD);
@@ -70,7 +71,7 @@ public class PrecisionAlign extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (target == null) {
+    if (targetSupplier != null) {
       target = targetSupplier.get();
     }
     xController.setSetpoint(target.getX());
