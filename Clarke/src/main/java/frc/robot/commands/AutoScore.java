@@ -24,7 +24,7 @@ public class AutoScore extends SequentialCommandGroup {
         allianceSupplier = alliance;
         addRequirements(drive, arm);
         addCommands(new PrecisionAlign(this::pickNode, drive));
-        addCommands(new InstantCommand(arm::toggleGrip));
+        addCommands(new InstantCommand(() -> arm.setGrip(true)));
     }
 
     private String[] highConeNodes = {
@@ -78,8 +78,11 @@ public class AutoScore extends SequentialCommandGroup {
             ArmConstants.PRESETS.HIGH_SCORE
         };
         for (ArmConstants.PRESETS preset : scoreAngles) {
-            if (Math.abs(preset.angle() - armPos) < closestAngle) {
+            double difference = Math.abs(preset.angle() - armPos);
+            if (difference < closestAngle) {
                 nearestRow = preset;
+                closestAngle = difference;
+
             }
         }
         switch (nearestRow) {
