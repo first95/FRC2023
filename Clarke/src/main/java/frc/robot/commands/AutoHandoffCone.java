@@ -28,7 +28,10 @@ public class AutoHandoffCone extends SequentialCommandGroup {
         addCommands(new InstantCommand(() -> {intake.grabCone(-0.3);}));
         addCommands(new WaitCommand(0.5));
         addCommands(new InstantCommand(() -> {intake.grabCone(0);}));
-        addCommands(new InstantCommand(() -> SmartDashboard.putString("LastHandoff", "CONE")));
+        addCommands(new InstantCommand(() -> {
+            SmartDashboard.putString("LastHandoff", "CONE");
+            SmartDashboard.putBoolean("ConeHandoffOccurred", true);
+        }));
     }
 
 }

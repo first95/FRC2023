@@ -10,6 +10,7 @@ import frc.robot.subsystems.Intake;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -71,6 +72,10 @@ public class ControlIntake extends CommandBase {
     } else if (grabbedCone){
       subsystem.setPreset(IntakeConstants.PRESETS.STOWED);
       subsystem.grabCone(0.08);
+      if (SmartDashboard.getBoolean("ConeHandoffOccurred", false)) {
+        grabbedCone = false;
+        SmartDashboard.putBoolean("ConeHandoffOccurred", false);
+      }
     } else {
       subsystem.setPreset(IntakeConstants.PRESETS.STOWED);
       subsystem.runRollers(0, 0);
