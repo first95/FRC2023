@@ -168,9 +168,9 @@ public class RobotContainer {
     // Could be causing a CommandScheduler loop overrun //
     operatorController.x().onTrue(new InstantCommand(() -> {arm.setPreset(ArmConstants.PRESETS.STOWED);}));
 
-    operatorController.back().onTrue(new AutoHandoffCube(arm, intake));
+    operatorController.back().onTrue(new AutoHandoffCube(arm, intake).withTimeout(5)); // Maybe add to auto too
     // operatorController.start().onTrue(new PrecisionAlign("Node1High", Alliance.Red, drivebase));
-    operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake));
+    operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake).withTimeout(5));
     operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
     
     driverController.button(1).whileTrue(new AutoScore(DriverStation::getAlliance, arm, drivebase));
