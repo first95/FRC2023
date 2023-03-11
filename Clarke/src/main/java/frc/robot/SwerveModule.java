@@ -25,7 +25,7 @@ public class SwerveModule {
     private final AbsoluteEncoder absoluteEncoder;
     private final RelativeEncoder driveEncoder;
     private final SparkMaxPIDController angleController, driveController;
-    private Timer time;
+    private final Timer time;
     private double angle, lastAngle, omega, speed, fakePos, lastTime, dt;
 
     private SimpleMotorFeedforward feedforward;
@@ -48,6 +48,7 @@ public class SwerveModule {
         absoluteEncoder.setVelocityConversionFactor(Drivebase.DEGREES_PER_STEERING_ROTATION / 60);
         absoluteEncoder.setZeroOffset(angleOffset);
         absoluteEncoder.setInverted(Drivebase.ABSOLUTE_ENCODER_INVERT);
+        absoluteEncoder.setAverageDepth(1);
 
         // Config angle motor/controller
         angleController = angleMotor.getPIDController();
@@ -69,6 +70,7 @@ public class SwerveModule {
         driveEncoder = driveMotor.getEncoder();
         driveEncoder.setPositionConversionFactor(Drivebase.METERS_PER_MOTOR_ROTATION);
         driveEncoder.setVelocityConversionFactor(Drivebase.METERS_PER_MOTOR_ROTATION / 60);
+        driveEncoder.setAverageDepth(1);
         driveController.setP(Drivebase.VELOCITY_KP);
         driveController.setI(Drivebase.VELOCITY_KI);
         driveController.setD(Drivebase.VELOCITY_KD);
@@ -83,13 +85,11 @@ public class SwerveModule {
 
         feedforward = new SimpleMotorFeedforward(Drivebase.KS, Drivebase.KV, Drivebase.KA);
 
+        time = new Timer();
+        time.start();
+        lastTime = time.get();
+        
         lastAngle = getState().angle.getDegrees();
-
-        if (!Robot.isReal()) {
-            time = new Timer();
-            time.start();
-            lastTime = time.get();
-        }
     }
 
     public void setDesiredState(BetterSwerveModuleState desiredState, boolean isOpenLoop) {
