@@ -149,6 +149,7 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putBoolean("Gripper Status", gripper.get());
     SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
+    SmartDashboard.putNumber("Arm Current", armMotor.getOutputCurrent());
 
     // Report arm position
     Rotation2d currentPosition = Rotation2d.fromDegrees(getPos());
