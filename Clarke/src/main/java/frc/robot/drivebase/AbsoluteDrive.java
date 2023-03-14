@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -185,9 +186,10 @@ public class AbsoluteDrive extends CommandBase {
    */
   private Translation2d limitVelocity(Translation2d commandedVelocity) {
     // Get the robot's current field-relative velocity
+    ChassisSpeeds vel = swerve.getFieldVelocity();
     Translation2d currentVelocity = new Translation2d(
-        swerve.getFieldVelocity().vxMetersPerSecond,
-        swerve.getFieldVelocity().vyMetersPerSecond);
+        vel.vxMetersPerSecond,
+        vel.vyMetersPerSecond);
     SmartDashboard.putNumber("currentVelocity", currentVelocity.getX());
 
     // Calculate the commanded change in velocity by subtracting current velocity

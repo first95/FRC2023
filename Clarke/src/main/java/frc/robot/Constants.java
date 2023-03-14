@@ -34,7 +34,7 @@ public final class Constants {
     public static final double NEO_550_FREE_SPEED = 11000; // RPM
     
     public static final double MANIPULATOR_MASS = 5 * KG_PER_LB;
-    public static final double ROBOT_MASS = (108 * KG_PER_LB) - MANIPULATOR_MASS;
+    public static final double ROBOT_MASS = (108 * KG_PER_LB);
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         -0.035,
