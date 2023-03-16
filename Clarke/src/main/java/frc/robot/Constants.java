@@ -288,7 +288,7 @@ public final class Constants {
 
         public enum GripState {GRIP_OFF, GRIP_ON}
 
-        public static final double MAX_CONTROL_EFFORT = 0.5;
+        public static final double MAX_CONTROL_EFFORT = 1;
 
         public static final double THEORETICAL_MAX_ARM_SPEED = (NEO_FREE_SPEED / 60) * 2 * Math.PI * ARM_GEAR_RATIO; // rad/s
         public static final double ARM_SPEED_LIMIT_DEG_PER_S = Math.toDegrees(THEORETICAL_MAX_ARM_SPEED * 0.1);

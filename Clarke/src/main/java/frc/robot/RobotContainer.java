@@ -12,6 +12,7 @@ import frc.robot.commands.AutoHandoffCube;
 import frc.robot.commands.AutoScore;
 import frc.robot.commands.ControlIntake;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ThrowCube;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
 import frc.robot.subsystems.Arm;
@@ -169,9 +170,9 @@ public class RobotContainer {
     operatorController.x().onTrue(new InstantCommand(() -> {arm.setPreset(ArmConstants.PRESETS.STOWED);}));
 
     operatorController.back().onTrue(new AutoHandoffCube(arm, intake).withTimeout(5)); // Maybe add to auto too
-    // operatorController.start().onTrue(new PrecisionAlign("Node1High", Alliance.Red, drivebase));
     operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake).withTimeout(5));
     operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
+    operatorController.start().onTrue(new ThrowCube(arm).withTimeout(5));
     
     driverController.button(1).whileTrue(new AutoScore(DriverStation::getAlliance, arm, drivebase));
     driverController.button(2).onTrue((new InstantCommand(drivebase::zeroGyro)));
