@@ -228,7 +228,7 @@ public class AutoParser {
                 }
             case "conehandoff":
                 try {
-                    return new AutoHandoffCone(arm, intake);
+                    return new AutoHandoffCone(arm, intake).withTimeout(2);
                 } catch (Exception e) {
                     throw new AutoParseException("ConeHandoff", "What did you do!?", e);
                 }
@@ -259,7 +259,7 @@ public class AutoParser {
                         intake.setPreset(IntakeConstants.PRESETS.CUBE);
                         intake.grabCube(0.6);
                     }, intake)
-                    .andThen(new WaitCommand(1))
+                    .andThen(new WaitCommand(0.8))
                     .andThen(new InstantCommand(() -> {
                         intake.setPreset(IntakeConstants.PRESETS.STOWED);
                         intake.grabCube(0);
@@ -270,7 +270,7 @@ public class AutoParser {
                 }
             case "cubehandoff":
                 try {
-                    return new AutoHandoffCube(arm, intake);
+                    return new AutoHandoffCube(arm, intake).withTimeout(2);
                 } catch (Exception e) {
                     throw new AutoParseException("CubeHandoff", "What did you do!?", e);
                 }

@@ -33,7 +33,7 @@ public final class Constants {
     public static final double NEO_STALL_TORQUE = 2.6; // N * m
     public static final double NEO_550_FREE_SPEED = 11000; // RPM
     
-    public static final double MANIPULATOR_MASS = 5 * KG_PER_LB;
+    public static final double MANIPULATOR_MASS = 1.11;
     public static final double ROBOT_MASS = (108 * KG_PER_LB);
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
@@ -192,7 +192,7 @@ public final class Constants {
             Map.entry("Node6High", new Pose2d(new Translation2d(1.723, 3.26),Rotation2d.fromDegrees(180))),
             Map.entry("Node7High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(151.875)),Rotation2d.fromDegrees(180))),
             Map.entry("Node8High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(173.875)),Rotation2d.fromDegrees(180))),
-            Map.entry("Node9High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(195.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node9High", new Pose2d(new Translation2d(1.723, 4.86),Rotation2d.fromDegrees(180))),
             Map.entry("Node1Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(19.875)),  Rotation2d.fromDegrees(180))),
             Map.entry("Node2Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(41.875)),  Rotation2d.fromDegrees(180))),
             Map.entry("Node3Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(63.875)),  Rotation2d.fromDegrees(180))),
@@ -201,7 +201,7 @@ public final class Constants {
             Map.entry("Node6Mid", new Pose2d(new Translation2d(2.18, 3.26), Rotation2d.fromDegrees(180))),
             Map.entry("Node7Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Node8Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node9Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(195.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9Mid", new Pose2d(new Translation2d(2.18, 4.86), Rotation2d.fromDegrees(180))),
             Map.entry("Node1Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(19.875)),  Rotation2d.fromDegrees(180))),
             Map.entry("Node2Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(41.875)),  Rotation2d.fromDegrees(180))),
             Map.entry("Node3Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(63.875)),  Rotation2d.fromDegrees(180))),
@@ -210,7 +210,7 @@ public final class Constants {
             Map.entry("Node6Low", new Pose2d(new Translation2d(1.913, 3.26), Rotation2d.fromDegrees(180))),
             Map.entry("Node7Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Node8Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node9Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(195.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9Low", new Pose2d(new Translation2d(1.913, 4.86), Rotation2d.fromDegrees(180))),
             Map.entry("Gamepiece1", new Pose2d(new Translation2d(6.95, 0.908), new Rotation2d(0))),
             Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
             Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
@@ -242,6 +242,8 @@ public final class Constants {
         public static final double X_TOLERANCE = 0.04;
         public static final double Y_TOLERANCE = 0.04;
         public static final double ANG_TOLERANCE = Math.toRadians(2);
+
+        public static final double CHARGER_BALANCE_ANGLE_TOLERANCE = 1.25;
     }
 
     public class OperatorConstants {
