@@ -72,7 +72,7 @@ public class Intake extends SubsystemBase {
 
   public void grabCube(double speed) {
     bottomRoller.set(speed);
-    topRoller.set(speed);
+    topRoller.set(0.05);
   }
 
   public void grabCone(double speed) {
@@ -143,6 +143,8 @@ public class Intake extends SubsystemBase {
 
     // Logging...
     SmartDashboard.putNumber("Rack Encoder", rackEncoder.getPosition());
+    SmartDashboard.putNumber("Low Roller Current Draw", getLowRollerCurrentDraw());
+    SmartDashboard.putNumber("Top Roller Currnet Draw", getTopRollerCurrentDraw());
   }
 
   @Override
