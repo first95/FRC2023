@@ -16,6 +16,7 @@ import frc.robot.Constants.Auton;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IntakeConstants.PRESETS;
 import frc.robot.autoCommands.DriveToPose;
+import frc.robot.autoCommands.FinalBalance;
 import frc.robot.autoCommands.FollowTrajectory;
 import frc.robot.autoCommands.PrecisionAlign;
 import frc.robot.commands.AutoHandoffCone;
@@ -114,7 +115,7 @@ public class AutoParser {
                 try {
                     parameters = splitCommand[1].split(",");
                 } catch (IndexOutOfBoundsException e) {
-                    throw new Exception("Missing parenthases at line: " + i, e);
+                    throw new Exception(String.format("Missing parenthases at line: %d", i), e);
                 }
 
                 // Remove whitespace and the final closed parenthases from the parameters
@@ -273,6 +274,12 @@ public class AutoParser {
                     return new AutoHandoffCube(arm, intake).withTimeout(2);
                 } catch (Exception e) {
                     throw new AutoParseException("CubeHandoff", "What did you do!?", e);
+                }
+            case "balance":
+                try {
+                    return new FinalBalance(drive);
+                } catch (Exception e) {
+                    throw new AutoParseException("Balance", "What did you do!?", e);
                 }
             default:
                 // If none of the preceeding cases apply, the command is invalid.

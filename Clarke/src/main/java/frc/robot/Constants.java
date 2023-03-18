@@ -182,7 +182,7 @@ public final class Constants {
         public static final double MAX_SPEED = 4;
         public static final double MAX_ACCELERATION = 3;
 
-        public static final double CHARGE_STATION_DISTANCE = 3.88; // meters
+        public static final double BALANCE_NUDGE = 0.02; //meters
 
         private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(
             Map.entry("Node1High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
