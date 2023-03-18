@@ -26,7 +26,6 @@ public class SwerveModule {
     private final AbsoluteEncoder absoluteEncoder;
     private final RelativeEncoder driveEncoder;
     private final SparkMaxPIDController angleController, driveController;
-    private final SlewRateLimiter azimuthSpeedLimit;
     private final Timer time;
     private double angle, lastAngle, omega, speed, fakePos, lastTime, dt;
 
@@ -66,7 +65,6 @@ public class SwerveModule {
         angleMotor.setInverted(Drivebase.ANGLE_MOTOR_INVERT);
         angleMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
         angleMotor.setSmartCurrentLimit(Drivebase.SWERVE_MODULE_CURRENT_LIMIT);
-        azimuthSpeedLimit = new SlewRateLimiter(Drivebase.MODULE_ANGULAR_SPEED_LIMIT);
 
         // Config drive motor/controller
         driveController = driveMotor.getPIDController();
@@ -125,7 +123,6 @@ public class SwerveModule {
         double angle = ((Math.abs(desiredState.speedMetersPerSecond) <= (Drivebase.MAX_SPEED * 0.01)) && antijitter ? 
             lastAngle :
             desiredState.angle.getDegrees()); // Prevents module rotation if speed is less than 1%
-        angle = azimuthSpeedLimit.calculate(angle);
         angleController.setReference(angle, ControlType.kPosition, 0, Math.toDegrees(desiredState.omegaRadPerSecond) * Drivebase.MODULE_KV);
         lastAngle = angle;
 
