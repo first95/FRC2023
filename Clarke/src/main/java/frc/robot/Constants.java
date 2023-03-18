@@ -93,6 +93,7 @@ public final class Constants {
         public static final double MAX_ACCELERATION = 1 * GRAVITY; // COF is 1.1 but careful
         // max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
         public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(NEO_550_FREE_SPEED * 7 / 372) / 60; // deg/s
+        public static final double MODULE_ANGULAR_SPEED_LIMIT = Units.radiansToDegrees(10);
 
         // Robot heading control gains
         public static final double HEADING_KP = MAX_ANGULAR_VELOCITY / Math.PI;
@@ -241,7 +242,7 @@ public final class Constants {
         // meters and radians
         public static final double X_TOLERANCE = 0.04;
         public static final double Y_TOLERANCE = 0.04;
-        public static final double ANG_TOLERANCE = Math.toRadians(2);
+        public static final double ANG_TOLERANCE = Math.toRadians(1);
 
         public static final double CHARGER_BALANCE_ANGLE_TOLERANCE = 1.25;
     }
