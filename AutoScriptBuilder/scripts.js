@@ -32,7 +32,9 @@ const commandmap = new Map([
   ["grabcone",[]],
   ["grip",[]],
   ["grabcube",[]],
-  ["cubehandoff",[]]
+  ["cubehandoff",[]],
+  ["balance",[]],
+  ["throw",[]]
 ]);
 
 function buildForm() {
