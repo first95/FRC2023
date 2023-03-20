@@ -30,7 +30,7 @@ public final class Constants {
     public static final double KG_PER_LB = 0.453592;
     
     public static final double NEO_FREE_SPEED = 5676; // RPM
-    public static final double NEO_STALL_TORQUE = 2.6; // N * m
+    public static final double NEO_STALL_TORQUE = 3.75; // N * m
     public static final double NEO_550_FREE_SPEED = 11000; // RPM
     
     public static final double MANIPULATOR_MASS = 1.11;
@@ -181,7 +181,7 @@ public final class Constants {
         public static final double MAX_SPEED = 4;
         public static final double MAX_ACCELERATION = 3;
 
-        public static final double BALANCE_NUDGE = 0.02; //meters
+        public static final double BALANCE_NUDGE = 0.1; //meters
 
         private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(
             Map.entry("Node1High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
@@ -342,10 +342,11 @@ public final class Constants {
         public static final double IZ = 0;
 
         // motor max rpm --> m/s
-        public static final double MAX_LINEAR_SPEED = 5676 * RACK_METERS_PER_MOTOR_ROTATION / 60;
+        public static final double MAX_LINEAR_SPEED = NEO_FREE_SPEED * RACK_METERS_PER_MOTOR_ROTATION / 60;
         public static final double MAX_LINEAR_ACCELERATION =
             (NEO_STALL_TORQUE / RACK_DRIVE_GEAR_RATIO) * (PINION_PITCH_DIAMETER / 2) / INTAKE_MASS;
 
+        // in case we ever want motion profiling
         public static final double KV = 12 / MAX_LINEAR_SPEED;
         public static final double KA = 12 / MAX_LINEAR_ACCELERATION;
 
