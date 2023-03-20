@@ -21,6 +21,7 @@ import frc.robot.autoCommands.FollowTrajectory;
 import frc.robot.autoCommands.PrecisionAlign;
 import frc.robot.commands.AutoHandoffCone;
 import frc.robot.commands.AutoHandoffCube;
+import frc.robot.commands.ThrowCube;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveBase;
@@ -280,6 +281,12 @@ public class AutoParser {
                     return new FinalBalance(drive);
                 } catch (Exception e) {
                     throw new AutoParseException("Balance", "What did you do!?", e);
+                }
+            case "throw":
+                try {
+                    return new ThrowCube(arm);
+                } catch (Exception e) {
+                  throw new AutoParseException("throwCube", "What did you do!?", e);
                 }
             default:
                 // If none of the preceeding cases apply, the command is invalid.
