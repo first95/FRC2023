@@ -17,7 +17,11 @@ const commandmap = new Map([
   ["wait", [{ paramname: "duration_in_seconds", paramvalue: "0" }]],
   ["stop", []],
   ["drivetopose",
-    [{ paramname: "robotPose", paramvalue: savedRobotPoses }]
+    [
+      { paramname: "robotPose", paramvalue: savedRobotPoses },
+      { paramname: "startInMotion", paramvalue: ["false","true"]},
+      { paramname: "endInMotion", paramvalue: ["false","true"]}
+    ]
   ],
   [
     "alignto",
@@ -25,7 +29,7 @@ const commandmap = new Map([
   ],
   [
     "movearm",
-    [{ paramname: "arpPresetPosition", paramvalue: savedArmPositions }]
+    [{ paramname: "armPresetPosition", paramvalue: savedArmPositions }]
   ],
   ["score",[]],
   ["conehandoff",[]],
