@@ -33,17 +33,19 @@ grip();
 movearm(MID_SCORE);
 alignto(Node8High);
 score();
-drivetopose(NavPoint2);
+drivetopose(NavPoint2, false, true);
 movearm(STOWED);
-drivetopose(NavPoint1);
+drivetopose(NavPoint1, true, false);
 alignto(Gamepiece4);
 grabcube();
-drivetopose(NavPoint1);
-drivetopose(NavPoint2)+cubehandoff();
+drivetopose(NavPoint1, false, false);
+drivetopose(NavPoint2, false, false)+cubehandoff();
 movearm(MID_SCORE);
 alignto(Node8Mid);
 score();
-drivetopose(StartNearBalance);
+drivetopose(StartNearBalance, false, false);
 alignto(ChargerCenter)+movearm(STOWED);
+balance();
 stop();
+
 
