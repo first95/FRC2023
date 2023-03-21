@@ -180,6 +180,7 @@ public final class Constants {
 
         public static final double MAX_SPEED = 4;
         public static final double MAX_ACCELERATION = 3;
+        public static final double MAX_SPEED_SAFETY_SCALAR = 0.8;
 
         public static final double BALANCE_SPEED = 0.18; // m/s
         public static final double BALANCE_LEVEL_TIME = 1; // s

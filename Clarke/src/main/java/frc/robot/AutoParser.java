@@ -200,7 +200,7 @@ public class AutoParser {
                 }
             case "drivetopose":
                 try {
-                    return new DriveToPose(parameters[0], currentAlliance, drive);
+                    return new DriveToPose(parameters[0], Boolean.valueOf(parameters[1]), Boolean.valueOf(parameters[2]), currentAlliance, drive);
                 } catch (NullPointerException e) {
                     throw new AutoParseException("DriveToPose", "Pose not recognized", e);
                 } catch (ArrayIndexOutOfBoundsException e) {
