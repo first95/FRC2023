@@ -267,7 +267,7 @@ public final class Constants {
         public static final int GRIPPER_SOLENOID_ID = 1;
 
         // Limits in degrees
-        public static final float ARM_LOWER_LIMIT = (float) -107.5;
+        public static final float ARM_LOWER_LIMIT = (float) -109.5;
         public static final float ARM_UPPER_LIMIT = 24;
 
         // 5 to 1 | 5 to 1 | 56 to 26
@@ -279,6 +279,7 @@ public final class Constants {
             MID_SCORE (-7),
             LOW_SCORE (5.7 - 90),
             HANDOFF (-89),
+            CUBE_COLLECT (-91.3),
             STOWED (ARM_LOWER_LIMIT);
             
             private final double angle;
