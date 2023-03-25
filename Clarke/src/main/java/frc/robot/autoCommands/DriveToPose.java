@@ -10,6 +10,7 @@ import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Auton;
@@ -18,15 +19,18 @@ import frc.robot.subsystems.SwerveBase;
 public class DriveToPose extends SequentialCommandGroup{
     private SwerveBase drive;
     private Pose2d pose;
+    private boolean startInMotion, endInMotion;
     
     /**
      * Creates a command to drive to any given pose in a straight line
      * by following a trajectory.  Should eventually take a named pose and alliance.
      * @param pose Pose2d to drive to.
      */
-    public DriveToPose(String pose, Alliance alliance, SwerveBase drive) {
+    public DriveToPose(String pose, boolean startInMotion, boolean endInMotion, Alliance alliance, SwerveBase drive) {
         this.drive = drive;
         this.pose = Auton.POSE_MAP.get(alliance).get(pose);
+        this.startInMotion = startInMotion;
+        this.endInMotion = endInMotion;
         addRequirements(drive);
 
         addCommands(new FollowTrajectory(drive, this::generateTrajectory, false));
@@ -39,12 +43,33 @@ public class DriveToPose extends SequentialCommandGroup{
             new Translation2d(currentPose.getX(), currentPose.getY());
         Translation2d desiredPosition = 
             new Translation2d(pose.getX(), pose.getY());
-        Rotation2d driveAngle = desiredPosition.minus(currentPosition).getAngle();
+        Translation2d deltaPosition = desiredPosition.minus(currentPosition);
+        Rotation2d driveAngle = deltaPosition.getAngle();
+        Rotation2d startAngle;
+        double startVelocity, endVelocity;
+        if (startInMotion) {
+           ChassisSpeeds velocity = drive.getFieldVelocity();
+           Translation2d roboVel = new Translation2d(velocity.vxMetersPerSecond, velocity.vyMetersPerSecond);
+           startAngle = roboVel.getAngle();
+           startVelocity = roboVel.getNorm();
+        } else {
+            startAngle = driveAngle;
+            startVelocity = -1; // this is the default for some reason
+        }
+        if (endInMotion) {
+            // Calculate maximum achievable velocity using Vf^2 = Vi^2 + 2ad
+            // Min is to ensure this isn't greater than the limit
+            endVelocity = Math.min(Auton.MAX_SPEED,
+                Math.sqrt(Math.pow(startVelocity, 2) + (2 * Auton.MAX_ACCELERATION * deltaPosition.getNorm()))    
+            ) * Auton.MAX_SPEED_SAFETY_SCALAR;
+        } else {
+            endVelocity = -1;
+        }
         PathPlannerTrajectory trajectory = PathPlanner.generatePath(
             new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION),
             List.of(
-                new PathPoint(currentPosition, driveAngle, drive.getPose().getRotation()),
-                new PathPoint(desiredPosition, driveAngle, pose.getRotation())
+                new PathPoint(currentPosition, startAngle, drive.getPose().getRotation(), startVelocity),
+                new PathPoint(desiredPosition, driveAngle, pose.getRotation(), endVelocity)
             ));
         return trajectory;
     }

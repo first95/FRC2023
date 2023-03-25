@@ -180,8 +180,11 @@ public final class Constants {
 
         public static final double MAX_SPEED = 4;
         public static final double MAX_ACCELERATION = 3;
+        public static final double MAX_SPEED_SAFETY_SCALAR = 0.8;
 
-        public static final double BALANCE_NUDGE = 0.1; //meters
+        public static final double BALANCE_SPEED = 0.18; // m/s
+        public static final double BALANCE_LEVEL_TIME = 1; // s
+        public static final double CHARGER_STARTING_TO_TIP = 11;
 
         private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(
             Map.entry("Node1High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
@@ -242,8 +245,6 @@ public final class Constants {
         public static final double X_TOLERANCE = 0.04;
         public static final double Y_TOLERANCE = 0.04;
         public static final double ANG_TOLERANCE = Math.toRadians(1);
-
-        public static final double CHARGER_BALANCE_ANGLE_TOLERANCE = 1.25;
     }
 
     public class OperatorConstants {
@@ -266,7 +267,7 @@ public final class Constants {
         public static final int GRIPPER_SOLENOID_ID = 1;
 
         // Limits in degrees
-        public static final float ARM_LOWER_LIMIT = (float) -107.5;
+        public static final float ARM_LOWER_LIMIT = (float) -109.5;
         public static final float ARM_UPPER_LIMIT = 24;
 
         // 5 to 1 | 5 to 1 | 56 to 26
@@ -278,6 +279,7 @@ public final class Constants {
             MID_SCORE (-7),
             LOW_SCORE (5.7 - 90),
             HANDOFF (-89),
+            CUBE_COLLECT (-91.3),
             STOWED (ARM_LOWER_LIMIT);
             
             private final double angle;

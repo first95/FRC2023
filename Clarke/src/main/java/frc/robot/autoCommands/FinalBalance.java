@@ -1,35 +1,54 @@
 package frc.robot.autoCommands;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.Auton;
 import frc.robot.subsystems.SwerveBase;
 
-public class FinalBalance extends SequentialCommandGroup {
-    private SwerveBase drive;
+public class FinalBalance extends CommandBase {
+    private final SwerveBase drive;
+    private final Timer time;
     public FinalBalance(SwerveBase drive) {
         this.drive = drive;
-        addRequirements(drive);
-
-        addCommands(new RepeatCommand(new PrecisionAlign(this::nudgePose, drive)).until(this::isLevel));
+        time = new Timer();
+        addRequirements(drive); 
     }
 
-    private Pose2d nudgePose() {
-        Pose2d currentPose = drive.getPose();
-        double[] gravVec = drive.getGravityVector();
-        double nudge = Math.copySign(Auton.BALANCE_NUDGE, gravVec[0]);
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {}
 
-        return new Pose2d(
-            new Translation2d(
-                currentPose.getX() + nudge,
-                currentPose.getY()),
-            currentPose.getRotation()
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+        
+        if (Math.abs(drive.getPitch().getDegrees()) < Auton.CHARGER_STARTING_TO_TIP) {
+            time.start();
+            drive.drive(new Translation2d(), 0, true, false);
+        } else {
+            time.stop();
+            time.reset();
+            double[] gravVec = drive.getGravityVector();;
+            double xVel = -Math.copySign(Auton.BALANCE_SPEED, gravVec[0]);
+            drive.drive(
+                new Translation2d(xVel, 0), 0, true, false
         );
+        }
     }
 
-    private boolean isLevel() {
-        return (Math.abs(drive.getPitch().getDegrees()) < Auton.CHARGER_BALANCE_ANGLE_TOLERANCE);
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        drive.drive(
+            new Translation2d(), 
+            0, 
+            true,
+            false);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return (time.get() >= Auton.BALANCE_LEVEL_TIME);
     }
 }

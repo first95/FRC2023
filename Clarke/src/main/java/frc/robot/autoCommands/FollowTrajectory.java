@@ -16,11 +16,11 @@ public class FollowTrajectory extends SequentialCommandGroup{
     public FollowTrajectory(SwerveBase drivebase, PathPlannerTrajectory trajectory, boolean resetOdometry) {
         addRequirements(drivebase);
 
-        addCommands(new InstantCommand(() -> {
-            if(resetOdometry) {
+        if (resetOdometry) {
+            addCommands(new InstantCommand(() -> {
                 drivebase.resetOdometry(trajectory.getInitialHolonomicPose());
-            }
-        }));
+            }));
+        }
         
         addCommands(
             new PPSwerveControllerCommand(
