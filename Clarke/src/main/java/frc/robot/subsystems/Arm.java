@@ -59,7 +59,7 @@ public class Arm extends SubsystemBase {
     armController.setFF(ArmConstants.ARM_KF);
     armController.setOutputRange(-ArmConstants.MAX_CONTROL_EFFORT, ArmConstants.MAX_CONTROL_EFFORT);
 
-    armMotor.setSmartCurrentLimit(30);
+    armMotor.setSmartCurrentLimit(40);
     armMotor.setIdleMode(IdleMode.kCoast);
 
     bottomLimitSwitch = armMotor.getReverseLimitSwitch(Type.kNormallyOpen);
@@ -136,6 +136,10 @@ public class Arm extends SubsystemBase {
     armMotorFollow.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
   }
 
+  public void setArmVoltage(double volts) {
+    armMotor.setVoltage(volts);
+  }
+
   @Override
   public void periodic() {
     if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(PRESETS.STOWED.angle());
@@ -150,6 +154,8 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
     SmartDashboard.putNumber("Arm Current", armMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Commanded Arm Voltage", armMotor.getAppliedOutput() * armMotor.getBusVoltage());
+    SmartDashboard.putNumber("Arm Setpoint", setPoint);
 
     // Report arm position
     Rotation2d currentPosition = Rotation2d.fromDegrees(getPos());

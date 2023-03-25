@@ -61,7 +61,7 @@ public class ControlArm extends CommandBase {
       } else if (setHighScore.getAsBoolean()) {
         arm.setPreset(ArmConstants.PRESETS.HIGH_SCORE);
       } else if (wasVelocityControlled) {
-        arm.setPos(arm.getPos());
+        //arm.setPos(arm.getPos()); FOR TESTING ONLY 
         wasVelocityControlled = false;
       }
     }
