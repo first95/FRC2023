@@ -178,9 +178,9 @@ public final class Constants {
         public static final double ANG_KI = 0;
         public static final double ANG_KD = 0;
 
-        public static final double MAX_SPEED = 4;
-        public static final double MAX_ACCELERATION = 3;
-        public static final double MAX_SPEED_SAFETY_SCALAR = 0.8;
+        public static final double MAX_SPEED = 2;
+        public static final double MAX_ACCELERATION = 2;
+        public static final double MAX_SPEED_SAFETY_SCALAR = 0.6;
 
         public static final double BALANCE_SPEED = 0.18; // m/s
         public static final double BALANCE_LEVEL_TIME = 1; // s
@@ -288,7 +288,7 @@ public final class Constants {
         }
 
         public static final double ANGLE_TOLERANCE = 4; // degrees
-        public static final double RETURN_MIDPOINT = -90; // position for arm to seek before stowing
+        public static final double RETURN_MIDPOINT = -45; // position for arm to seek before stowing
 
         public enum GripState {GRIP_OFF, GRIP_ON}
 
@@ -300,13 +300,13 @@ public final class Constants {
         public static final double RETURN_TIME_STOWING = 0.4; // seconds
 
         // Constants for PID
-        public static final double ARM_KP = 0.03;
+        public static final double ARM_KP = 0.015;
         public static final double ARM_KI = 0;
         public static final double ARM_KD = 0.02;
         public static final double ARM_KF = 0;
 
         // Constants for feed forward
-        public static final double ARM_KS = 0.2;
+        public static final double ARM_KS = 0;
         public static final double ARM_KG = 0.642;
         public static final double ARM_KV = 12 / THEORETICAL_MAX_ARM_SPEED;
 
