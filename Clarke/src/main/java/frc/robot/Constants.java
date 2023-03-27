@@ -217,7 +217,7 @@ public final class Constants {
             Map.entry("Gamepiece1", new Pose2d(new Translation2d(6.95, 0.908), new Rotation2d(0))),
             Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
             Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
-            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.6, 4.3), new Rotation2d(0))),
+            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.7, 4.3), new Rotation2d(0))),
             Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 3.30), Rotation2d.fromDegrees(180))),
             Map.entry("StartFarBalance", new Pose2d(new Translation2d(5.6, 3.30), Rotation2d.fromDegrees(180))),
             Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.93, 3.30), Rotation2d.fromDegrees(180))),
@@ -265,6 +265,7 @@ public final class Constants {
         public static final int ARM_MOTOR_ID = 10; 
         public static final int ARM_MOTOR_FOLLOWER_ID = 11; 
         public static final int GRIPPER_SOLENOID_ID = 1;
+        public static final int CUBE_SENSOR_ID = 0;
 
         // Limits in degrees
         public static final float ARM_LOWER_LIMIT = (float) -109.5;
@@ -279,7 +280,7 @@ public final class Constants {
             MID_SCORE (-7),
             LOW_SCORE (5.7 - 90),
             HANDOFF (-100.3),
-            CUBE_COLLECT (-91.3),
+            CUBE_COLLECT (-92.3),
             STOWED (ARM_LOWER_LIMIT);
             
             private final double angle;
@@ -372,6 +373,6 @@ public final class Constants {
         public static final int APRILTAG_PIPELINE_NUMBER = 0;
         public static final String PORT_LIMELIGHT_NAME = "port";
         public static final String STARBOARD_LIMELIGHT_NAME = "sboard";
-        public static final double POSE_ERROR_TOLERANCE = 0.5;
+        public static final double POSE_ERROR_TOLERANCE = 1.5;
     }
 }

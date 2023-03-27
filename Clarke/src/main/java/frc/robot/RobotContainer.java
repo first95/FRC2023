@@ -54,7 +54,6 @@ public class RobotContainer {
   private final TeleopDrive openFieldRel, openRobotRel, closedFieldRel, closedRobotRel;
   private final ControlArm controlArm;
   private final ControlIntake controlIntake;
-  private final DigitalInput cubeSensor;
 
   private Alliance alliance;
 
@@ -153,7 +152,6 @@ public class RobotContainer {
       new BooleanSupplier() { public boolean getAsBoolean() {return false;};}, // HANDOFF
       arm);
       
-      cubeSensor = new DigitalInput(0);
   }
 
   /**
@@ -176,7 +174,7 @@ public class RobotContainer {
       new InstantCommand(() -> {
         arm.setPreset(ArmConstants.PRESETS.CUBE_COLLECT);
         arm.setGrip(true);})
-      .andThen(new WaitUntilCommand(() -> cubeSensor.get()))
+      .andThen(new WaitUntilCommand(() -> arm.getCubeSensor()))
       .andThen(new InstantCommand(arm::toggleGrip))
       .withTimeout(5));
 

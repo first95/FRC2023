@@ -257,16 +257,16 @@ public class AutoParser {
             case "grabcube":
                 try {
                     return new InstantCommand(() -> {
-                        arm.setGrip(true);
                         intake.setPreset(IntakeConstants.PRESETS.CUBE);
                         intake.grabCube(0.6);
-                    }, intake)
-                    .andThen(new WaitCommand(0.8))
-                    .andThen(new InstantCommand(() -> {
-                        intake.setPreset(IntakeConstants.PRESETS.STOWED);
+                        arm.setPreset(ArmConstants.PRESETS.CUBE_COLLECT);
+                        arm.setGrip(true);}, arm, intake)
+                      .andThen(new WaitUntilCommand(() -> arm.getCubeSensor()).withTimeout(2))
+                      .andThen(new InstantCommand(() -> {
+                        arm.toggleGrip();
                         intake.grabCube(0);
-                        arm.setGrip(false);
-                    }, intake));
+                        intake.setPreset(IntakeConstants.PRESETS.STOWED);
+                        }, arm));
                 } catch (Exception e) {
                     throw new AutoParseException("GrabCube", "What did you do!?", e);
                 }
