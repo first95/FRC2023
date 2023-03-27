@@ -1,11 +1,11 @@
 One Cube and Balance:
 grip();
 movearm(MID_SCORE);
-drivetopose(Node8High);
+drivetopose(Node8High,false,false);
 alignto(Node8High);
 score();
-drivetopose(StartNearBalance);
-alignto(ChargerCenter)+movearm(STOWED);
+drivetopose(StartNearBalanceClear,false,false);
+alignto(ChargerCenterClear)+movearm(STOWED);
 stop();
 
 One Cube and Leave Community:
@@ -13,18 +13,32 @@ grip();
 movearm(MID_SCORE);
 alignto(Node8High);
 score();
-drivetopose(NavPoint2);
+drivetopose(NavPoint2,false,true);
 movearm(STOWED);
-drivetopose(NavPoint1);
+drivetopose(NavPoint1,true,false);
+
+One Cube Balance and throw cube:
+moveArm(MID_SCORE);
+alignto(Node8High,false,false);
+score();
+drivetopose(NavPoint2,false,true);
+drivetopose(NavPoint1,true,false)+moveArm(STOWED);
+alignto(Gamepiece4);
+grabCube();
+drivetoPose(StartFarBalance,false,false);
+alignto(ChargerCenter);
+balance();
+stop();
+throw()
 
 Scoring table side One cube and balance:
 grip();
 movearm(MID_SCORE);
 alignto(Node2High);
 score();
-drivetopose(StartNearBalanceTable);
+drivetopose(StartNearBalanceTable,false,false);
 alignto(ChargerCenterTable)+movearm(STOWED);
-stop();
+stop()
 
 
 Not Working
