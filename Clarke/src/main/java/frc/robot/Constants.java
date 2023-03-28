@@ -33,8 +33,8 @@ public final class Constants {
     public static final double NEO_STALL_TORQUE = 3.75; // N * m
     public static final double NEO_550_FREE_SPEED = 11000; // RPM
     
-    public static final double MANIPULATOR_MASS = 1.11;
-    public static final double ROBOT_MASS = (108 * KG_PER_LB);
+    public static final double MANIPULATOR_MASS = 1.88;
+    public static final double ROBOT_MASS = (110 * KG_PER_LB);
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         -0.035,
@@ -282,8 +282,8 @@ public final class Constants {
             HIGH_SCORE (21.3),
             MID_SCORE (-3),
             LOW_SCORE (5.7 - 90),
-            HANDOFF (-100.3),
-            CUBE_COLLECT (-92.3),
+            HANDOFF (-101.3),
+            CUBE_COLLECT (-94.3),
             STOWED (ARM_LOWER_LIMIT);
             
             private final double angle;
