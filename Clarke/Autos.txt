@@ -18,6 +18,7 @@ movearm(STOWED);
 drivetopose(NavPoint1,true,false);
 
 One Cube Balance and throw cube:
+grip();
 moveArm(MID_SCORE);
 alignto(Node8High,false,false);
 score();
