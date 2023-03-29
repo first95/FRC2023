@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ControlArm;
 import frc.robot.commands.AutoHandoffCone;
@@ -54,7 +55,6 @@ public class RobotContainer {
   private final TeleopDrive openFieldRel, openRobotRel, closedFieldRel, closedRobotRel;
   private final ControlArm controlArm;
   private final ControlIntake controlIntake;
-  private final DigitalInput cubeSensor;
 
   private Alliance alliance;
 
@@ -153,7 +153,6 @@ public class RobotContainer {
       new BooleanSupplier() { public boolean getAsBoolean() {return false;};}, // HANDOFF
       arm);
       
-      cubeSensor = new DigitalInput(0);
   }
 
   /**
@@ -176,7 +175,7 @@ public class RobotContainer {
       new InstantCommand(() -> {
         arm.setPreset(ArmConstants.PRESETS.CUBE_COLLECT);
         arm.setGrip(true);})
-      .andThen(new WaitUntilCommand(() -> cubeSensor.get()))
+      .andThen(new WaitUntilCommand(() -> arm.getCubeSensor()))
       .andThen(new InstantCommand(arm::toggleGrip))
       .withTimeout(5));
 
@@ -184,6 +183,11 @@ public class RobotContainer {
     operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake).withTimeout(5));
     operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
     operatorController.start().onTrue(new ThrowCube(arm).withTimeout(5));
+
+    rotationController.button(14).whileTrue(new RepeatCommand(new InstantCommand(() -> {
+      intake.setPreset(IntakeConstants.PRESETS.CUBE);
+      intake.grabCube(-0.6);
+    })));
     
     driverController.button(1).whileTrue(new AutoScore(DriverStation::getAlliance, arm, drivebase));
     driverController.button(2).onTrue((new InstantCommand(drivebase::zeroGyro)));

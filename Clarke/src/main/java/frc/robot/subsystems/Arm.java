@@ -15,6 +15,7 @@ import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
@@ -34,6 +35,7 @@ public class Arm extends SubsystemBase {
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
   private ArmFeedforward feedforward;
+  private DigitalInput cubeSensor;
 
   private Timer time = new Timer();
 
@@ -70,9 +72,15 @@ public class Arm extends SubsystemBase {
       ArmConstants.ARM_KS,
       ArmConstants.ARM_KG,
       ArmConstants.ARM_KV);
+
+    cubeSensor = new DigitalInput(ArmConstants.CUBE_SENSOR_ID);
     
     time.reset();
     time.start();
+  }
+
+  public boolean getCubeSensor() {
+    return cubeSensor.get();
   }
 
   public double getPos(){

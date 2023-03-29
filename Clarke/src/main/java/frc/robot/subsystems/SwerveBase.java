@@ -333,7 +333,6 @@ public class SwerveBase extends SubsystemBase {
   public Pose3d getVisionPose(NetworkTable visionData) {
     if ((visionData.getEntry("tv").getDouble(0) == 0 ||
       visionData.getEntry("getPipe").getDouble(0) != Vision.APRILTAG_PIPELINE_NUMBER)) {
-      DriverStation.reportWarning("Limelight no target" + visionData.getPath(), false);
       return null;
     }
     double[] poseComponents;
