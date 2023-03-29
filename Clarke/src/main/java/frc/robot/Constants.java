@@ -283,7 +283,7 @@ public final class Constants {
             MID_SCORE (-3),
             LOW_SCORE (5.7 - 90),
             HANDOFF (-101.3),
-            CUBE_COLLECT (-94.3),
+            CUBE_COLLECT (-96.3),
             STOWED (ARM_LOWER_LIMIT);
             
             private final double angle;
