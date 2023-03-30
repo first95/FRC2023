@@ -106,7 +106,7 @@ public class SwerveBase extends SubsystemBase {
       translation.getX(), 
       translation.getY(), 
       rotation, 
-      getYaw()
+      getPose().getRotation()
     )
     : new ChassisSpeeds(
       translation.getX(),
@@ -175,7 +175,7 @@ public class SwerveBase extends SubsystemBase {
     // ChassisSpeeds has a method to convert from field-relative to robot-relative speeds,
     // but not the reverse.  However, because this transform is a simple rotation, negating the angle
     // given as the robot angle reverses the direction of rotation, and the conversion is reversed.
-    return ChassisSpeeds.fromFieldRelativeSpeeds(Drivebase.KINEMATICS.toChassisSpeeds(getStates()), getYaw().unaryMinus());
+    return ChassisSpeeds.fromFieldRelativeSpeeds(Drivebase.KINEMATICS.toChassisSpeeds(getStates()), getPose().getRotation().unaryMinus());
   }
 
   /**
@@ -420,6 +420,7 @@ public class SwerveBase extends SubsystemBase {
     
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
+
     Pose2d estimatedPose = getPose();
     double timestamp;
     Pose3d portPose3d = getVisionPose(portLimelightData);
@@ -455,10 +456,10 @@ public class SwerveBase extends SubsystemBase {
     if (!Robot.isReal()) {
       angle += Drivebase.KINEMATICS.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lasttime);
       lasttime = timer.get();
-
-      field.setRobotPose(odometry.getEstimatedPosition());
-      SmartDashboard.putData("Field", field);
+      
     }
+    field.setRobotPose(estimatedPose);
+    SmartDashboard.putData("Field", field);
 
     double[] moduleStates = new double[8];
     for (SwerveModule module : swerveModules) {

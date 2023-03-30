@@ -285,7 +285,7 @@ public final class Constants {
             HIGH_SCORE (21.3),
             MID_SCORE (-3),
             LOW_SCORE (5.7 - 90),
-            HANDOFF (-101.3),
+            HANDOFF (-95),
             CUBE_COLLECT (-96.3),
             STOWED (ARM_LOWER_LIMIT);
             
