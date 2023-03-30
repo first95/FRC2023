@@ -420,12 +420,14 @@ public class SwerveBase extends SubsystemBase {
     
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
+    Pose2d estimatedPose = getPose();
     double timestamp;
     Pose3d portPose3d = getVisionPose(portLimelightData);
     double portTime = visionLatency;
     if (portPose3d != null) {
       Pose2d portPose = portPose3d.toPose2d();
-      if (portPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
+      if ((portPose.minus(estimatedPose).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) &&
+      portPose.getRotation().minus(estimatedPose.getRotation()).getRadians() <= Vision.ANGULAR_ERROR_TOLERANCE) {
         timestamp = Timer.getFPGATimestamp() - portTime / 1000;
         odometry.addVisionMeasurement(portPose, timestamp);
       }
@@ -434,7 +436,8 @@ public class SwerveBase extends SubsystemBase {
     double starboardTime = visionLatency;
     if (starboardPose3d != null) {
       Pose2d starboardPose = starboardPose3d.toPose2d();
-      if (starboardPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
+      if ((starboardPose.minus(estimatedPose).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) &&
+      starboardPose.getRotation().minus(estimatedPose.getRotation()).getRadians() <= Vision.ANGULAR_ERROR_TOLERANCE) {
         timestamp = Timer.getFPGATimestamp() - starboardTime / 1000;
         odometry.addVisionMeasurement(starboardPose, timestamp);
       }

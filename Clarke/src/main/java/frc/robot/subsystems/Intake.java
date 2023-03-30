@@ -72,7 +72,7 @@ public class Intake extends SubsystemBase {
 
   public void grabCube(double speed) {
     bottomRoller.set(speed);
-    topRoller.set(0.05);
+    topRoller.set(speed * 0.3);
   }
 
   public void grabCone(double speed) {

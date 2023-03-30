@@ -95,7 +95,7 @@ public final class Constants {
         public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(NEO_550_FREE_SPEED * 7 / 372) / 60; // deg/s
 
         // Robot heading control gains
-        public static final double HEADING_KP = MAX_ANGULAR_VELOCITY / Math.PI;
+        public static final double HEADING_KP = 0.5 * (MAX_ANGULAR_VELOCITY / Math.PI);
         public static final double HEADING_KI = 0;
         public static final double HEADING_KD = 0;
         
@@ -184,7 +184,7 @@ public final class Constants {
 
         public static final double BALANCE_SPEED = 0.18; // m/s
         public static final double BALANCE_LEVEL_TIME = 1; // s
-        public static final double CHARGER_STARTING_TO_TIP = 11;
+        public static final double CHARGER_STARTING_TO_TIP = 8;
 
         private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(
             Map.entry("Node1High", new Pose2d(new Translation2d(1.8, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
@@ -214,10 +214,13 @@ public final class Constants {
             Map.entry("Node7Low", new Pose2d(new Translation2d(1.973, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Node8Low", new Pose2d(new Translation2d(1.973, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Node9Low", new Pose2d(new Translation2d(1.973, 4.86), Rotation2d.fromDegrees(180))),
+            Map.entry("Throw1", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Throw2", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Throw3", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Gamepiece1", new Pose2d(new Translation2d(6.95, 0.908), new Rotation2d(0))),
             Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
             Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
-            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.7, 4.3), new Rotation2d(0))),
+            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.7, 4.54), new Rotation2d(0))),
             Map.entry("StartNearBalanceClear", new Pose2d(new Translation2d(2.52, 3.30), Rotation2d.fromDegrees(180))),
             Map.entry("StartFarBalanceClear", new Pose2d(new Translation2d(5.6, 3.30), Rotation2d.fromDegrees(180))),
             Map.entry("ChargerCenterClear", new Pose2d(new Translation2d(3.93, 3.30), Rotation2d.fromDegrees(180))),
@@ -372,10 +375,11 @@ public final class Constants {
             }
         }
     }
-    public class Vision {
+    public static class Vision {
         public static final int APRILTAG_PIPELINE_NUMBER = 0;
         public static final String PORT_LIMELIGHT_NAME = "port";
         public static final String STARBOARD_LIMELIGHT_NAME = "sboard";
-        public static final double POSE_ERROR_TOLERANCE = 1.5;
+        public static final double POSE_ERROR_TOLERANCE = 0.5;
+        public static final double ANGULAR_ERROR_TOLERANCE = Math.toRadians(2);
     }
 }

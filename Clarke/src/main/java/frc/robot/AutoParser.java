@@ -261,7 +261,7 @@ public class AutoParser {
                         intake.grabCube(0.6);
                         arm.setPreset(ArmConstants.PRESETS.CUBE_COLLECT);
                         arm.setGrip(true);}, arm, intake)
-                      .andThen(new WaitUntilCommand(() -> arm.getCubeSensor()).withTimeout(1))
+                      .andThen(new WaitUntilCommand(() -> arm.getCubeSensor()).withTimeout(4))
                       .andThen(new InstantCommand(() -> {
                         arm.toggleGrip();
                         intake.grabCube(0);
