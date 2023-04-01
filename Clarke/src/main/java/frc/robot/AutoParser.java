@@ -208,7 +208,7 @@ public class AutoParser {
                 }
             case "alignto":
                 try {
-                    return new PrecisionAlign(parameters[0], currentAlliance, drive);
+                    return new PrecisionAlign(parameters[0], currentAlliance, drive).withTimeout(5);
                 } catch (NullPointerException e) {
                     throw new AutoParseException("AlignTo", "Pose not recognized", e); 
                 } catch (ArrayIndexOutOfBoundsException e) {
