@@ -232,7 +232,9 @@ public final class Constants {
             Map.entry("StartFarBalanceTable", new Pose2d(new Translation2d(5.8, 1.89), Rotation2d.fromDegrees(180))),
             Map.entry("ChargerCenterTable", new Pose2d(new Translation2d(3.93, 1.89), Rotation2d.fromDegrees(180))),
             Map.entry("NavPoint1", new Pose2d(new Translation2d(5.38, 4.54), Rotation2d.fromDegrees(180))),
-            Map.entry("NavPoint2", new Pose2d(new Translation2d(2.8, 4.54), Rotation2d.fromDegrees(180)))
+            Map.entry("NavPoint2", new Pose2d(new Translation2d(2.8, 4.54), Rotation2d.fromDegrees(180))),
+            Map.entry("NavPoint3", new Pose2d(new Translation2d(5.38, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("NavPoint4", new Pose2d(new Translation2d(2.8, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180)))
         );
         private static final Map<String, Pose2d> RED_MAP =
             BLUE_MAP.entrySet().stream().collect(Collectors.toMap(

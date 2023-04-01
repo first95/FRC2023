@@ -64,6 +64,15 @@ drivetopose(NavPoint2,false,true);
 movearm(STOWED);
 drivetopose(NavPoint1,true,false);
 
+One Cube and leave Cable side:
+grip();
+movearm(MID_SCORE);
+alignto(Node2High);
+score();
+drivetopose(NavPoint4,false,true);
+movearm(STOWED);
+drivetopose(NavPoint3,true,false);
+
 One Cube Balance and throw cube:
 grip();
 moveArm(MID_SCORE);
