@@ -14,12 +14,12 @@ One Cube leave and balance center:
 grip();
 moveArm(MID_SCORE);
 wait(1);
-alignto(Node5Mid);
+alignto(Node5High);
 score();
 drivetopose(StartNearBalance,false,false);
 moveArm(STOWED);
 wait(1);
-alignto(ChargerCenter);
+alignto(PastChargerCenter);
 drivetopose(StartFarBalance,false,false);
 alignto(ChargerCenter);
 balance();
