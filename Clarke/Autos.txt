@@ -19,8 +19,7 @@ score();
 drivetopose(StartNearBalance,false,false);
 moveArm(STOWED);
 wait(1);
-alignto(PastChargerCenter);
-drivetopose(StartFarBalance,false,false);
+drivetopose(ExitCommunity,false,false);
 alignto(ChargerCenter);
 balance();
 stop()

@@ -182,7 +182,7 @@ public final class Constants {
         public static final double MAX_ACCELERATION = 2;
         public static final double MAX_SPEED_SAFETY_SCALAR = 0.6;
 
-        public static final double BALANCE_SPEED = 0.18; // m/s
+        public static final double BALANCE_SPEED = 0.25; // m/s
         public static final double BALANCE_LEVEL_TIME = 1; // s
         public static final double CHARGER_STARTING_TO_TIP = 8;
 
@@ -226,8 +226,9 @@ public final class Constants {
             Map.entry("ChargerCenterClear", new Pose2d(new Translation2d(3.93, 3.30), Rotation2d.fromDegrees(180))),
             Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
             Map.entry("StartFarBalance", new Pose2d(new Translation2d(5.8, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("ExitCommunity", new Pose2d(new Translation2d(6.2, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
             Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.93, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("PastChargerCenter", new Pose2d(new Translation2d(4, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("PastChargerCenter", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
             Map.entry("StartNearBalanceTable", new Pose2d(new Translation2d(2.52, 1.89), Rotation2d.fromDegrees(180))),
             Map.entry("StartFarBalanceTable", new Pose2d(new Translation2d(5.8, 1.89), Rotation2d.fromDegrees(180))),
             Map.entry("ChargerCenterTable", new Pose2d(new Translation2d(3.93, 1.89), Rotation2d.fromDegrees(180))),
