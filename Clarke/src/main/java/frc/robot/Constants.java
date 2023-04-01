@@ -33,8 +33,8 @@ public final class Constants {
     public static final double NEO_STALL_TORQUE = 3.75; // N * m
     public static final double NEO_550_FREE_SPEED = 11000; // RPM
     
-    public static final double MANIPULATOR_MASS = 1.88;
-    public static final double ROBOT_MASS = (110 * KG_PER_LB);
+    public static final double MANIPULATOR_MASS = 1.11;
+    public static final double ROBOT_MASS = (108 * KG_PER_LB);
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         -0.035,
@@ -187,33 +187,33 @@ public final class Constants {
         public static final double CHARGER_STARTING_TO_TIP = 8;
 
         private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(
-            Map.entry("Node1High", new Pose2d(new Translation2d(1.8, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node2High", new Pose2d(new Translation2d(1.8, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node3High", new Pose2d(new Translation2d(1.8, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node4High", new Pose2d(new Translation2d(1.8, 2.08), Rotation2d.fromDegrees(180))),
-            Map.entry("Node5High", new Pose2d(new Translation2d(1.8, Units.inchesToMeters(107.875)),Rotation2d.fromDegrees(180))),
-            Map.entry("Node6High", new Pose2d(new Translation2d(1.8, 3.26),Rotation2d.fromDegrees(180))),
-            Map.entry("Node7High", new Pose2d(new Translation2d(1.8, Units.inchesToMeters(151.875)),Rotation2d.fromDegrees(180))),
-            Map.entry("Node8High", new Pose2d(new Translation2d(1.8, Units.inchesToMeters(173.875)),Rotation2d.fromDegrees(180))),
-            Map.entry("Node9High", new Pose2d(new Translation2d(1.8, 4.86),Rotation2d.fromDegrees(180))),
-            Map.entry("Node1Mid", new Pose2d(new Translation2d(2.24, Units.inchesToMeters(19.875)),  Rotation2d.fromDegrees(180))),
-            Map.entry("Node2Mid", new Pose2d(new Translation2d(2.24, Units.inchesToMeters(41.875)),  Rotation2d.fromDegrees(180))),
-            Map.entry("Node3Mid", new Pose2d(new Translation2d(2.24, Units.inchesToMeters(63.875)),  Rotation2d.fromDegrees(180))),
-            Map.entry("Node4Mid", new Pose2d(new Translation2d(2.24, 2.08),  Rotation2d.fromDegrees(180))),
-            Map.entry("Node5Mid", new Pose2d(new Translation2d(2.24, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node6Mid", new Pose2d(new Translation2d(2.24, 3.26), Rotation2d.fromDegrees(180))),
-            Map.entry("Node7Mid", new Pose2d(new Translation2d(2.24, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node8Mid", new Pose2d(new Translation2d(2.24, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node9Mid", new Pose2d(new Translation2d(2.24, 4.86), Rotation2d.fromDegrees(180))),
-            Map.entry("Node1Low", new Pose2d(new Translation2d(1.973, Units.inchesToMeters(19.875)),  Rotation2d.fromDegrees(180))),
-            Map.entry("Node2Low", new Pose2d(new Translation2d(1.973, Units.inchesToMeters(41.875)),  Rotation2d.fromDegrees(180))),
-            Map.entry("Node3Low", new Pose2d(new Translation2d(1.973, Units.inchesToMeters(63.875)),  Rotation2d.fromDegrees(180))),
-            Map.entry("Node4Low", new Pose2d(new Translation2d(1.973, 2.08),  Rotation2d.fromDegrees(180))),
-            Map.entry("Node5Low", new Pose2d(new Translation2d(1.973, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node6Low", new Pose2d(new Translation2d(1.973, 3.26), Rotation2d.fromDegrees(180))),
-            Map.entry("Node7Low", new Pose2d(new Translation2d(1.973, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node8Low", new Pose2d(new Translation2d(1.973, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node9Low", new Pose2d(new Translation2d(1.973, 4.86), Rotation2d.fromDegrees(180))),
+            Map.entry("Node1High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node2High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node3High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node4High", new Pose2d(new Translation2d(1.723, 2.08), Rotation2d.fromDegrees(180))),
+            Map.entry("Node5High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(107.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node6High", new Pose2d(new Translation2d(1.723, 3.26),Rotation2d.fromDegrees(180))),
+            Map.entry("Node7High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(151.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node8High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(173.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node9High", new Pose2d(new Translation2d(1.723, 4.86),Rotation2d.fromDegrees(180))),
+            Map.entry("Node1Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(19.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node2Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(41.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node3Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(63.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node4Mid", new Pose2d(new Translation2d(2.18, 2.08),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node5Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node6Mid", new Pose2d(new Translation2d(2.18, 3.26), Rotation2d.fromDegrees(180))),
+            Map.entry("Node7Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node8Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9Mid", new Pose2d(new Translation2d(2.18, 4.86), Rotation2d.fromDegrees(180))),
+            Map.entry("Node1Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(19.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node2Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(41.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node3Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(63.875)),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node4Low", new Pose2d(new Translation2d(1.913, 2.08),  Rotation2d.fromDegrees(180))),
+            Map.entry("Node5Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node6Low", new Pose2d(new Translation2d(1.913, 3.26), Rotation2d.fromDegrees(180))),
+            Map.entry("Node7Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node8Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9Low", new Pose2d(new Translation2d(1.913, 4.86), Rotation2d.fromDegrees(180))),
             Map.entry("Throw1", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Throw2", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Throw3", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
@@ -282,11 +282,11 @@ public final class Constants {
         public static final double ARM_DEGREES_PER_MOTOR_ROTATION = ARM_GEAR_RATIO * 360;
 
         public enum PRESETS {
-            HIGH_SCORE (21.3),
-            MID_SCORE (-3),
+            HIGH_SCORE (13),
+            MID_SCORE (-7),
             LOW_SCORE (5.7 - 90),
-            HANDOFF (-101.3),
-            CUBE_COLLECT (-96.3),
+            HANDOFF (-89),
+            CUBE_COLLECT (-92.3),
             STOWED (ARM_LOWER_LIMIT);
             
             private final double angle;
@@ -314,7 +314,7 @@ public final class Constants {
 
         // Constants for feed forward
         public static final double ARM_KS = 0;
-        public static final double ARM_KG = 0.642;
+        public static final double ARM_KG = 0.05 * 12;
         public static final double ARM_KV = 12 / THEORETICAL_MAX_ARM_SPEED;
 
         public static final Translation3d SHOULDER_LOCATION = new Translation3d(
