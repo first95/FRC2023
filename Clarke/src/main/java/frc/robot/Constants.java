@@ -274,7 +274,7 @@ public final class Constants {
         public static final int CUBE_SENSOR_ID = 0;
 
         // Limits in degrees
-        public static final float ARM_LOWER_LIMIT = (float) -109.5;
+        public static final float ARM_LOWER_LIMIT = (float) -107.5;
         public static final float ARM_UPPER_LIMIT = 24;
 
         // 5 to 1 | 5 to 1 | 56 to 26
