@@ -286,7 +286,7 @@ public final class Constants {
             MID_SCORE (-7),
             LOW_SCORE (5.7 - 90),
             HANDOFF (-89),
-            CUBE_COLLECT (-92.3),
+            CUBE_COLLECT (-90.3),
             STOWED (ARM_LOWER_LIMIT);
             
             private final double angle;
@@ -331,6 +331,7 @@ public final class Constants {
         public static final int RACK_ID = 13;
 
         public static final double GRABBED_CONE_ROLLER_CURRENT = 2; // Amps
+        public static final double TOP_ROLLER_IDLE = 0.05;
 
         public static final boolean INVERT_ROLLERS = true;
         public static final boolean INVERT_RACK = false;
