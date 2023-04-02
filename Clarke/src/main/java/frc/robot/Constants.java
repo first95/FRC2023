@@ -150,7 +150,7 @@ public final class Constants {
         public static final class Mod2 {
             public static final int DRIVE_MOTOR_ID = 5;
             public static final int ANGLE_MOTOR_ID = 4;
-            public static final double ANGLE_OFFSET = 52.3; // 52.67;
+            public static final double ANGLE_OFFSET = 52.3 + 1.1; // 52.67;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
