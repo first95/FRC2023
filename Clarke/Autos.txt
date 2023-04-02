@@ -37,6 +37,13 @@ alignto(ChargerCenter);
 balance();
 stop()
 
+Throw 'n go:
+throw();
+wait(1);
+movearm(STOWED);
+wait(1);
+drivetopose(Gamepiece1,false,false)+grabcone();
+
 Cube thrower:
 grip();
 alignto(Throw2);
