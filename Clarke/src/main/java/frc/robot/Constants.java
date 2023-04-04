@@ -178,8 +178,8 @@ public final class Constants {
         public static final double ANG_KI = 0;
         public static final double ANG_KD = 0;
 
-        public static final double MAX_SPEED = 2;
-        public static final double MAX_ACCELERATION = 2;
+        public static final double MAX_SPEED = 5;
+        public static final double MAX_ACCELERATION = 1;
         public static final double MAX_SPEED_SAFETY_SCALAR = 0.6;
 
         public static final double BALANCE_SPEED = 0.25; // m/s
@@ -219,8 +219,8 @@ public final class Constants {
             Map.entry("Throw3", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Gamepiece1", new Pose2d(new Translation2d(6.95, 0.908), new Rotation2d(0))),
             Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
-            Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
-            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.7, 4.54), new Rotation2d(0))),
+            Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.7), new Rotation2d(0))),
+            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.9, 4.45), new Rotation2d(0))),
             Map.entry("StartNearBalanceClear", new Pose2d(new Translation2d(2.52, 3.30), Rotation2d.fromDegrees(180))),
             Map.entry("StartFarBalanceClear", new Pose2d(new Translation2d(5.8, 3.30), Rotation2d.fromDegrees(180))),
             Map.entry("ChargerCenterClear", new Pose2d(new Translation2d(3.93, 3.30), Rotation2d.fromDegrees(180))),

@@ -175,6 +175,7 @@ public class AutoParser {
                 PathPlannerTrajectory trajectory = PathPlanner.loadPath(parameters[0], 
                     new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION));
                 try {
+                    trajectory.getInitialHolonomicPose(); // Throws a null pointer exception if the trajectory import fails
                     trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, currentAlliance);
                     return new FollowTrajectory(drive, trajectory, Boolean.valueOf(parameters[1]));
                 } catch (NullPointerException e) {
@@ -287,6 +288,12 @@ public class AutoParser {
                     return new ThrowCube(arm);
                 } catch (Exception e) {
                   throw new AutoParseException("throwCube", "What did you do!?", e);
+                }
+            case "localize":
+                try {
+                    return new InstantCommand(() -> drive.setAlliance(currentAlliance));
+                } catch (Exception e) {
+                    throw new AutoParseException("localize", "What did you do!?", e);
                 }
             default:
                 // If none of the preceeding cases apply, the command is invalid.
