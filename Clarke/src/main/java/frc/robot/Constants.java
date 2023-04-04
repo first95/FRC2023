@@ -334,7 +334,7 @@ public final class Constants {
         public static final int TOP_ROLLER_ID = 12;
         public static final int RACK_ID = 13;
 
-        public static final double GRABBED_CONE_ROLLER_CURRENT = 2; // Amps
+        public static final double GRABBED_CONE_ROLLER_CURRENT = 30; // Amps
         public static final double TOP_ROLLER_IDLE = 0.05;
 
         public static final boolean INVERT_ROLLERS = true;

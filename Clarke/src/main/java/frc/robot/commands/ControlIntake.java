@@ -60,14 +60,14 @@ public class ControlIntake extends CommandBase {
     } 
     else if (setCone.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.CONE);
-      if(subsystem.rackHasReachedReference(IntakeConstants.PRESETS.CONE.position()).getAsBoolean())
+      if(subsystem.rackHasReachedReference(IntakeConstants.PRESETS.CONE.position()))
         subsystem.grabCone(0.6);
       grabbedCone = true;
       SmartDashboard.putString("LastHandoff", "CONE");
     } 
     else if (setCube.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.CUBE);
-      if(subsystem.rackHasReachedReference(IntakeConstants.PRESETS.CUBE.position()).getAsBoolean())
+      if(subsystem.rackHasReachedReference(IntakeConstants.PRESETS.CUBE.position()))
         subsystem.grabCube(0.6);
       grabbedCone = false;
       SmartDashboard.putString("LastHandoff", "CUBE");

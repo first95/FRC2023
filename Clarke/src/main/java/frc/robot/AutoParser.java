@@ -240,12 +240,13 @@ public class AutoParser {
                     return new InstantCommand(() -> {
                         intake.setPreset(IntakeConstants.PRESETS.CONE);
                         intake.grabCone(0.6);
-                    }, intake)
+                    })
+                    .andThen(new WaitUntilCommand(() -> intake.rackHasReachedReference(IntakeConstants.PRESETS.CONE.position())))
                     .andThen(new WaitUntilCommand(() -> (intake.getTopRollerCurrentDraw() > IntakeConstants.GRABBED_CONE_ROLLER_CURRENT)))
                     .andThen(new InstantCommand(() -> {
-                        intake.setPreset(IntakeConstants.PRESETS.HANDOFF);
+                        intake.setPreset(IntakeConstants.PRESETS.STOWED);
                         intake.grabCone(0);
-                    }, intake));
+                    }));
                 } catch (Exception e) {
                     throw new AutoParseException("GrabCone", "What did you do!?", e);
                 }

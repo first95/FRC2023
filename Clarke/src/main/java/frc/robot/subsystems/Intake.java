@@ -101,10 +101,10 @@ public class Intake extends SubsystemBase {
     return bottomRoller.getOutputCurrent();
   }
 
-  public BooleanSupplier rackHasReachedReference(double reference) {
-    return () -> { return rackEncoder.getPosition() + 0.025 > (reference)
-      && rackEncoder.getPosition() - 0.025 < (reference); };  
-    }
+  public boolean rackHasReachedReference(double reference) {
+    return rackEncoder.getPosition() + 0.025 > (reference)
+      && rackEncoder.getPosition() - 0.025 < (reference);
+  }
 
   public void moveIntake(double speed) {
     gearRack.set(speed * 0.3);
