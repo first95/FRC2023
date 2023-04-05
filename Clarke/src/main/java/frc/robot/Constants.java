@@ -178,8 +178,8 @@ public final class Constants {
         public static final double ANG_KI = 0;
         public static final double ANG_KD = 0;
 
-        public static final double MAX_SPEED = 5;
-        public static final double MAX_ACCELERATION = 1;
+        public static final double MAX_SPEED = 3;
+        public static final double MAX_ACCELERATION = 1.3;
         public static final double MAX_SPEED_SAFETY_SCALAR = 0.6;
 
         public static final double BALANCE_SPEED = 0.25; // m/s
