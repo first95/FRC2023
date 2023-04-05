@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTable;
@@ -105,7 +106,7 @@ public class SwerveBase extends SubsystemBase {
       translation.getX(), 
       translation.getY(), 
       rotation, 
-      getYaw()
+      getPose().getRotation()
     )
     : new ChassisSpeeds(
       translation.getX(),
@@ -174,7 +175,7 @@ public class SwerveBase extends SubsystemBase {
     // ChassisSpeeds has a method to convert from field-relative to robot-relative speeds,
     // but not the reverse.  However, because this transform is a simple rotation, negating the angle
     // given as the robot angle reverses the direction of rotation, and the conversion is reversed.
-    return ChassisSpeeds.fromFieldRelativeSpeeds(Drivebase.KINEMATICS.toChassisSpeeds(getStates()), getYaw().unaryMinus());
+    return ChassisSpeeds.fromFieldRelativeSpeeds(Drivebase.KINEMATICS.toChassisSpeeds(getStates()), getPose().getRotation().unaryMinus());
   }
 
   /**
@@ -278,11 +279,25 @@ public class SwerveBase extends SubsystemBase {
   }
 
   public Rotation2d getPitch() {
-    return Rotation2d.fromDegrees(imu.getPitch());
+    if (Robot.isReal()) {
+      return Rotation2d.fromDegrees(imu.getPitch());
+    } else {
+      return new Rotation2d();
+    }
   }
 
   public Rotation2d getRoll() {
-    return Rotation2d.fromDegrees(imu.getRoll());
+    if (Robot.isReal()) {
+      return Rotation2d.fromDegrees(imu.getRoll());
+    } else {
+      return new Rotation2d();
+    }
+  }
+
+  public double[] getGravityVector() {
+    double[] components = new double[3];
+    imu.getGravityVector(components);
+    return components;
   }
 
   /**
@@ -318,7 +333,6 @@ public class SwerveBase extends SubsystemBase {
   public Pose3d getVisionPose(NetworkTable visionData) {
     if ((visionData.getEntry("tv").getDouble(0) == 0 ||
       visionData.getEntry("getPipe").getDouble(0) != Vision.APRILTAG_PIPELINE_NUMBER)) {
-      DriverStation.reportWarning("Limelight no target" + visionData.getPath(), false);
       return null;
     }
     double[] poseComponents;
@@ -406,12 +420,15 @@ public class SwerveBase extends SubsystemBase {
     
     // Update odometry
     odometry.update(getYaw(), getModulePositions());
+
+    /*Pose2d estimatedPose = getPose();
     double timestamp;
     Pose3d portPose3d = getVisionPose(portLimelightData);
     double portTime = visionLatency;
     if (portPose3d != null) {
       Pose2d portPose = portPose3d.toPose2d();
-      if (portPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
+      if ((portPose.minus(estimatedPose).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) &&
+      portPose.getRotation().minus(estimatedPose.getRotation()).getRadians() <= Vision.ANGULAR_ERROR_TOLERANCE) {
         timestamp = Timer.getFPGATimestamp() - portTime / 1000;
         odometry.addVisionMeasurement(portPose, timestamp);
       }
@@ -420,11 +437,12 @@ public class SwerveBase extends SubsystemBase {
     double starboardTime = visionLatency;
     if (starboardPose3d != null) {
       Pose2d starboardPose = starboardPose3d.toPose2d();
-      if (starboardPose.minus(getPose()).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) {
+      if ((starboardPose.minus(estimatedPose).getTranslation().getNorm() <= Vision.POSE_ERROR_TOLERANCE) &&
+      starboardPose.getRotation().minus(estimatedPose.getRotation()).getRadians() <= Vision.ANGULAR_ERROR_TOLERANCE) {
         timestamp = Timer.getFPGATimestamp() - starboardTime / 1000;
         odometry.addVisionMeasurement(starboardPose, timestamp);
       }
-    }
+    }*/
 
     /*ChassisSpeeds robotVelocity = getRobotVelocity();
     SmartDashboard.putNumber("Robot X Vel", robotVelocity.vxMetersPerSecond);
@@ -438,10 +456,10 @@ public class SwerveBase extends SubsystemBase {
     if (!Robot.isReal()) {
       angle += Drivebase.KINEMATICS.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lasttime);
       lasttime = timer.get();
-
-      field.setRobotPose(odometry.getEstimatedPosition());
-      SmartDashboard.putData("Field", field);
+      
     }
+    field.setRobotPose(pose);
+    SmartDashboard.putData("Field", field);
 
     double[] moduleStates = new double[8];
     for (SwerveModule module : swerveModules) {

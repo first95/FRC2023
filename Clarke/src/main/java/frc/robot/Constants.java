@@ -30,16 +30,16 @@ public final class Constants {
     public static final double KG_PER_LB = 0.453592;
     
     public static final double NEO_FREE_SPEED = 5676; // RPM
-    public static final double NEO_STALL_TORQUE = 2.6; // N * m
+    public static final double NEO_STALL_TORQUE = 3.75; // N * m
     public static final double NEO_550_FREE_SPEED = 11000; // RPM
     
-    public static final double MANIPULATOR_MASS = 5 * KG_PER_LB;
-    public static final double ROBOT_MASS = (100 * KG_PER_LB) - MANIPULATOR_MASS;
+    public static final double MANIPULATOR_MASS = 1.11;
+    public static final double ROBOT_MASS = (108 * KG_PER_LB);
     public static final double CHASSIS_MASS = ROBOT_MASS - MANIPULATOR_MASS;
     public static final Translation3d CHASSIS_CG = new Translation3d(
         -0.035,
         0.0026,
-        Units.inchesToMeters(10.55));
+        Units.inchesToMeters(8.8));
     public static final double ARM_Y_POS = 0; // centered on robot
     public static final double GRAVITY = 9.81; // m/s/s
     public static final double LOOP_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
@@ -95,7 +95,7 @@ public final class Constants {
         public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(NEO_550_FREE_SPEED * 7 / 372) / 60; // deg/s
 
         // Robot heading control gains
-        public static final double HEADING_KP = MAX_ANGULAR_VELOCITY / Math.PI;
+        public static final double HEADING_KP = 0.5 * (MAX_ANGULAR_VELOCITY / Math.PI);
         public static final double HEADING_KI = 0;
         public static final double HEADING_KD = 0;
         
@@ -150,14 +150,14 @@ public final class Constants {
         public static final class Mod2 {
             public static final int DRIVE_MOTOR_ID = 5;
             public static final int ANGLE_MOTOR_ID = 4;
-            public static final double ANGLE_OFFSET = 52.3; // 52.67;
+            public static final double ANGLE_OFFSET = 52.3 + 1.1; // 52.67;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
         public static final class Mod3 {
             public static final int DRIVE_MOTOR_ID = 3;
             public static final int ANGLE_MOTOR_ID = 2;
-            public static final double ANGLE_OFFSET =  91 - 90 + 131 - 5; // 224.08 - 90;
+            public static final double ANGLE_OFFSET =  127 + 8.5; // 224.08 - 90;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
@@ -178,21 +178,24 @@ public final class Constants {
         public static final double ANG_KI = 0;
         public static final double ANG_KD = 0;
 
-        public static final double MAX_SPEED = 4;
-        public static final double MAX_ACCELERATION = 3;
+        public static final double MAX_SPEED = 3;
+        public static final double MAX_ACCELERATION = 1.3;
+        public static final double MAX_SPEED_SAFETY_SCALAR = 0.6;
 
-        public static final double CHARGE_STATION_DISTANCE = 3.88; // meters
+        public static final double BALANCE_SPEED = 0.25; // m/s
+        public static final double BALANCE_LEVEL_TIME = 1; // s
+        public static final double CHARGER_STARTING_TO_TIP = 8;
 
         private static final Map<String, Pose2d> BLUE_MAP = Map.ofEntries(
-            Map.entry("Node1High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node2High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node3High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node4High", new Pose2d(new Translation2d(1.723, 2.08), Rotation2d.fromDegrees(180))),
-            Map.entry("Node5High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(107.875)),Rotation2d.fromDegrees(180))),
-            Map.entry("Node6High", new Pose2d(new Translation2d(1.723, 3.26),Rotation2d.fromDegrees(180))),
-            Map.entry("Node7High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(151.875)),Rotation2d.fromDegrees(180))),
-            Map.entry("Node8High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(173.875)),Rotation2d.fromDegrees(180))),
-            Map.entry("Node9High", new Pose2d(new Translation2d(1.723, Units.inchesToMeters(195.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node1High", new Pose2d(new Translation2d(1.87, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node2High", new Pose2d(new Translation2d(1.87, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node3High", new Pose2d(new Translation2d(1.87, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node4High", new Pose2d(new Translation2d(1.87, 2.08), Rotation2d.fromDegrees(180))),
+            Map.entry("Node5High", new Pose2d(new Translation2d(1.87, Units.inchesToMeters(107.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node6High", new Pose2d(new Translation2d(1.87, 3.26),Rotation2d.fromDegrees(180))),
+            Map.entry("Node7High", new Pose2d(new Translation2d(1.87, Units.inchesToMeters(151.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node8High", new Pose2d(new Translation2d(1.87, Units.inchesToMeters(173.875)),Rotation2d.fromDegrees(180))),
+            Map.entry("Node9High", new Pose2d(new Translation2d(1.87, 4.86),Rotation2d.fromDegrees(180))),
             Map.entry("Node1Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(19.875)),  Rotation2d.fromDegrees(180))),
             Map.entry("Node2Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(41.875)),  Rotation2d.fromDegrees(180))),
             Map.entry("Node3Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(63.875)),  Rotation2d.fromDegrees(180))),
@@ -201,7 +204,7 @@ public final class Constants {
             Map.entry("Node6Mid", new Pose2d(new Translation2d(2.18, 3.26), Rotation2d.fromDegrees(180))),
             Map.entry("Node7Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Node8Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node9Mid", new Pose2d(new Translation2d(2.18, Units.inchesToMeters(195.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9Mid", new Pose2d(new Translation2d(2.18, 4.86), Rotation2d.fromDegrees(180))),
             Map.entry("Node1Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(19.875)),  Rotation2d.fromDegrees(180))),
             Map.entry("Node2Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(41.875)),  Rotation2d.fromDegrees(180))),
             Map.entry("Node3Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(63.875)),  Rotation2d.fromDegrees(180))),
@@ -210,16 +213,29 @@ public final class Constants {
             Map.entry("Node6Low", new Pose2d(new Translation2d(1.913, 3.26), Rotation2d.fromDegrees(180))),
             Map.entry("Node7Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(151.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Node8Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(173.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Node9Low", new Pose2d(new Translation2d(1.913, Units.inchesToMeters(195.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Node9Low", new Pose2d(new Translation2d(1.913, 4.86), Rotation2d.fromDegrees(180))),
+            Map.entry("Throw1", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Throw2", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("Throw3", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Gamepiece1", new Pose2d(new Translation2d(6.95, 0.908), new Rotation2d(0))),
             Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.95, 2.123), new Rotation2d(0))),
-            Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.341), new Rotation2d(0))),
-            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.6, 4.3), new Rotation2d(0))),
-            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, 3.35), Rotation2d.fromDegrees(180))),
-            Map.entry("StartFarBalance", new Pose2d(new Translation2d(5.6, 3.35), Rotation2d.fromDegrees(180))),
-            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.82, 3.35), Rotation2d.fromDegrees(180))),
+            Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.95, 3.7), new Rotation2d(0))),
+            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.9, 4.45), new Rotation2d(0))),
+            Map.entry("StartNearBalanceClear", new Pose2d(new Translation2d(2.52, 3.30), Rotation2d.fromDegrees(180))),
+            Map.entry("StartFarBalanceClear", new Pose2d(new Translation2d(5.8, 3.30), Rotation2d.fromDegrees(180))),
+            Map.entry("ChargerCenterClear", new Pose2d(new Translation2d(3.93, 3.30), Rotation2d.fromDegrees(180))),
+            Map.entry("StartNearBalance", new Pose2d(new Translation2d(2.52, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("StartFarBalance", new Pose2d(new Translation2d(5.8, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("ExitCommunity", new Pose2d(new Translation2d(6.2, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.93, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("PastChargerCenter", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("StartNearBalanceTable", new Pose2d(new Translation2d(2.52, 1.89), Rotation2d.fromDegrees(180))),
+            Map.entry("StartFarBalanceTable", new Pose2d(new Translation2d(5.8, 1.89), Rotation2d.fromDegrees(180))),
+            Map.entry("ChargerCenterTable", new Pose2d(new Translation2d(3.93, 1.89), Rotation2d.fromDegrees(180))),
             Map.entry("NavPoint1", new Pose2d(new Translation2d(5.38, 4.54), Rotation2d.fromDegrees(180))),
-            Map.entry("NavPoint2", new Pose2d(new Translation2d(2.8, 4.54), Rotation2d.fromDegrees(180)))
+            Map.entry("NavPoint2", new Pose2d(new Translation2d(2.8, 4.54), Rotation2d.fromDegrees(180))),
+            Map.entry("NavPoint3", new Pose2d(new Translation2d(5.38, Units.inchesToMeters(24.875)), Rotation2d.fromDegrees(180))),
+            Map.entry("NavPoint4", new Pose2d(new Translation2d(2.8, Units.inchesToMeters(24.875)), Rotation2d.fromDegrees(180)))
         );
         private static final Map<String, Pose2d> RED_MAP =
             BLUE_MAP.entrySet().stream().collect(Collectors.toMap(
@@ -238,7 +254,7 @@ public final class Constants {
         // meters and radians
         public static final double X_TOLERANCE = 0.04;
         public static final double Y_TOLERANCE = 0.04;
-        public static final double ANG_TOLERANCE = Math.toRadians(2);
+        public static final double ANG_TOLERANCE = Math.toRadians(1);
     }
 
     public class OperatorConstants {
@@ -252,13 +268,14 @@ public final class Constants {
 
         // Joystick Deadband
         public static final double RIGHT_X_DEADBAND = 0.05;
-        public static final double RIGHT_Y_DEADBAND = 0.1;
+        public static final double RIGHT_Y_DEADBAND = 0.05;
     }
 
     public static final class ArmConstants {
         public static final int ARM_MOTOR_ID = 10; 
         public static final int ARM_MOTOR_FOLLOWER_ID = 11; 
         public static final int GRIPPER_SOLENOID_ID = 1;
+        public static final int CUBE_SENSOR_ID = 0;
 
         // Limits in degrees
         public static final float ARM_LOWER_LIMIT = (float) -107.5;
@@ -269,10 +286,11 @@ public final class Constants {
         public static final double ARM_DEGREES_PER_MOTOR_ROTATION = ARM_GEAR_RATIO * 360;
 
         public enum PRESETS {
-            HIGH_SCORE (18),
+            HIGH_SCORE (13),
             MID_SCORE (-7),
             LOW_SCORE (5.7 - 90),
-            HANDOFF (-88),
+            HANDOFF (-89.3),
+            CUBE_COLLECT (-90.3),
             STOWED (ARM_LOWER_LIMIT);
             
             private final double angle;
@@ -281,19 +299,19 @@ public final class Constants {
         }
 
         public static final double ANGLE_TOLERANCE = 4; // degrees
-        public static final double RETURN_MIDPOINT = -90; // position for arm to seek before stowing
+        public static final double RETURN_MIDPOINT = -45; // position for arm to seek before stowing
 
         public enum GripState {GRIP_OFF, GRIP_ON}
 
-        public static final double MAX_CONTROL_EFFORT = 0.5;
+        public static final double MAX_CONTROL_EFFORT = 1;
 
         public static final double THEORETICAL_MAX_ARM_SPEED = (NEO_FREE_SPEED / 60) * 2 * Math.PI * ARM_GEAR_RATIO; // rad/s
-        public static final double ARM_SPEED_LIMIT_DEG_PER_S = Math.toDegrees(THEORETICAL_MAX_ARM_SPEED * 0.25);
+        public static final double ARM_SPEED_LIMIT_DEG_PER_S = Math.toDegrees(THEORETICAL_MAX_ARM_SPEED * 0.1);
 
         public static final double RETURN_TIME_STOWING = 0.4; // seconds
 
         // Constants for PID
-        public static final double ARM_KP = 0.02;
+        public static final double ARM_KP = 0.015;
         public static final double ARM_KI = 0;
         public static final double ARM_KD = 0.02;
         public static final double ARM_KF = 0;
@@ -316,7 +334,8 @@ public final class Constants {
         public static final int TOP_ROLLER_ID = 12;
         public static final int RACK_ID = 13;
 
-        public static final double GRABBED_CONE_ROLLER_CURRENT = 2; // Amps
+        public static final double GRABBED_CONE_ROLLER_CURRENT = 30; // Amps
+        public static final double TOP_ROLLER_IDLE = 0.05;
 
         public static final boolean INVERT_ROLLERS = true;
         public static final boolean INVERT_RACK = false;
@@ -337,10 +356,11 @@ public final class Constants {
         public static final double IZ = 0;
 
         // motor max rpm --> m/s
-        public static final double MAX_LINEAR_SPEED = 5676 * RACK_METERS_PER_MOTOR_ROTATION / 60;
+        public static final double MAX_LINEAR_SPEED = NEO_FREE_SPEED * RACK_METERS_PER_MOTOR_ROTATION / 60;
         public static final double MAX_LINEAR_ACCELERATION =
             (NEO_STALL_TORQUE / RACK_DRIVE_GEAR_RATIO) * (PINION_PITCH_DIAMETER / 2) / INTAKE_MASS;
 
+        // in case we ever want motion profiling
         public static final double KV = 12 / MAX_LINEAR_SPEED;
         public static final double KA = 12 / MAX_LINEAR_ACCELERATION;
 
@@ -360,10 +380,11 @@ public final class Constants {
             }
         }
     }
-    public class Vision {
+    public static class Vision {
         public static final int APRILTAG_PIPELINE_NUMBER = 0;
         public static final String PORT_LIMELIGHT_NAME = "port";
         public static final String STARBOARD_LIMELIGHT_NAME = "sboard";
         public static final double POSE_ERROR_TOLERANCE = 0.5;
+        public static final double ANGULAR_ERROR_TOLERANCE = Math.toRadians(2);
     }
 }

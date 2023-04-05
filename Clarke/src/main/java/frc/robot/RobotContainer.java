@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ControlArm;
 import frc.robot.commands.AutoHandoffCone;
@@ -12,6 +13,7 @@ import frc.robot.commands.AutoHandoffCube;
 import frc.robot.commands.AutoScore;
 import frc.robot.commands.ControlIntake;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ThrowCube;
 import frc.robot.drivebase.AbsoluteDrive;
 import frc.robot.drivebase.TeleopDrive;
 import frc.robot.subsystems.Arm;
@@ -22,6 +24,7 @@ import frc.robot.subsystems.SwerveBase;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -30,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -138,7 +142,7 @@ public class RobotContainer {
       intake);
 
     controlArm = new ControlArm(
-      () -> (Math.abs(Math.pow(operatorController.getRightY(), 3)) > OperatorConstants.RIGHT_Y_DEADBAND) 
+      () -> (Math.abs(operatorController.getRightY()) > OperatorConstants.RIGHT_Y_DEADBAND) 
               ? ((Math.pow(operatorController.getRightY(), 3))) 
               : 0
       , 
@@ -147,7 +151,8 @@ public class RobotContainer {
       operatorController.povLeft(),   // low
       operatorController.povRight(),  // high
       new BooleanSupplier() { public boolean getAsBoolean() {return false;};}, // HANDOFF
-      arm);   
+      arm);
+      
   }
 
   /**
@@ -166,14 +171,24 @@ public class RobotContainer {
 
     // Hacky solutuon to stow arm on cube intake //
     // Could be causing a CommandScheduler loop overrun //
-    operatorController.x().onTrue(new InstantCommand(() -> {arm.setPreset(ArmConstants.PRESETS.STOWED);}));
+    operatorController.x().whileTrue(
+      new InstantCommand(() -> {
+        arm.setPreset(ArmConstants.PRESETS.CUBE_COLLECT);
+        arm.setGrip(true);})
+      .andThen(new WaitUntilCommand(arm::getCubeSensor))
+      .andThen(new InstantCommand(() -> arm.setGrip(false))));
 
-    operatorController.back().onTrue(new AutoHandoffCube(arm, intake));
-    // operatorController.start().onTrue(new PrecisionAlign("Node1High", Alliance.Red, drivebase));
-    operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake));
+    operatorController.back().onTrue(new AutoHandoffCube(arm, intake).withTimeout(5)); // Maybe add to auto too
+    operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake).withTimeout(5));
     operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
+    operatorController.start().onTrue(new ThrowCube(arm).withTimeout(5));
+
+    rotationController.button(14).whileTrue(new RepeatCommand(new InstantCommand(() -> {
+      intake.setPreset(IntakeConstants.PRESETS.CUBE);
+      intake.grabCube(-0.6);
+    })));
     
-    //driverController.button(1).whileTrue(new AutoScore(DriverStation::getAlliance, arm, drivebase));
+    driverController.button(1).whileTrue(new AutoScore(DriverStation::getAlliance, arm, drivebase));
     driverController.button(2).onTrue((new InstantCommand(drivebase::zeroGyro)));
   }
 
@@ -195,8 +210,8 @@ public class RobotContainer {
     drivebase.setDefaultCommand(closedAbsoluteDrive);
     arm.setDefaultCommand(controlArm);
     intake.setDefaultCommand(controlIntake);
-    absoluteDrive.setHeading(drivebase.getYaw());
-    closedAbsoluteDrive.setHeading(drivebase.getYaw());
+    absoluteDrive.setHeading(drivebase.getPose().getRotation());
+    closedAbsoluteDrive.setHeading(drivebase.getPose().getRotation());
   }
   public void prepareDriveForAuto() {
     arm.setPreset(ArmConstants.PRESETS.STOWED);

@@ -15,6 +15,7 @@ import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
@@ -34,6 +35,7 @@ public class Arm extends SubsystemBase {
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
   private ArmFeedforward feedforward;
+  private DigitalInput cubeSensor;
 
   private Timer time = new Timer();
 
@@ -59,7 +61,7 @@ public class Arm extends SubsystemBase {
     armController.setFF(ArmConstants.ARM_KF);
     armController.setOutputRange(-ArmConstants.MAX_CONTROL_EFFORT, ArmConstants.MAX_CONTROL_EFFORT);
 
-    armMotor.setSmartCurrentLimit(30);
+    armMotor.setSmartCurrentLimit(40);
     armMotor.setIdleMode(IdleMode.kCoast);
 
     bottomLimitSwitch = armMotor.getReverseLimitSwitch(Type.kNormallyOpen);
@@ -70,9 +72,15 @@ public class Arm extends SubsystemBase {
       ArmConstants.ARM_KS,
       ArmConstants.ARM_KG,
       ArmConstants.ARM_KV);
+
+    cubeSensor = new DigitalInput(ArmConstants.CUBE_SENSOR_ID);
     
     time.reset();
     time.start();
+  }
+
+  public boolean getCubeSensor() {
+    return cubeSensor.get();
   }
 
   public double getPos(){
@@ -136,6 +144,10 @@ public class Arm extends SubsystemBase {
     armMotorFollow.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
   }
 
+  public void setArmVoltage(double volts) {
+    armMotor.setVoltage(volts);
+  }
+
   @Override
   public void periodic() {
     if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(PRESETS.STOWED.angle());
@@ -149,16 +161,19 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putBoolean("Gripper Status", gripper.get());
     SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
+    SmartDashboard.putNumber("Arm Current", armMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Commanded Arm Voltage", armMotor.getAppliedOutput() * armMotor.getBusVoltage());
+    SmartDashboard.putNumber("Arm Setpoint", setPoint);
 
     // Report arm position
     Rotation2d currentPosition = Rotation2d.fromDegrees(getPos());
     SmartDashboard.putNumber("armHeight", 
       ArmConstants.SHOULDER_LOCATION.getZ()
-      - currentPosition.getSin() * ArmConstants.ARM_LENGTH);
+      + currentPosition.getSin() * ArmConstants.ARM_LENGTH);
     
     SmartDashboard.putNumber("armExtension",
       ArmConstants.SHOULDER_LOCATION.getX()
-      - currentPosition.getCos() * ArmConstants.ARM_LENGTH);
+      + currentPosition.getCos() * ArmConstants.ARM_LENGTH);
 
     dt = time.get() - lastTime;
     lastTime = time.get();

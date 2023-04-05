@@ -1,11 +1,80 @@
+One Cube leave and balance clear side:
+grip();
+moveArm(MID_SCORE);
+alignto(Node8Mid);
+score();
+drivetopose(NavPoint2,false,true);
+drivetopose(NavPoint1,true,true)+movearm(STOWED);
+drivetopose(StartFarBalance,true,false);
+alignto(ChargerCenter);
+balance();
+stop()
+
+One Cube leave and balance center:
+grip();
+moveArm(MID_SCORE);
+wait(1);
+alignto(Node5High);
+score();
+drivetopose(StartNearBalance,false,false);
+moveArm(STOWED);
+wait(1);
+drivetopose(ExitCommunity,false,false);
+alignto(ChargerCenter);
+balance();
+stop()
+
+one cube leave grab balance center:
+grip();movearm(MID_SCORE);wait(0.2);alignto(Node5High);score();drivetopose(StartNearBalance,false,false);movearm(STOWED);wait(0.2);drivetopose(ExitCommunity,false,false);localize();drivetopose(Gamepiece2,false,false)+grabCone();drivetopose(StartFarBalance,false,false);localize();alignto(ChargerCenter);balance();stop();
+
+One Cube and balance center:
+grip();
+moveArm(MID_SCORE);
+wait(1);
+alignto(Node5High);
+score();
+drivetopose(StartNearBalance,false,false);
+moveArm(STOWED);
+wait(1);
+alignto(ChargerCenter);
+balance();
+stop()
+
+Throw 'n go:
+throw();
+wait(1);
+movearm(STOWED);
+wait(1);
+drivetopose(Gamepiece1,false,false)+grabcone();
+
+Cube thrower:
+grip();
+alignto(Throw2);
+throw();
+wait(0.2);
+movearm(STOWED);
+followTrajectory(Throw2ToGamepiece1,false)+grabcube();
+followTrajectory(Gamepiece1ToThrow1,false);
+throw();
+wait(0.2);
+movearm(STOWED);
+followTrajectory(Throw1ToGamepiece2,false)+grabcube();
+followTrajectory(Gamepiece2ToStartFarBalanceTable,false);
+alignto(ChargerCenterTable);
+balance();
+stop();
+throw();
+wait(0.2);
+moveArm(STOWED);
+
 One Cube and Balance:
 grip();
 movearm(MID_SCORE);
-drivetopose(Node8High);
+drivetopose(Node8High,false,false);
 alignto(Node8High);
 score();
-drivetopose(StartNearBalance);
-alignto(ChargerCenter)+movearm(STOWED);
+drivetopose(StartNearBalanceClear,false,false);
+alignto(ChargerCenterClear)+movearm(STOWED);
 stop();
 
 One Cube and Leave Community:
@@ -13,9 +82,36 @@ grip();
 movearm(MID_SCORE);
 alignto(Node8High);
 score();
-drivetopose(NavPoint2);
+drivetopose(NavPoint2,false,true);
 movearm(STOWED);
-drivetopose(NavPoint1);
+drivetopose(NavPoint1,true,false);
+
+One Cube and leave Cable side:
+grip(); movearm(MID_SCORE); alignto(Node2High); score(); drivetopose(NavPoint4,false,true); movearm(STOWED); drivetopose(NavPoint3,true,false);alignto(Gamepiece1);grabcone()
+
+One Cube Balance and throw cube:
+grip();
+moveArm(MID_SCORE);
+alignto(Node8High,false,false);
+score();
+drivetopose(NavPoint2,false,true);
+drivetopose(NavPoint1,true,false)+moveArm(STOWED);
+alignto(Gamepiece4);
+grabCube();
+drivetoPose(StartFarBalance,false,false);
+alignto(ChargerCenter);
+balance();
+stop();
+throw()
+
+Scoring table side One cube and balance:
+grip();
+movearm(MID_SCORE);
+alignto(Node2High);
+score();
+drivetopose(StartNearBalanceTable,false,false);
+alignto(ChargerCenterTable)+movearm(STOWED);
+stop()
 
 
 Not Working
@@ -24,17 +120,21 @@ grip();
 movearm(MID_SCORE);
 alignto(Node8High);
 score();
-drivetopose(NavPoint2);
+drivetopose(NavPoint2, false, true);
 movearm(STOWED);
-drivetopose(NavPoint1);
+drivetopose(NavPoint1, true, false);
 alignto(Gamepiece4);
 grabcube();
-drivetopose(NavPoint1);
-drivetopose(NavPoint2)+cubehandoff();
+drivetopose(NavPoint1, false, false);
+drivetopose(NavPoint2, false, false)+cubehandoff();
 movearm(MID_SCORE);
 alignto(Node8Mid);
 score();
-drivetopose(StartNearBalance);
+drivetopose(StartNearBalance, false, false);
 alignto(ChargerCenter)+movearm(STOWED);
+balance();
 stop();
+
+grip();moveArm(MID_SCORE); alignto(Node8Mid,false,false); score(); drivetopose(NavPoint2,false,true); moveArm(STOWED); drivetopose(Gamepiece4,true,false)+ grabCube(); drivetoPose(StartFarBalance,false,false); alignto(ChargerCenter);balance();stop();throw();moveArm(STOWED)
+
 

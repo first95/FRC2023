@@ -72,17 +72,17 @@ public class Intake extends SubsystemBase {
 
   public void grabCube(double speed) {
     bottomRoller.set(speed);
-    topRoller.set(speed);
+    topRoller.set((speed * 0.3) + IntakeConstants.TOP_ROLLER_IDLE);
   }
 
   public void grabCone(double speed) {
     bottomRoller.set(-speed);
-    topRoller.set(speed);
+    topRoller.set(speed + IntakeConstants.TOP_ROLLER_IDLE);
   }
 
   public void runRollers(double coneSpeed, double cubeSpeed) {
     bottomRoller.set(cubeSpeed - coneSpeed);
-    topRoller.set(cubeSpeed + coneSpeed);
+    topRoller.set(cubeSpeed + coneSpeed + IntakeConstants.TOP_ROLLER_IDLE);
   }
 
   public void setPosition(double meters) {
@@ -101,10 +101,10 @@ public class Intake extends SubsystemBase {
     return bottomRoller.getOutputCurrent();
   }
 
-  public BooleanSupplier rackHasReachedReference(double reference) {
-    return () -> { return rackEncoder.getPosition() + 0.025 > (reference)
-      && rackEncoder.getPosition() - 0.025 < (reference); };  
-    }
+  public boolean rackHasReachedReference(double reference) {
+    return rackEncoder.getPosition() + 0.025 > (reference)
+      && rackEncoder.getPosition() - 0.025 < (reference);
+  }
 
   public void moveIntake(double speed) {
     gearRack.set(speed * 0.3);
@@ -143,6 +143,8 @@ public class Intake extends SubsystemBase {
 
     // Logging...
     SmartDashboard.putNumber("Rack Encoder", rackEncoder.getPosition());
+    SmartDashboard.putNumber("Low Roller Current Draw", getLowRollerCurrentDraw());
+    SmartDashboard.putNumber("Top Roller Currnet Draw", getTopRollerCurrentDraw());
   }
 
   @Override

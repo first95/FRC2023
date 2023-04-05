@@ -16,14 +16,15 @@ import frc.robot.subsystems.SwerveBase;
 public class AutoScore extends SequentialCommandGroup {
     private final SwerveBase drive;
     private final Arm arm;
-    private final Alliance alliance;
+    private final Supplier<Alliance> allianceSupplier;
+    private Alliance alliance;
     public AutoScore(Supplier<Alliance> alliance, Arm arm, SwerveBase drive) {
         this.drive = drive;
         this.arm = arm;
-        this.alliance = alliance.get();
+        allianceSupplier = alliance;
         addRequirements(drive, arm);
         addCommands(new PrecisionAlign(this::pickNode, drive));
-        addCommands(new InstantCommand(arm::toggleGrip));
+        addCommands(new InstantCommand(() -> arm.setGrip(true)));
     }
 
     private String[] highConeNodes = {
@@ -64,6 +65,7 @@ public class AutoScore extends SequentialCommandGroup {
         "Node9Low"
     };
     private Pose2d pickNode() {
+        alliance = allianceSupplier.get();
         String[] nodeList;
         String gamepiece = SmartDashboard.getString("LastHandoff", "CONE");
 
@@ -76,8 +78,11 @@ public class AutoScore extends SequentialCommandGroup {
             ArmConstants.PRESETS.HIGH_SCORE
         };
         for (ArmConstants.PRESETS preset : scoreAngles) {
-            if (Math.abs(preset.angle() - armPos) < closestAngle) {
+            double difference = Math.abs(preset.angle() - armPos);
+            if (difference < closestAngle) {
                 nearestRow = preset;
+                closestAngle = difference;
+
             }
         }
         switch (nearestRow) {

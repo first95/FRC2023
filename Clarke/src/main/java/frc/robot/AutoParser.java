@@ -16,10 +16,12 @@ import frc.robot.Constants.Auton;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IntakeConstants.PRESETS;
 import frc.robot.autoCommands.DriveToPose;
+import frc.robot.autoCommands.FinalBalance;
 import frc.robot.autoCommands.FollowTrajectory;
 import frc.robot.autoCommands.PrecisionAlign;
 import frc.robot.commands.AutoHandoffCone;
 import frc.robot.commands.AutoHandoffCube;
+import frc.robot.commands.ThrowCube;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.SwerveBase;
@@ -114,7 +116,7 @@ public class AutoParser {
                 try {
                     parameters = splitCommand[1].split(",");
                 } catch (IndexOutOfBoundsException e) {
-                    throw new Exception("Missing parenthases at line: " + i, e);
+                    throw new Exception(String.format("Missing parenthases at line: %d", i), e);
                 }
 
                 // Remove whitespace and the final closed parenthases from the parameters
@@ -173,6 +175,7 @@ public class AutoParser {
                 PathPlannerTrajectory trajectory = PathPlanner.loadPath(parameters[0], 
                     new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION));
                 try {
+                    trajectory.getInitialHolonomicPose(); // Throws a null pointer exception if the trajectory import fails
                     trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, currentAlliance);
                     return new FollowTrajectory(drive, trajectory, Boolean.valueOf(parameters[1]));
                 } catch (NullPointerException e) {
@@ -198,7 +201,7 @@ public class AutoParser {
                 }
             case "drivetopose":
                 try {
-                    return new DriveToPose(parameters[0], currentAlliance, drive);
+                    return new DriveToPose(parameters[0], Boolean.valueOf(parameters[1]), Boolean.valueOf(parameters[2]), currentAlliance, drive);
                 } catch (NullPointerException e) {
                     throw new AutoParseException("DriveToPose", "Pose not recognized", e);
                 } catch (ArrayIndexOutOfBoundsException e) {
@@ -206,7 +209,7 @@ public class AutoParser {
                 }
             case "alignto":
                 try {
-                    return new PrecisionAlign(parameters[0], currentAlliance, drive);
+                    return new PrecisionAlign(parameters[0], currentAlliance, drive).withTimeout(5);
                 } catch (NullPointerException e) {
                     throw new AutoParseException("AlignTo", "Pose not recognized", e); 
                 } catch (ArrayIndexOutOfBoundsException e) {
@@ -228,7 +231,7 @@ public class AutoParser {
                 }
             case "conehandoff":
                 try {
-                    return new AutoHandoffCone(arm, intake);
+                    return new AutoHandoffCone(arm, intake).withTimeout(2);
                 } catch (Exception e) {
                     throw new AutoParseException("ConeHandoff", "What did you do!?", e);
                 }
@@ -237,12 +240,13 @@ public class AutoParser {
                     return new InstantCommand(() -> {
                         intake.setPreset(IntakeConstants.PRESETS.CONE);
                         intake.grabCone(0.6);
-                    }, intake)
+                    })
+                    .andThen(new WaitUntilCommand(() -> intake.rackHasReachedReference(IntakeConstants.PRESETS.CONE.position())))
                     .andThen(new WaitUntilCommand(() -> (intake.getTopRollerCurrentDraw() > IntakeConstants.GRABBED_CONE_ROLLER_CURRENT)))
                     .andThen(new InstantCommand(() -> {
-                        intake.setPreset(IntakeConstants.PRESETS.HANDOFF);
+                        intake.setPreset(IntakeConstants.PRESETS.STOWED);
                         intake.grabCone(0);
-                    }, intake));
+                    }));
                 } catch (Exception e) {
                     throw new AutoParseException("GrabCone", "What did you do!?", e);
                 }
@@ -255,24 +259,42 @@ public class AutoParser {
             case "grabcube":
                 try {
                     return new InstantCommand(() -> {
-                        arm.setGrip(true);
                         intake.setPreset(IntakeConstants.PRESETS.CUBE);
                         intake.grabCube(0.6);
-                    }, intake)
-                    .andThen(new WaitCommand(1))
-                    .andThen(new InstantCommand(() -> {
-                        intake.setPreset(IntakeConstants.PRESETS.STOWED);
+                        arm.setPreset(ArmConstants.PRESETS.CUBE_COLLECT);
+                        arm.setGrip(true);}, arm, intake)
+                      .andThen(new WaitUntilCommand(() -> arm.getCubeSensor()).withTimeout(4))
+                      .andThen(new InstantCommand(() -> {
+                        arm.toggleGrip();
                         intake.grabCube(0);
-                        arm.setGrip(false);
-                    }, intake));
+                        intake.setPreset(IntakeConstants.PRESETS.STOWED);
+                        }, arm));
                 } catch (Exception e) {
                     throw new AutoParseException("GrabCube", "What did you do!?", e);
                 }
             case "cubehandoff":
                 try {
-                    return new AutoHandoffCube(arm, intake);
+                    return new AutoHandoffCube(arm, intake).withTimeout(2);
                 } catch (Exception e) {
                     throw new AutoParseException("CubeHandoff", "What did you do!?", e);
+                }
+            case "balance":
+                try {
+                    return new FinalBalance(drive);
+                } catch (Exception e) {
+                    throw new AutoParseException("Balance", "What did you do!?", e);
+                }
+            case "throw":
+                try {
+                    return new ThrowCube(arm);
+                } catch (Exception e) {
+                  throw new AutoParseException("throwCube", "What did you do!?", e);
+                }
+            case "localize":
+                try {
+                    return new InstantCommand(() -> drive.setAlliance(currentAlliance));
+                } catch (Exception e) {
+                    throw new AutoParseException("localize", "What did you do!?", e);
                 }
             default:
                 // If none of the preceeding cases apply, the command is invalid.

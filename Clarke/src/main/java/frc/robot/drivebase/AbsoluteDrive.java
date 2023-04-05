@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -27,7 +28,7 @@ public class AbsoluteDrive extends CommandBase {
   /**
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply 
    * translation inputs, where x is torwards/away from alliance wall and y is left/right.
-   * headingHorzontal and headingVertical are the Cartesian coordinates from which the robot's angle
+   * headingHorizontal and headingVertical are the Cartesian coordinates from which the robot's angle
    * will be derived— they will be converted to a polar angle, which the robot will rotate to.
    *
    * @param swerve The swerve drivebase subsystem.
@@ -73,7 +74,7 @@ public class AbsoluteDrive extends CommandBase {
     // reset without the robot immediately rotating to the previously-commanded angle in the new
     // refrence frame.  This currently does not override the joystick.
     if (swerve.wasGyroReset()) {
-      lastAngle = 0;
+      lastAngle = swerve.getPose().getRotation().getRadians();
       swerve.clearGyroReset();
     }
 
@@ -140,39 +141,40 @@ public class AbsoluteDrive extends CommandBase {
     Translation3d robotCG = new Translation3d(xMoment, yMoment, zMoment).div(Constants.ROBOT_MASS);
     Translation2d horizontalCG = robotCG.toTranslation2d();
 
-    Translation2d projectedHorizontalCg = new Translation2d(
-      (angle.getSin() * angle.getCos() * horizontalCG.getY()) + (Math.pow(angle.getCos(), 2) * horizontalCG.getX()),
-      (angle.getSin() * angle.getCos() * horizontalCG.getX()) + (Math.pow(angle.getSin(), 2) * horizontalCG.getY())
-    );
+    // Determine the angle from the CG to each corner
+    Rotation2d thetaFL = new Rotation2d(Drivebase.FRONT_LEFT_X - horizontalCG.getX(), Drivebase.FRONT_LEFT_Y - horizontalCG.getY());
+    Rotation2d thetaFR = new Rotation2d(Drivebase.FRONT_RIGHT_X - horizontalCG.getX(), Drivebase.FRONT_RIGHT_Y - horizontalCG.getY());
+    Rotation2d thetaBL = new Rotation2d(Drivebase.BACK_LEFT_X - horizontalCG.getX(), Drivebase.BACK_LEFT_Y - horizontalCG.getY());
+    Rotation2d thetaBR = new Rotation2d(Drivebase.BACK_RIGHT_X - horizontalCG.getX(), Drivebase.BACK_RIGHT_Y - horizontalCG.getY());
 
-    // Projects the edge of the wheelbase onto the direction line.  Assumes the wheelbase is rectangular.
-    // Because a line is being projected, rather than a point, one of the coordinates of the projected point is
-    // already known.
-    Translation2d projectedWheelbaseEdge;
-    double angDeg = angle.getDegrees();
-    if (angDeg <= 45 && angDeg >= -45) {
-      projectedWheelbaseEdge = new Translation2d(
-        Drivebase.FRONT_RIGHT_X,
-        Drivebase.FRONT_RIGHT_X * angle.getTan());
-    } else if (135 >= angDeg && angDeg > 45) {
-      projectedWheelbaseEdge = new Translation2d(
-        Drivebase.BACK_LEFT_Y / angle.getTan(),
-        Drivebase.BACK_LEFT_Y);
-    } else if (-135 <= angDeg && angDeg < -45) {
-      projectedWheelbaseEdge = new Translation2d(
-        Drivebase.BACK_RIGHT_Y / angle.getTan(),
-        Drivebase.BACK_RIGHT_Y);
+    Rotation2d reverseAngle = angle.plus(Rotation2d.fromDegrees(180));
+    Translation2d wheelbaseEdge;
+    if (thetaFR.getRadians() <= reverseAngle.getRadians() && reverseAngle.getRadians() < thetaFL.getRadians()) {
+      wheelbaseEdge = new Translation2d(
+        Drivebase.FRONT_LEFT_X,
+        reverseAngle.getTan() * (Drivebase.FRONT_LEFT_X - robotCG.getX()) + robotCG.getY()
+      );
+    } else if (thetaBL.getRadians() <= reverseAngle.getRadians() || reverseAngle.getRadians() <= thetaBR.getRadians()) {
+      wheelbaseEdge = new Translation2d(
+        Drivebase.BACK_LEFT_X,
+        reverseAngle.getTan() * (Drivebase.BACK_LEFT_X - robotCG.getX()) + robotCG.getY()
+      );
+    } else if (thetaFL.getRadians() <= reverseAngle.getRadians() && reverseAngle.getRadians() < thetaBL.getRadians()) {
+      wheelbaseEdge = new Translation2d(
+        ((Drivebase.FRONT_LEFT_Y - robotCG.getY()) / reverseAngle.getTan()) + robotCG.getX(),
+        Drivebase.FRONT_LEFT_Y
+      );
+    } else if (thetaBR.getRadians() <= reverseAngle.getRadians() && reverseAngle.getRadians() < thetaFR.getRadians()) {
+      wheelbaseEdge = new Translation2d(
+        ((Drivebase.FRONT_RIGHT_Y - robotCG.getY()) / reverseAngle.getTan()) + robotCG.getX(),
+        Drivebase.FRONT_RIGHT_Y
+      );
     } else {
-      projectedWheelbaseEdge = new Translation2d(
-        Drivebase.BACK_RIGHT_X,
-        Drivebase.BACK_RIGHT_X * angle.getTan());
+      // This should never happen, just to make the compiler happy
+      wheelbaseEdge = new Translation2d();
     }
-
-    double horizontalDistance = projectedHorizontalCg.minus(projectedWheelbaseEdge).getNorm();
-    double maxAccel = Constants.GRAVITY * horizontalDistance / robotCG.getZ();
-
-    SmartDashboard.putNumber("calcMaxAccel", maxAccel);
-    return maxAccel;
+    double distance = horizontalCG.minus(wheelbaseEdge).getNorm();
+    return distance * Constants.GRAVITY / robotCG.getZ();
   }
 
   /**
@@ -185,9 +187,10 @@ public class AbsoluteDrive extends CommandBase {
    */
   private Translation2d limitVelocity(Translation2d commandedVelocity) {
     // Get the robot's current field-relative velocity
+    ChassisSpeeds vel = swerve.getFieldVelocity();
     Translation2d currentVelocity = new Translation2d(
-        swerve.getFieldVelocity().vxMetersPerSecond,
-        swerve.getFieldVelocity().vyMetersPerSecond);
+        vel.vxMetersPerSecond,
+        vel.vyMetersPerSecond);
     SmartDashboard.putNumber("currentVelocity", currentVelocity.getX());
 
     // Calculate the commanded change in velocity by subtracting current velocity
