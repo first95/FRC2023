@@ -25,7 +25,7 @@ balance();
 stop()
 
 one cube leave grab balance center:
-grip();movearm(MID_SCORE);wait(0.2);alignto(Node5High);score();drivetopose(StartNearBalance,false,false);movearm(STOWED);wait(0.2);drivetopose(ExitCommunity,false,false);localize();drivetopose(Gamepiece2,false,false)+grabCone();drivetopose(StartFarBalance,false,false);localize();alignto(ChargerCenter);balance();stop();
+grip();movearm(MID_SCORE);wait(0.2);alignto(Node5High);score();drivetopose(StartNearBalance,false,false);movearm(STOWED);wait(0.2);drivetopose(ExitCommunity,false,true);localize();drivetopose(Gamepiece3,true,false)+grabCone();drivetopose(StartFarBalance,false,false);localize();alignto(ChargerCenter);balance();stop();
 
 One cube grab cone clear side:
 grip(); movearm(MID_SCORE); alignto(Node8High); score(); drivetopose(NavPoint2,false,true); movearm(STOWED);drivetopose(Gamepiece4,false,false)+grabcone();

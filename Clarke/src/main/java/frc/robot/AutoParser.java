@@ -209,7 +209,7 @@ public class AutoParser {
                 }
             case "alignto":
                 try {
-                    return new PrecisionAlign(parameters[0], currentAlliance, drive).withTimeout(5);
+                    return new PrecisionAlign(parameters[0], currentAlliance, drive).withTimeout(3);
                 } catch (NullPointerException e) {
                     throw new AutoParseException("AlignTo", "Pose not recognized", e); 
                 } catch (ArrayIndexOutOfBoundsException e) {
@@ -241,12 +241,12 @@ public class AutoParser {
                         intake.setPreset(IntakeConstants.PRESETS.CONE);
                         intake.grabCone(0.6);
                     })
-                    .andThen(new WaitUntilCommand(() -> intake.rackHasReachedReference(IntakeConstants.PRESETS.CONE.position())))
-                    .andThen(new WaitUntilCommand(() -> (intake.getTopRollerCurrentDraw() > IntakeConstants.GRABBED_CONE_ROLLER_CURRENT)))
+                    .andThen(new WaitUntilCommand(() -> intake.rackHasReachedReference(IntakeConstants.PRESETS.CONE.position())).withTimeout(2))
+                    .andThen(new WaitUntilCommand(() -> (intake.getTopRollerCurrentDraw() > IntakeConstants.GRABBED_CONE_ROLLER_CURRENT)).withTimeout(2))
                     .andThen(new InstantCommand(() -> {
                         intake.setPreset(IntakeConstants.PRESETS.STOWED);
                         intake.grabCone(0);
-                    })).withTimeout(3);
+                    }));
                 } catch (Exception e) {
                     throw new AutoParseException("GrabCone", "What did you do!?", e);
                 }
