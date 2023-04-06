@@ -296,6 +296,20 @@ public class AutoParser {
                 } catch (Exception e) {
                     throw new AutoParseException("localize", "What did you do!?", e);
                 }
+            case "dropcone":
+                try {
+                    return new InstantCommand(() -> {
+                        intake.setPreset(IntakeConstants.PRESETS.CONE);
+                        intake.grabCone(-0.6);
+                    })
+                    .andThen(new WaitCommand(0.5))
+                    .andThen(new InstantCommand(() -> {
+                        intake.grabCone(0);
+                        intake.setPreset(IntakeConstants.PRESETS.STOWED);
+                    }));
+                } catch (Exception e) {
+                    throw new AutoParseException("dropCone", "What did you do!?", e);
+                }
             default:
                 // If none of the preceeding cases apply, the command is invalid.
                 throw new AutoParseException("Unrecognized Command", "Command is not valid");
