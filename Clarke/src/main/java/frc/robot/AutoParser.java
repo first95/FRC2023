@@ -246,7 +246,7 @@ public class AutoParser {
                     .andThen(new InstantCommand(() -> {
                         intake.setPreset(IntakeConstants.PRESETS.STOWED);
                         intake.grabCone(0);
-                    }));
+                    })).withTimeout(3);
                 } catch (Exception e) {
                     throw new AutoParseException("GrabCone", "What did you do!?", e);
                 }
