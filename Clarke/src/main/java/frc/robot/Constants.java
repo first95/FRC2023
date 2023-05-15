@@ -330,14 +330,15 @@ public final class Constants {
      }
 
     public static final class IntakeConstants {
-        public static final int BOTTOM_ROLLER_ID = 14;
-        public static final int TOP_ROLLER_ID = 12;
+        public static final int ROLLER_ID = 14;
+        public static final int ROTATOR_ID = 12;
         public static final int RACK_ID = 13;
 
         public static final double GRABBED_CONE_ROLLER_CURRENT = 30; // Amps
         public static final double TOP_ROLLER_IDLE = 0.05;
 
         public static final boolean INVERT_ROLLERS = true;
+        public static final boolean INVERT_ROTATOR = false;
         public static final boolean INVERT_RACK = false;
 
         public static final double PINION_PITCH_DIAMETER = Units.inchesToMeters(0.9);
@@ -348,6 +349,8 @@ public final class Constants {
         public static final float RACK_LOWER_LIMIT = 0;
         public static final float RACK_UPPER_LIMIT = (float)Units.inchesToMeters(14);
         public static final double RACK_TRAVEL = RACK_UPPER_LIMIT - RACK_LOWER_LIMIT;
+
+        public static final double ROTATOR_DEGREES_PER_MOTOR_ROTATION = 16;
 
         public static final double KP = 10;
         public static final double KI = 0;

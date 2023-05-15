@@ -23,27 +23,26 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IntakeConstants.PRESETS;
 
 public class Intake extends SubsystemBase {
-  private CANSparkMax bottomRoller, topRoller, gearRack;
-  private SparkMaxPIDController rackController;
-  private RelativeEncoder rackEncoder;
+  private CANSparkMax rollers, rotator, gearRack;
+  private SparkMaxPIDController rackController, rotatorController;
+  private RelativeEncoder rackEncoder, rotatorEncoder;
   private SparkMaxLimitSwitch homeSwitch;
   /** Creates a new Intake subsystem. */
   public Intake() {
-    bottomRoller = new CANSparkMax(IntakeConstants.BOTTOM_ROLLER_ID, MotorType.kBrushless);
-    topRoller = new CANSparkMax(IntakeConstants.TOP_ROLLER_ID, MotorType.kBrushless);
+    rollers = new CANSparkMax(IntakeConstants.ROLLER_ID, MotorType.kBrushless);
+    rotator = new CANSparkMax(IntakeConstants.ROTATOR_ID, MotorType.kBrushless);
     gearRack = new CANSparkMax(IntakeConstants.RACK_ID, MotorType.kBrushless);
 
-    bottomRoller.restoreFactoryDefaults();
-    bottomRoller.setIdleMode(IdleMode.kBrake);
-    bottomRoller.setInverted(IntakeConstants.INVERT_ROLLERS);
-    bottomRoller.setSmartCurrentLimit(15);
-    bottomRoller.burnFlash();
+    rollers.restoreFactoryDefaults();
+    rollers.setIdleMode(IdleMode.kBrake);
+    rollers.setInverted(IntakeConstants.INVERT_ROLLERS);
+    rollers.setSmartCurrentLimit(15);
+    rollers.burnFlash();
 
-    topRoller.restoreFactoryDefaults();
-    topRoller.setIdleMode(IdleMode.kBrake);
-    topRoller.setInverted(!IntakeConstants.INVERT_ROLLERS);
-    topRoller.setSmartCurrentLimit(15);
-    topRoller.burnFlash();
+    rotator.restoreFactoryDefaults();
+    rotator.setIdleMode(IdleMode.kBrake);
+    rotator.setInverted(IntakeConstants.INVERT_ROTATOR);
+    rotator.setSmartCurrentLimit(15);
 
     gearRack.restoreFactoryDefaults();
     gearRack.setIdleMode(IdleMode.kCoast);
@@ -54,6 +53,11 @@ public class Intake extends SubsystemBase {
     rackEncoder.setPositionConversionFactor(IntakeConstants.RACK_METERS_PER_MOTOR_ROTATION);
     rackEncoder.setVelocityConversionFactor(IntakeConstants.RACK_METERS_PER_MOTOR_ROTATION / 60);
     rackEncoder.setPosition(0);
+
+    rotatorEncoder = rotator.getEncoder();
+    rotatorEncoder.setPositionConversionFactor(IntakeConstants.ROTATOR_DEGREES_PER_MOTOR_ROTATION);
+    rotatorEncoder.setVelocityConversionFactor(IntakeConstants.ROTATOR_DEGREES_PER_MOTOR_ROTATION / 60);
+    rotatorEncoder.setPosition(0);
 
     gearRack.setSoftLimit(SoftLimitDirection.kForward, IntakeConstants.RACK_UPPER_LIMIT);
     gearRack.setSoftLimit(SoftLimitDirection.kReverse, IntakeConstants.RACK_LOWER_LIMIT);
@@ -67,22 +71,32 @@ public class Intake extends SubsystemBase {
 
     homeSwitch = gearRack.getReverseLimitSwitch(Type.kNormallyOpen);
 
+    rotatorController = rotator.getPIDController();
+    rotatorController.setP(IntakeConstants.KP);
+    rotatorController.setI(IntakeConstants.KI);
+    rotatorController.setD(IntakeConstants.KD);
+    rotatorController.setFF(IntakeConstants.KF);
+    rotatorController.setIZone(IntakeConstants.IZ);
+    rotatorController.setPositionPIDWrappingEnabled(true);
+    rotatorController.setPositionPIDWrappingMinInput(-180);
+    rotatorController.setPositionPIDWrappingMaxInput(180);
+
     gearRack.burnFlash();
   }
 
   public void grabCube(double speed) {
-    bottomRoller.set(speed);
-    topRoller.set((speed * 0.3) + IntakeConstants.TOP_ROLLER_IDLE);
+    rollers.set(speed);
+    rotator.set((speed * 0.3) + IntakeConstants.TOP_ROLLER_IDLE);
   }
 
   public void grabCone(double speed) {
-    bottomRoller.set(-speed);
-    topRoller.set(speed + IntakeConstants.TOP_ROLLER_IDLE);
+    rollers.set(-speed);
+    rotator.set(speed + IntakeConstants.TOP_ROLLER_IDLE);
   }
 
   public void runRollers(double coneSpeed, double cubeSpeed) {
-    bottomRoller.set(cubeSpeed - coneSpeed);
-    topRoller.set(cubeSpeed + coneSpeed + IntakeConstants.TOP_ROLLER_IDLE);
+    rollers.set(cubeSpeed - coneSpeed);
+    rotator.set(cubeSpeed + coneSpeed + IntakeConstants.TOP_ROLLER_IDLE);
   }
 
   public void setPosition(double meters) {
@@ -94,11 +108,11 @@ public class Intake extends SubsystemBase {
   }
 
   public double getTopRollerCurrentDraw() {
-    return topRoller.getOutputCurrent();
+    return rotator.getOutputCurrent();
   }
 
   public double getLowRollerCurrentDraw() {
-    return bottomRoller.getOutputCurrent();
+    return rollers.getOutputCurrent();
   }
 
   public boolean rackHasReachedReference(double reference) {
