@@ -185,7 +185,7 @@ public class RobotContainer {
 
     rotationController.button(14).whileTrue(new RepeatCommand(new InstantCommand(() -> {
       intake.setPreset(IntakeConstants.PRESETS.CUBE);
-      intake.grabCube(-0.6);
+      intake.runRollers(-0.6);
     })));
     
     driverController.button(1).whileTrue(new AutoScore(DriverStation::getAlliance, arm, drivebase));

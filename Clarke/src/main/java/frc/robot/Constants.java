@@ -368,18 +368,22 @@ public final class Constants {
         public static final double KA = 12 / MAX_LINEAR_ACCELERATION;
 
         public enum PRESETS {
-            STOWED (0),
-            HANDOFF (0),
-            CONE (0.15),
-            CUBE (Units.inchesToMeters(13.5));
+            STOWED (0, 0),
+            HANDOFF (0, 0),
+            CONE (0.15, 0),
+            CUBE (Units.inchesToMeters(13.5), 0);
 
-            private final double position;
-            PRESETS(double position) {
+            private final double position, angle;
+            PRESETS(double position, double angle) {
                 this.position = position;
+                this.angle = angle;
             }
 
             public double position() {
                 return position;
+            }
+            public double angle() {
+                return angle;
             }
         }
     }

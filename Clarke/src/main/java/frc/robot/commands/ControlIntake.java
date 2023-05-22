@@ -50,37 +50,37 @@ public class ControlIntake extends CommandBase {
     //subsystem.setPosition(IntakeConstants.RACK_TRAVEL * position.getAsDouble());
     if (setStowed.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.STOWED);
-      subsystem.runRollers(0, 0);
+      subsystem.runRollers(0);
       grabbedCone = false;
     } 
     else if (setHandoff.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.HANDOFF);
-      subsystem.grabCone(-0.6);
+      subsystem.runRollers(-0.6);
       grabbedCone = false;
     } 
     else if (setCone.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.CONE);
       if(subsystem.rackHasReachedReference(IntakeConstants.PRESETS.CONE.position()))
-        subsystem.grabCone(0.6);
+        subsystem.runRollers(0.6);
       grabbedCone = true;
       SmartDashboard.putString("LastHandoff", "CONE");
     } 
     else if (setCube.getAsBoolean()) {
       subsystem.setPreset(IntakeConstants.PRESETS.CUBE);
       if(subsystem.rackHasReachedReference(IntakeConstants.PRESETS.CUBE.position()))
-        subsystem.grabCube(0.6);
+        subsystem.runRollers(0.6);
       grabbedCone = false;
       SmartDashboard.putString("LastHandoff", "CUBE");
     } else if (grabbedCone){
       subsystem.setPreset(IntakeConstants.PRESETS.STOWED);
-      subsystem.grabCone(0.08);
+      subsystem.runRollers(0.08);
       if (SmartDashboard.getBoolean("ConeHandoffOccurred", false)) {
         grabbedCone = false;
         SmartDashboard.putBoolean("ConeHandoffOccurred", false);
       }
     } else {
       subsystem.setPreset(IntakeConstants.PRESETS.STOWED);
-      subsystem.runRollers(0, 0);
+      subsystem.runRollers(0);
     }
   }
 

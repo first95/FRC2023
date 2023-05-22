@@ -24,7 +24,7 @@ public class AutoEject extends SequentialCommandGroup {
         // Simple cone handoff...
         addCommands(new InstantCommand(() -> {
             intake.setPreset(IntakeConstants.PRESETS.CUBE); 
-            intake.grabCube(0.6);
+            intake.runRollers(0.6);
         }));
     
     }

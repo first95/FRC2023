@@ -27,9 +27,9 @@ public class AutoHandoffCone extends SequentialCommandGroup {
 
         addCommands(new InstantCommand(() -> {arm.setGrip(false);}));
         addCommands(new WaitCommand(0.2));
-        addCommands(new InstantCommand(() -> {intake.grabCone(-1);}));
+        addCommands(new InstantCommand(() -> {intake.runRollers(-1);}));
         addCommands(new WaitCommand(0.5));
-        addCommands(new InstantCommand(() -> {intake.grabCone(0);}));
+        addCommands(new InstantCommand(() -> {intake.runRollers(0);}));
         addCommands(new InstantCommand(() -> {
             SmartDashboard.putBoolean("ConeHandoffOccurred", true);
         }));

@@ -239,13 +239,13 @@ public class AutoParser {
                 try {
                     return new InstantCommand(() -> {
                         intake.setPreset(IntakeConstants.PRESETS.CONE);
-                        intake.grabCone(0.6);
+                        intake.runRollers(0.6);
                     })
                     .andThen(new WaitUntilCommand(() -> intake.rackHasReachedReference(IntakeConstants.PRESETS.CONE.position())).withTimeout(2))
-                    .andThen(new WaitUntilCommand(() -> (intake.getTopRollerCurrentDraw() > IntakeConstants.GRABBED_CONE_ROLLER_CURRENT)).withTimeout(2))
+                    .andThen(new WaitUntilCommand(() -> (intake.getRollerCurrentDraw() > IntakeConstants.GRABBED_CONE_ROLLER_CURRENT)).withTimeout(2))
                     .andThen(new InstantCommand(() -> {
                         intake.setPreset(IntakeConstants.PRESETS.STOWED);
-                        intake.grabCone(0);
+                        intake.runRollers(0.6);
                     }));
                 } catch (Exception e) {
                     throw new AutoParseException("GrabCone", "What did you do!?", e);
@@ -260,13 +260,13 @@ public class AutoParser {
                 try {
                     return new InstantCommand(() -> {
                         intake.setPreset(IntakeConstants.PRESETS.CUBE);
-                        intake.grabCube(0.6);
+                        intake.runRollers(0.6);
                         arm.setPreset(ArmConstants.PRESETS.CUBE_COLLECT);
                         arm.setGrip(true);}, arm, intake)
                       .andThen(new WaitUntilCommand(() -> arm.getCubeSensor()).withTimeout(4))
                       .andThen(new InstantCommand(() -> {
                         arm.toggleGrip();
-                        intake.grabCube(0);
+                        intake.runRollers(0);
                         intake.setPreset(IntakeConstants.PRESETS.STOWED);
                         }, arm));
                 } catch (Exception e) {
@@ -300,11 +300,11 @@ public class AutoParser {
                 try {
                     return new InstantCommand(() -> {
                         intake.setPreset(IntakeConstants.PRESETS.CONE);
-                        intake.grabCone(-0.6);
+                        intake.runRollers(-0.6);
                     })
                     .andThen(new WaitCommand(0.5))
                     .andThen(new InstantCommand(() -> {
-                        intake.grabCone(0);
+                        intake.runRollers(0);
                         intake.setPreset(IntakeConstants.PRESETS.STOWED);
                     }));
                 } catch (Exception e) {
