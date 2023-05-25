@@ -72,14 +72,14 @@ public class Intake extends SubsystemBase {
     homeSwitch = gearRack.getReverseLimitSwitch(Type.kNormallyOpen);
 
     rotatorController = rotator.getPIDController();
-    rotatorController.setP(IntakeConstants.KP);
-    rotatorController.setI(IntakeConstants.KI);
-    rotatorController.setD(IntakeConstants.KD);
-    rotatorController.setFF(IntakeConstants.KF);
-    rotatorController.setIZone(IntakeConstants.IZ);
-    rotatorController.setPositionPIDWrappingEnabled(true);
+    rotatorController.setP(IntakeConstants.ROTATOR_KP);
+    rotatorController.setI(IntakeConstants.ROTATOR_KI);
+    rotatorController.setD(IntakeConstants.ROTATOR_KD);
+    rotatorController.setFF(IntakeConstants.ROTATOR_KF);
+    rotatorController.setIZone(IntakeConstants.ROTATOR_IZ);
+    /*rotatorController.setPositionPIDWrappingEnabled(true);
     rotatorController.setPositionPIDWrappingMinInput(-180);
-    rotatorController.setPositionPIDWrappingMaxInput(180);
+    rotatorController.setPositionPIDWrappingMaxInput(180);*/
 
     gearRack.burnFlash();
   }

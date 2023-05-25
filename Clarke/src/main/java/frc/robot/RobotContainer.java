@@ -184,7 +184,7 @@ public class RobotContainer {
     operatorController.start().onTrue(new ThrowCube(arm).withTimeout(5));
 
     rotationController.button(14).whileTrue(new RepeatCommand(new InstantCommand(() -> {
-      intake.setPreset(IntakeConstants.PRESETS.CUBE);
+      intake.setPreset(IntakeConstants.PRESETS.INTAKE);
       intake.runRollers(-0.6);
     })));
     

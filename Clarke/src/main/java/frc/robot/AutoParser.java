@@ -238,10 +238,10 @@ public class AutoParser {
             case "grabcone":
                 try {
                     return new InstantCommand(() -> {
-                        intake.setPreset(IntakeConstants.PRESETS.CONE);
+                        intake.setPreset(IntakeConstants.PRESETS.INTAKE);
                         intake.runRollers(0.6);
                     })
-                    .andThen(new WaitUntilCommand(() -> intake.rackHasReachedReference(IntakeConstants.PRESETS.CONE.position())).withTimeout(2))
+                    .andThen(new WaitUntilCommand(() -> intake.rackHasReachedReference(IntakeConstants.PRESETS.INTAKE.position())).withTimeout(2))
                     .andThen(new WaitUntilCommand(() -> (intake.getRollerCurrentDraw() > IntakeConstants.GRABBED_CONE_ROLLER_CURRENT)).withTimeout(2))
                     .andThen(new InstantCommand(() -> {
                         intake.setPreset(IntakeConstants.PRESETS.STOWED);
@@ -259,7 +259,7 @@ public class AutoParser {
             case "grabcube":
                 try {
                     return new InstantCommand(() -> {
-                        intake.setPreset(IntakeConstants.PRESETS.CUBE);
+                        intake.setPreset(IntakeConstants.PRESETS.INTAKE);
                         intake.runRollers(0.6);
                         arm.setPreset(ArmConstants.PRESETS.CUBE_COLLECT);
                         arm.setGrip(true);}, arm, intake)
@@ -299,7 +299,7 @@ public class AutoParser {
             case "dropcone":
                 try {
                     return new InstantCommand(() -> {
-                        intake.setPreset(IntakeConstants.PRESETS.CONE);
+                        intake.setPreset(IntakeConstants.PRESETS.INTAKE);
                         intake.runRollers(-0.6);
                     })
                     .andThen(new WaitCommand(0.5))

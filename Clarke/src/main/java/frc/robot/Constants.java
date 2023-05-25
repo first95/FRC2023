@@ -330,15 +330,15 @@ public final class Constants {
      }
 
     public static final class IntakeConstants {
-        public static final int ROLLER_ID = 14;
-        public static final int ROTATOR_ID = 12;
+        public static final int ROLLER_ID = 12;
+        public static final int ROTATOR_ID = 14;
         public static final int RACK_ID = 13;
 
         public static final double GRABBED_CONE_ROLLER_CURRENT = 30; // Amps
         public static final double TOP_ROLLER_IDLE = 0.05;
 
         public static final boolean INVERT_ROLLERS = true;
-        public static final boolean INVERT_ROTATOR = false;
+        public static final boolean INVERT_ROTATOR = true;
         public static final boolean INVERT_RACK = false;
 
         public static final double PINION_PITCH_DIAMETER = Units.inchesToMeters(0.9);
@@ -358,6 +358,12 @@ public final class Constants {
         public static final double KF = 0;
         public static final double IZ = 0;
 
+        public static final double ROTATOR_KP = 0.1;
+        public static final double ROTATOR_KI = 0;
+        public static final double ROTATOR_KD = 0;
+        public static final double ROTATOR_KF = 0;
+        public static final double ROTATOR_IZ = 0;
+
         // motor max rpm --> m/s
         public static final double MAX_LINEAR_SPEED = NEO_FREE_SPEED * RACK_METERS_PER_MOTOR_ROTATION / 60;
         public static final double MAX_LINEAR_ACCELERATION =
@@ -369,9 +375,9 @@ public final class Constants {
 
         public enum PRESETS {
             STOWED (0, 0),
-            HANDOFF (0, 0),
-            CONE (0.15, 0),
-            CUBE (Units.inchesToMeters(13.5), 0);
+            CONE_HANDOFF (0, 180),
+            CUBE_HANDOFF (0, 15),
+            INTAKE (0.15, 180);
 
             private final double position, angle;
             PRESETS(double position, double angle) {

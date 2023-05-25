@@ -5,10 +5,12 @@
 package frc.robot.commands;
 
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ArmConstants.PRESETS;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 public class AutoHandoffCube extends SequentialCommandGroup {
@@ -18,18 +20,18 @@ public class AutoHandoffCube extends SequentialCommandGroup {
 
         // Simple cube handoff...
         addCommands(new InstantCommand(() -> {
-            intake.setPreset(IntakeConstants.PRESETS.CUBE);
-            intake.runRollers(0.6);
+            intake.setPreset(IntakeConstants.PRESETS.CUBE_HANDOFF);
+            arm.setPreset(PRESETS.HANDOFF);
         }));
 
-        addCommands(new InstantCommand(() -> {arm.setPos(-55);}));
-        addCommands(new WaitUntilCommand(() -> arm.hasReachedReference(-60)));     
+        addCommands(new WaitUntilCommand(() -> arm.hasReachedReference(PRESETS.HANDOFF.angle())));     
 
         addCommands(new InstantCommand(() -> {
-            intake.runRollers(0);
-            intake.setPreset(IntakeConstants.PRESETS.STOWED);
+            intake.runRollers(-0.6);
+            arm.setGrip(false);
         }));
-
+        addCommands(new WaitCommand(0.5));
+        addCommands(new InstantCommand(() -> intake.runRollers(0)));
     }
 
 }
