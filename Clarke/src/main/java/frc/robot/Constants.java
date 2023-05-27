@@ -375,7 +375,7 @@ public final class Constants {
 
         public enum PRESETS {
             STOWED (0, 0),
-            CONE_HANDOFF (0, 130),
+            CONE_HANDOFF (0, 60),
             CUBE_HANDOFF (0, 15),
             INTAKE (0.15, 180);
 
