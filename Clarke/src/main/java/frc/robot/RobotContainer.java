@@ -169,15 +169,6 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    // Hacky solutuon to stow arm on cube intake //
-    // Could be causing a CommandScheduler loop overrun //
-    operatorController.x().whileTrue(
-      new InstantCommand(() -> {
-        arm.setPreset(ArmConstants.PRESETS.CUBE_COLLECT);
-        arm.setGrip(true);})
-      .andThen(new WaitUntilCommand(arm::getCubeSensor))
-      .andThen(new InstantCommand(() -> arm.setGrip(false))));
-
     operatorController.back().onTrue(new AutoHandoffCube(arm, intake).withTimeout(5)); // Maybe add to auto too
     operatorController.leftBumper().onTrue(new AutoHandoffCone(arm, intake).withTimeout(5));
     operatorController.rightBumper().onTrue(new InstantCommand(() -> {arm.toggleGrip();}));
