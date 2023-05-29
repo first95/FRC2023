@@ -305,8 +305,12 @@ public final class Constants {
 
         public static final double MAX_CONTROL_EFFORT = 1;
 
+        public static final double ARM_LENGTH = 1.1;
+
         public static final double THEORETICAL_MAX_ARM_SPEED = (NEO_FREE_SPEED / 60) * 2 * Math.PI * ARM_GEAR_RATIO; // rad/s
         public static final double ARM_SPEED_LIMIT_DEG_PER_S = Math.toDegrees(THEORETICAL_MAX_ARM_SPEED * 0.1);
+        public static final double THEORETICAL_MAX_ARM_ACCEL = (NEO_STALL_TORQUE * 2) / (ARM_GEAR_RATIO * MANIPULATOR_MASS * ARM_LENGTH * ARM_LENGTH);
+        public static final double ARM_ACCEL_LIM_DEG_PER_S_S = Math.toDegrees(THEORETICAL_MAX_ARM_ACCEL * 0.1);
 
         public static final double RETURN_TIME_STOWING = 0.4; // seconds
 
@@ -325,8 +329,6 @@ public final class Constants {
             Units.inchesToMeters(9),
             0,
             Units.inchesToMeters(51.5));
-        
-        public static final double ARM_LENGTH = 1.1;
      }
 
     public static final class IntakeConstants {
