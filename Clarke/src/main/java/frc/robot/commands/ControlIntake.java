@@ -73,7 +73,7 @@ public class ControlIntake extends CommandBase {
       SmartDashboard.putString("LastHandoff", "CUBE");
     } else if (grabbedCone){
       subsystem.setPreset(IntakeConstants.PRESETS.CONE_HANDOFF);
-      subsystem.runRollers(0.08);
+      subsystem.runRollers(0.15);
       if (SmartDashboard.getBoolean("ConeHandoffOccurred", false)) {
         grabbedCone = false;
         SmartDashboard.putBoolean("ConeHandoffOccurred", false);
