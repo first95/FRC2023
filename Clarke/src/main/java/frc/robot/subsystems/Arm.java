@@ -15,6 +15,7 @@ import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -41,6 +42,10 @@ public class Arm extends SubsystemBase {
 
   private Solenoid gripper; // FALSE is CLOSE || TRUE is OPEN
   private SparkMaxLimitSwitch bottomLimitSwitch;
+
+  private TrapezoidProfile.State pidSetPointState, targetState;
+  private final TrapezoidProfile.Constraints constraints;
+
 
   public Arm() {
     gripper = new Solenoid(Constants.PNEUMATIC_HUB_ID, PneumaticsModuleType.REVPH, ArmConstants.GRIPPER_SOLENOID_ID);
@@ -71,7 +76,13 @@ public class Arm extends SubsystemBase {
     feedforward = new ArmFeedforward(
       ArmConstants.ARM_KS,
       ArmConstants.ARM_KG,
-      ArmConstants.ARM_KV);
+      ArmConstants.ARM_KV,
+      ArmConstants.ARM_KA);
+
+    constraints = new TrapezoidProfile.Constraints(
+      feedforward.maxAchievableVelocity(12, 0, ArmConstants.THEORETICAL_MAX_ACCEL),
+      feedforward.maxAchievableAcceleration(12, 0, ArmConstants.THEORETICAL_MAX_ARM_SPEED)
+    );
 
     cubeSensor = new DigitalInput(ArmConstants.CUBE_SENSOR_ID);
     
@@ -89,11 +100,7 @@ public class Arm extends SubsystemBase {
 
   public void setPos(double angleDegree) {
     setPoint = Math.min(angleDegree, ArmConstants.ARM_UPPER_LIMIT);
-    armController.setReference(
-      angleDegree,
-      CANSparkMax.ControlType.kPosition,
-      0,
-      feedforward.calculate(Math.toRadians(setPoint), 0));
+    
   }
 
   /**
