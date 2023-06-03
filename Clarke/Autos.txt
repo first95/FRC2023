@@ -1,12 +1,12 @@
 One Cube leave and balance clear side:
 grip();
 moveArm(MID_SCORE);
-alignto(Node8Mid);
+alignto(Node8High);
 score();
 drivetopose(NavPoint2,false,true);
 drivetopose(NavPoint1,true,true)+movearm(STOWED);
-drivetopose(StartFarBalance,true,false);
-alignto(ChargerCenter);
+drivetopose(StartFarBalanceClear,true,false);
+alignto(ChargerCenterClear);
 balance();
 stop()
 
