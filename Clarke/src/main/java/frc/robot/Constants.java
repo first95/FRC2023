@@ -182,7 +182,7 @@ public final class Constants {
         public static final double MAX_ACCELERATION = 1.3;
         public static final double MAX_SPEED_SAFETY_SCALAR = 0.6;
 
-        public static final double BALANCE_SPEED = 0.2; // m/s
+        public static final double BALANCE_SPEED = 0.225; // m/s
         public static final double BALANCE_LEVEL_TIME = 1; // s
         public static final double CHARGER_STARTING_TO_TIP = 8;
 
