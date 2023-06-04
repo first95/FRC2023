@@ -32,6 +32,19 @@ alignto(ChargerCenter);
 balance();
 stop()
 
+Battlecry Playoff:
+grip();
+moveArm(MID_SCORE);
+wait(1);
+alignto(Node5High);
+score();
+drivetopose(StartNearBalanceTable,false,false);
+moveArm(STOWED);
+wait(4);
+alignto(ChargerCenterTable);
+balance();
+stop()
+
 Throw 'n go:
 throw();
 wait(1);
