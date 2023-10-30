@@ -7,10 +7,12 @@ package frc.robot.drivebase;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -20,10 +22,13 @@ import frc.robot.subsystems.SwerveBase;
 /** An example command that uses an example subsystem. */
 public class AbsoluteDrive extends CommandBase {
   private SwerveBase swerve;
-  private PIDController thetaController;
+  private ProfiledPIDController thetaController;
   private DoubleSupplier vX, vY, headingHorizontal, headingVertical;
-  private double omega, angle, lastAngle, x, y;
+  private double omega, angle, lastAngle, x, y, 
+    maxAngularVelocity, xMoment, yMoment, zMoment, armHeight, armExtension, maxAngularAccel;
   private boolean isOpenLoop;
+  private Translation2d horizontalCG;
+  private Translation3d robotCG;
 
   /**
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply 
@@ -61,8 +66,6 @@ public class AbsoluteDrive extends CommandBase {
 
   @Override
   public void initialize() {
-    thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
     lastAngle = swerve.getPose().getRotation().getRadians();
   }
 
@@ -86,8 +89,40 @@ public class AbsoluteDrive extends CommandBase {
     } else {
       angle = Math.atan2(headingHorizontal.getAsDouble(), headingVertical.getAsDouble());
     }
+
+    // Get the position of the arm from NetworkTables 
+    armHeight = SmartDashboard.getNumber("armHeight", 0);
+    armExtension = SmartDashboard.getNumber("armExtension", 0);
+
+    xMoment = (armExtension * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getX() * Constants.CHASSIS_MASS);
+    yMoment = (Constants.ARM_Y_POS * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getY() * Constants.CHASSIS_MASS);
+    // Calculate the vertical mass moment using the floor as the datum.  This will be used later to calculate max acceleration
+    zMoment = 
+      (armHeight * Constants.MANIPULATOR_MASS)
+      + (Constants.CHASSIS_CG.getZ() * (Constants.CHASSIS_MASS));
+    
+    robotCG = new Translation3d(xMoment, yMoment, zMoment).div(Constants.ROBOT_MASS);
+    horizontalCG = robotCG.toTranslation2d();
+
     // Calculates an angular rate using a PIDController and the commanded angle.
     Rotation2d currentHeading = swerve.getPose().getRotation();
+    
+    maxAngularVelocity = Math.sqrt(
+      calcMaxAccel(horizontalCG.getAngle().unaryMinus()) /
+      horizontalCG.getNorm()
+    );
+    maxAngularAccel = 
+      calcMaxAccel(
+        horizontalCG.getAngle().plus(
+          Rotation2d.fromDegrees(Math.copySign(90, (angle - currentHeading.getRadians())))
+        )
+      ) /
+      horizontalCG.getNorm();
+
+    TrapezoidProfile.Constraints trapProfileConstraints = new TrapezoidProfile.Constraints(maxAngularVelocity, maxAngularAccel);
+    thetaController = new ProfiledPIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD, trapProfileConstraints);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
     omega = (Math.abs(currentHeading.getRadians() - angle) > Drivebase.HEADING_TOLERANCE) ?
       thetaController.calculate(currentHeading.getRadians(), angle) :
       0;
@@ -127,19 +162,7 @@ public class AbsoluteDrive extends CommandBase {
    * @return
    */
   private double calcMaxAccel(Rotation2d angle) {
-    // Get the position of the arm from NetworkTables 
-    double armHeight = SmartDashboard.getNumber("armHeight", 0);
-    double armExtension = SmartDashboard.getNumber("armExtension", 0);
-
-    double xMoment = (armExtension * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getX() * Constants.CHASSIS_MASS);
-    double yMoment = (Constants.ARM_Y_POS * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getY() * Constants.CHASSIS_MASS);
-    // Calculate the vertical mass moment using the floor as the datum.  This will be used later to calculate max acceleration
-    double zMoment = 
-      (armHeight * Constants.MANIPULATOR_MASS)
-      + (Constants.CHASSIS_CG.getZ() * (Constants.CHASSIS_MASS));
     
-    Translation3d robotCG = new Translation3d(xMoment, yMoment, zMoment).div(Constants.ROBOT_MASS);
-    Translation2d horizontalCG = robotCG.toTranslation2d();
 
     // Determine the angle from the CG to each corner
     Rotation2d thetaFL = new Rotation2d(Drivebase.FRONT_LEFT_X - horizontalCG.getX(), Drivebase.FRONT_LEFT_Y - horizontalCG.getY());
