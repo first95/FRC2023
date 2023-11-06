@@ -117,10 +117,12 @@ public final class Constants {
         // Hold time on motor brakes when disabled
         public static final double WHEEL_LOCK_TIME = 10; // seconds
 
+        public static final double HEADING_TOLERANCE = Math.toRadians(2);
+        
         // Robot heading control gains
-        public static final double HEADING_KP = 0.4;
+        public static final double HEADING_KP = 1;
         public static final double HEADING_KI = 0;
-        public static final double HEADING_KD = 0.01;
+        public static final double HEADING_KD = 0;
 
         // Motor and encoder inversions
         public static final boolean CANCODER_INVERT = false;
