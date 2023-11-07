@@ -91,6 +91,7 @@ public class AbsoluteDrive extends CommandBase {
       angle = lastAngle;
     } else {
       angle = Math.atan2(headingHorizontal.getAsDouble(), headingVertical.getAsDouble());
+      thetaController.setGoal(angle);
     }
 
     // Get the position of the arm from NetworkTables 
@@ -126,10 +127,16 @@ public class AbsoluteDrive extends CommandBase {
     //thetaController = new ProfiledPIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD, trapProfileConstraints);
     //thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    omega = (Math.abs(currentHeading.getRadians() - angle) > Drivebase.HEADING_TOLERANCE) ?
+    /*omega = (Math.abs(currentHeading.getRadians() - angle) > Drivebase.HEADING_TOLERANCE) ?
       thetaController.calculate(currentHeading.getRadians(), angle) :
       0;
-    SmartDashboard.putNumber("Robot Y Vel", omega);
+    SmartDashboard.putNumber("Robot Y Vel", omega);*/
+    omega = thetaController.calculate(currentHeading.getRadians());
+    SmartDashboard.putNumber("Rotation Goal", thetaController.getGoal().position);
+    SmartDashboard.putNumber("Rotation Vel Goal", thetaController.getGoal().velocity);
+    SmartDashboard.putNumber("Rotation Setpoint", thetaController.getSetpoint().position);
+    SmartDashboard.putNumber("Rotational Velocity Setpoint", thetaController.getSetpoint().velocity);
+    SmartDashboard.putNumber("ControlOutput", omega);
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.
     x = Math.pow(vX.getAsDouble(), 3) * Drivebase.MAX_SPEED;
