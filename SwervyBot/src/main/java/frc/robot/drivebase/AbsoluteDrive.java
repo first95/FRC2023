@@ -6,6 +6,7 @@ package frc.robot.drivebase;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -126,6 +127,22 @@ public class AbsoluteDrive extends CommandBase {
       horizontalCG.getNorm();
 
     TrapezoidProfile.Constraints trapProfileConstraints = new TrapezoidProfile.Constraints(SmartDashboard.getNumber("MaxVel", 0.5), SmartDashboard.getNumber("MaxAccel", 1));
+    
+    // ------------------------------------------------------------------------------------------------------------------------------------
+    // Get error which is the smallest distance between goal and measurement                                            |
+    double goalMinDistance = //                                                                                         |
+        MathUtil.inputModulus(angle - currentHeading.getRadians(), -Math.PI, Math.PI); //                               |
+    double setpointMinDistance = //                                                                                     |
+        MathUtil.inputModulus(setpoint.position - currentHeading.getRadians(), -Math.PI, Math.PI); //                   |
+    //                                                                                                                  |
+    // Recompute the profile goal with the smallest error, thus giving the shortest path. The goal      Taken from ProfiledPIDController
+    // may be outside the input range after this operation, but that's OK because the controller            Applies continuous input
+    // will still go there and report an error of zero. In other words, the setpoint only needs to                      |
+    // be offset from the measurement by the input range modulus; they don't need to be equal.                          |
+    angle = goalMinDistance + currentHeading.getRadians(); //                                                           |
+    setpoint.position = setpointMinDistance + currentHeading.getRadians(); //                                           |
+    // ------------------------------------------------------------------------------------------------------------------------------------
+
     TrapezoidProfile profile = new TrapezoidProfile(
       trapProfileConstraints,
       new TrapezoidProfile.State(angle, 0),
@@ -134,14 +151,15 @@ public class AbsoluteDrive extends CommandBase {
 
     /*omega = (Math.abs(currentHeading.getRadians() - angle) > Drivebase.HEADING_TOLERANCE) ?
       thetaController.calculate(currentHeading.getRadians(), angle) :
-      0;
-    SmartDashboard.putNumber("Robot Y Vel", omega);*/
+      0;*/
+
     omega = thetaController.calculate(currentHeading.getRadians(), setpoint.position) + setpoint.velocity;
     SmartDashboard.putNumber("Rotation Goal", angle);
     //SmartDashboard.putNumber("Rotation Vel Goal", thetaController.getGoal().velocity);
     SmartDashboard.putNumber("Rotation Setpoint", setpoint.position);
     SmartDashboard.putNumber("Rotational Velocity Setpoint", setpoint.velocity);
     SmartDashboard.putNumber("ControlOutput", omega);
+
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.
     x = Math.pow(vX.getAsDouble(), 3) * Drivebase.MAX_SPEED;
