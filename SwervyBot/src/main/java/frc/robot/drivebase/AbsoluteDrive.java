@@ -22,7 +22,7 @@ import frc.robot.subsystems.SwerveBase;
 /** An example command that uses an example subsystem. */
 public class AbsoluteDrive extends CommandBase {
   private SwerveBase swerve;
-  private ProfiledPIDController thetaController;
+  private PIDController thetaController;
   private DoubleSupplier vX, vY, headingHorizontal, headingVertical;
   private double omega, angle, lastAngle, x, y, 
     maxAngularVelocity, xMoment, yMoment, zMoment, armHeight, armExtension, maxAngularAccel;
@@ -67,8 +67,7 @@ public class AbsoluteDrive extends CommandBase {
   @Override
   public void initialize() {
     lastAngle = swerve.getPose().getRotation().getRadians();
-    thetaController = new ProfiledPIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD,
-    new TrapezoidProfile.Constraints(0.25, 2));
+    thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
@@ -91,7 +90,6 @@ public class AbsoluteDrive extends CommandBase {
       angle = lastAngle;
     } else {
       angle = Math.atan2(headingHorizontal.getAsDouble(), headingVertical.getAsDouble());
-      thetaController.setGoal(angle);
     }
 
     // Get the position of the arm from NetworkTables 
@@ -123,19 +121,21 @@ public class AbsoluteDrive extends CommandBase {
       ) /
       horizontalCG.getNorm();
 
-    //TrapezoidProfile.Constraints trapProfileConstraints = new TrapezoidProfile.Constraints(maxAngularVelocity, maxAngularAccel);
-    //thetaController = new ProfiledPIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD, trapProfileConstraints);
-    //thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    TrapezoidProfile.Constraints trapProfileConstraints = new TrapezoidProfile.Constraints(0.5, 1);
+    TrapezoidProfile profile = new TrapezoidProfile(
+      trapProfileConstraints,
+      new TrapezoidProfile.State(angle, 0),
+      new TrapezoidProfile.State(currentHeading.getRadians(), swerve.getFieldVelocity().omegaRadiansPerSecond));
 
     /*omega = (Math.abs(currentHeading.getRadians() - angle) > Drivebase.HEADING_TOLERANCE) ?
       thetaController.calculate(currentHeading.getRadians(), angle) :
       0;
     SmartDashboard.putNumber("Robot Y Vel", omega);*/
-    omega = thetaController.calculate(currentHeading.getRadians());
-    SmartDashboard.putNumber("Rotation Goal", thetaController.getGoal().position);
+    omega = thetaController.calculate(currentHeading.getRadians(), profile.calculate(Constants.RIO_LOOP_TIME).position); // Remember to add velocity as well
+    /*SmartDashboard.putNumber("Rotation Goal", thetaController.getGoal().position);
     SmartDashboard.putNumber("Rotation Vel Goal", thetaController.getGoal().velocity);
     SmartDashboard.putNumber("Rotation Setpoint", thetaController.getSetpoint().position);
-    SmartDashboard.putNumber("Rotational Velocity Setpoint", thetaController.getSetpoint().velocity);
+    SmartDashboard.putNumber("Rotational Velocity Setpoint", thetaController.getSetpoint().velocity);*/
     SmartDashboard.putNumber("ControlOutput", omega);
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.
@@ -242,7 +242,7 @@ public class AbsoluteDrive extends CommandBase {
 
     // Calculate the maximum achievable velocity by the next loop cycle.
     // delta V = Vf - Vi = at
-    Translation2d maxAchievableDeltaVelocity = maxAccel.times(Constants.LOOP_TIME);
+    Translation2d maxAchievableDeltaVelocity = maxAccel.times(Constants.SPARK_TOTAL_LAG_TIME);
     
     if (deltaV.getNorm() > maxAchievableDeltaVelocity.getNorm()) {
       return maxAchievableDeltaVelocity.plus(currentVelocity);
