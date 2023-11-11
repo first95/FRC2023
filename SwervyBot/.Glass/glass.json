@@ -7,7 +7,11 @@
     },
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Brake": "Command",
+      "/SmartDashboard/Compile": "Command",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Reset Odometry": "Command",
+      "/SmartDashboard/SendAlliance": "Command",
       "/SmartDashboard/SendableChooser[0]": "String Chooser"
     },
     "windows": {

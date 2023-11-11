@@ -29,6 +29,7 @@ public class AbsoluteDrive extends CommandBase {
   private boolean isOpenLoop;
   private Translation2d horizontalCG;
   private Translation3d robotCG;
+  private TrapezoidProfile.State setpoint;
 
   /**
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply 
@@ -69,6 +70,9 @@ public class AbsoluteDrive extends CommandBase {
     lastAngle = swerve.getPose().getRotation().getRadians();
     thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    setpoint = new TrapezoidProfile.State(swerve.getPose().getRotation().getRadians(), swerve.getFieldVelocity().omegaRadiansPerSecond);
+    SmartDashboard.putNumber("MaxVel", 0.5);
+    SmartDashboard.putNumber("MaxAccel", 1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -121,21 +125,22 @@ public class AbsoluteDrive extends CommandBase {
       ) /
       horizontalCG.getNorm();
 
-    TrapezoidProfile.Constraints trapProfileConstraints = new TrapezoidProfile.Constraints(0.5, 1);
+    TrapezoidProfile.Constraints trapProfileConstraints = new TrapezoidProfile.Constraints(SmartDashboard.getNumber("MaxVel", 0.5), SmartDashboard.getNumber("MaxAccel", 1));
     TrapezoidProfile profile = new TrapezoidProfile(
       trapProfileConstraints,
       new TrapezoidProfile.State(angle, 0),
-      new TrapezoidProfile.State(currentHeading.getRadians(), swerve.getFieldVelocity().omegaRadiansPerSecond));
+      setpoint);
+    setpoint = profile.calculate(Constants.RIO_LOOP_TIME);
 
     /*omega = (Math.abs(currentHeading.getRadians() - angle) > Drivebase.HEADING_TOLERANCE) ?
       thetaController.calculate(currentHeading.getRadians(), angle) :
       0;
     SmartDashboard.putNumber("Robot Y Vel", omega);*/
-    omega = thetaController.calculate(currentHeading.getRadians(), profile.calculate(Constants.RIO_LOOP_TIME).position); // Remember to add velocity as well
-    /*SmartDashboard.putNumber("Rotation Goal", thetaController.getGoal().position);
-    SmartDashboard.putNumber("Rotation Vel Goal", thetaController.getGoal().velocity);
-    SmartDashboard.putNumber("Rotation Setpoint", thetaController.getSetpoint().position);
-    SmartDashboard.putNumber("Rotational Velocity Setpoint", thetaController.getSetpoint().velocity);*/
+    omega = thetaController.calculate(currentHeading.getRadians(), setpoint.position) + setpoint.velocity;
+    SmartDashboard.putNumber("Rotation Goal", angle);
+    //SmartDashboard.putNumber("Rotation Vel Goal", thetaController.getGoal().velocity);
+    SmartDashboard.putNumber("Rotation Setpoint", setpoint.position);
+    SmartDashboard.putNumber("Rotational Velocity Setpoint", setpoint.velocity);
     SmartDashboard.putNumber("ControlOutput", omega);
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.

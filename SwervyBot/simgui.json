@@ -7,6 +7,7 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d",
       "/SmartDashboard/Reset Odometry": "Command",
+      "/SmartDashboard/SendAlliance": "Command",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Test DriveToPoint": "Command"
     }
