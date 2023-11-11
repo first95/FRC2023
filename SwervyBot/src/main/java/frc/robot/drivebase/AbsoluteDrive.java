@@ -154,6 +154,9 @@ public class AbsoluteDrive extends CommandBase {
       0;*/
 
     omega = thetaController.calculate(currentHeading.getRadians(), setpoint.position) + setpoint.velocity;
+    SmartDashboard.putNumber("ControlOutput", omega);
+    SmartDashboard.putNumber("Rotational Velocity Setpoint", setpoint.velocity);
+    SmartDashboard.putNumber("Rotation Setpoint", setpoint.position);
 
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.
