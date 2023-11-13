@@ -143,7 +143,7 @@ public final class Constants {
         public static final class Mod1 {
             public static final int DRIVE_MOTOR_ID = 9;
             public static final int ANGLE_MOTOR_ID = 8;
-            public static final double ANGLE_OFFSET = 180.7 + 180; // 170.69 + 180;
+            public static final double ANGLE_OFFSET = 180 + 159.12; // 170.69 + 180;
             public static final SwerveModuleConstants CONSTANTS =
                 new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, ANGLE_OFFSET);
         }
@@ -182,7 +182,7 @@ public final class Constants {
         public static final double MAX_ACCELERATION = 1.3;
         public static final double MAX_SPEED_SAFETY_SCALAR = 0.6;
 
-        public static final double BALANCE_SPEED = 0.25; // m/s
+        public static final double BALANCE_SPEED = 0.225; // m/s
         public static final double BALANCE_LEVEL_TIME = 1; // s
         public static final double CHARGER_STARTING_TO_TIP = 8;
 
@@ -217,10 +217,10 @@ public final class Constants {
             Map.entry("Throw1", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(19.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Throw2", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(41.875)), Rotation2d.fromDegrees(180))),
             Map.entry("Throw3", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(63.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("Gamepiece1", new Pose2d(new Translation2d(6.6, 0.908), new Rotation2d(0))),
-            Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.6, 2.123), new Rotation2d(0))),
-            Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.6, 3.7), new Rotation2d(0))),
-            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.6, 4.45), new Rotation2d(0))),
+            Map.entry("Gamepiece1", new Pose2d(new Translation2d(6.75, 0.908), new Rotation2d(0))),
+            Map.entry("Gamepiece2", new Pose2d(new Translation2d(6.75, 2.123), new Rotation2d(0))),
+            Map.entry("Gamepiece3", new Pose2d(new Translation2d(6.75, 3.7), new Rotation2d(0))),
+            Map.entry("Gamepiece4", new Pose2d(new Translation2d(6.75, 4.45), new Rotation2d(0))),
             Map.entry("StartNearBalanceClear", new Pose2d(new Translation2d(2.52, 3.30), Rotation2d.fromDegrees(180))),
             Map.entry("StartFarBalanceClear", new Pose2d(new Translation2d(5.8, 3.30), Rotation2d.fromDegrees(180))),
             Map.entry("ChargerCenterClear", new Pose2d(new Translation2d(3.93, 3.30), Rotation2d.fromDegrees(180))),
@@ -229,9 +229,9 @@ public final class Constants {
             Map.entry("ExitCommunity", new Pose2d(new Translation2d(6.2, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
             Map.entry("ChargerCenter", new Pose2d(new Translation2d(3.87, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
             Map.entry("PastChargerCenter", new Pose2d(new Translation2d(4.2, Units.inchesToMeters(107.875)), Rotation2d.fromDegrees(180))),
-            Map.entry("StartNearBalanceTable", new Pose2d(new Translation2d(2.52, 1.89), Rotation2d.fromDegrees(180))),
-            Map.entry("StartFarBalanceTable", new Pose2d(new Translation2d(5.8, 1.89), Rotation2d.fromDegrees(180))),
-            Map.entry("ChargerCenterTable", new Pose2d(new Translation2d(3.93, 1.89), Rotation2d.fromDegrees(180))),
+            Map.entry("StartNearBalanceTable", new Pose2d(new Translation2d(2.52, 1.95), Rotation2d.fromDegrees(180))),
+            Map.entry("StartFarBalanceTable", new Pose2d(new Translation2d(5.8, 1.95), Rotation2d.fromDegrees(180))),
+            Map.entry("ChargerCenterTable", new Pose2d(new Translation2d(3.93, 1.95), Rotation2d.fromDegrees(180))),
             Map.entry("NavPoint1", new Pose2d(new Translation2d(5.38, 4.54), Rotation2d.fromDegrees(180))),
             Map.entry("NavPoint2", new Pose2d(new Translation2d(2.8, 4.54), Rotation2d.fromDegrees(180))),
             Map.entry("NavPoint3", new Pose2d(new Translation2d(5.38, Units.inchesToMeters(24.875)), Rotation2d.fromDegrees(180))),
