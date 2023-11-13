@@ -8,7 +8,6 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -114,20 +113,25 @@ public class AbsoluteDrive extends CommandBase {
     // Calculates an angular rate using a PIDController and the commanded angle.
     Rotation2d currentHeading = swerve.getPose().getRotation();
     
-    maxAngularVelocity = Math.sqrt(
-      calcMaxAccel(horizontalCG.getAngle().unaryMinus()) /
-      horizontalCG.getNorm()
-    );
-    maxAngularAccel = 
+    maxAngularVelocity = Math.min(
+      Math.sqrt(
+        calcMaxAccel(horizontalCG.getAngle().unaryMinus()) /
+        horizontalCG.getNorm()
+      ),
+      Drivebase.MAX_ANGULAR_VELOCITY);
+    maxAngularAccel = Math.min(
       calcMaxAccel(
         horizontalCG.getAngle().plus(
           Rotation2d.fromDegrees(Math.copySign(90, (angle - currentHeading.getRadians())))
         )
       ) /
-      horizontalCG.getNorm();
+      horizontalCG.getNorm(),
+      Drivebase.MAX_ANGULAR_ACCELERATION);
 
-    TrapezoidProfile.Constraints trapProfileConstraints = new TrapezoidProfile.Constraints(SmartDashboard.getNumber("MaxVel", 0.5), SmartDashboard.getNumber("MaxAccel", 1));
-    
+    TrapezoidProfile.Constraints trapProfileConstraints = new TrapezoidProfile.Constraints(
+      maxAngularVelocity,
+      maxAngularAccel);
+
     // ------------------------------------------------------------------------------------------------------------------------------------
     // Get error which is the smallest distance between goal and measurement                                            |
     double goalMinDistance = //                                                                                         |
@@ -149,14 +153,7 @@ public class AbsoluteDrive extends CommandBase {
       setpoint);
     setpoint = profile.calculate(Constants.RIO_LOOP_TIME);
 
-    /*omega = (Math.abs(currentHeading.getRadians() - angle) > Drivebase.HEADING_TOLERANCE) ?
-      thetaController.calculate(currentHeading.getRadians(), angle) :
-      0;*/
-
     omega = thetaController.calculate(currentHeading.getRadians(), setpoint.position) + setpoint.velocity;
-    SmartDashboard.putNumber("ControlOutput", omega);
-    SmartDashboard.putNumber("Rotational Velocity Setpoint", setpoint.velocity);
-    SmartDashboard.putNumber("Rotation Setpoint", setpoint.position);
 
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.
