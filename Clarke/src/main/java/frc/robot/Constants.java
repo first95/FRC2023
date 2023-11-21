@@ -42,7 +42,8 @@ public final class Constants {
         Units.inchesToMeters(8.8));
     public static final double ARM_Y_POS = 0; // centered on robot
     public static final double GRAVITY = 9.81; // m/s/s
-    public static final double LOOP_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
+    public static final double SPARK_TOTAL_LAG_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
+    public static final double RIO_LOOP_TIME = 0.02;
 
     public static final double FIELD_WIDTH = Units.inchesToMeters((12 * 26) + 3.5);
     
@@ -52,7 +53,7 @@ public final class Constants {
 
         public static final int SWERVE_MODULE_CURRENT_LIMIT = 60;
 
-        public static final double HEADING_TOLERANCE = Math.toRadians(2);
+        public static final double HEADING_TOLERANCE = Math.toRadians(1);
 
         // Motor and encoder inversions
         public static final boolean ABSOLUTE_ENCODER_INVERT = true;
@@ -91,13 +92,14 @@ public final class Constants {
         // (2.6 * 6.75 * 4) / (Units.inchesToMeters(2) * ROBOT_MASS)
         // However, the drive is traction-limited, so the max accelration is actually (wheel coefficient of friction * gravity)
         public static final double MAX_ACCELERATION = 1 * GRAVITY; // COF is 1.1 but careful
+        public static final double MAX_ANGULAR_ACCELERATION = MAX_ACCELERATION / Math.hypot(FRONT_LEFT_X, FRONT_LEFT_Y);
         // max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
         public static final double MAX_MODULE_ANGULAR_SPEED = Units.rotationsToDegrees(NEO_550_FREE_SPEED * 7 / 372) / 60; // deg/s
 
         // Robot heading control gains
         public static final double HEADING_KP = 0.5 * (MAX_ANGULAR_VELOCITY / Math.PI);
         public static final double HEADING_KI = 0;
-        public static final double HEADING_KD = 0;
+        public static final double HEADING_KD = 0.01 * (MAX_ANGULAR_VELOCITY / Math.PI);
         
         // Swerve base kinematics object
         public static final BetterSwerveKinematics KINEMATICS = new BetterSwerveKinematics(MODULE_LOCATIONS);

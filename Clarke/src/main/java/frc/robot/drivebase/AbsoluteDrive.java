@@ -6,8 +6,8 @@ package frc.robot.drivebase;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -22,13 +22,14 @@ import frc.robot.subsystems.SwerveBase;
 /** An example command that uses an example subsystem. */
 public class AbsoluteDrive extends CommandBase {
   private SwerveBase swerve;
-  private ProfiledPIDController thetaController;
+  private PIDController thetaController;
   private DoubleSupplier vX, vY, headingHorizontal, headingVertical;
   private double omega, angle, lastAngle, x, y, 
     maxAngularVelocity, xMoment, yMoment, zMoment, armHeight, armExtension, maxAngularAccel;
   private boolean isOpenLoop;
   private Translation2d horizontalCG;
   private Translation3d robotCG;
+  private TrapezoidProfile.State setpoint;
 
   /**
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply 
@@ -67,6 +68,9 @@ public class AbsoluteDrive extends CommandBase {
   @Override
   public void initialize() {
     lastAngle = swerve.getPose().getRotation().getRadians();
+    thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    setpoint = new TrapezoidProfile.State(swerve.getPose().getRotation().getRadians(), swerve.getFieldVelocity().omegaRadiansPerSecond);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -107,26 +111,57 @@ public class AbsoluteDrive extends CommandBase {
     // Calculates an angular rate using a PIDController and the commanded angle.
     Rotation2d currentHeading = swerve.getPose().getRotation();
     
-    maxAngularVelocity = Math.sqrt(
-      calcMaxAccel(horizontalCG.getAngle().unaryMinus()) /
-      horizontalCG.getNorm()
-    );
-    maxAngularAccel = 
+    maxAngularVelocity = Math.min(
+      Math.sqrt(
+        calcMaxAccel(horizontalCG.getAngle().unaryMinus()) /
+        horizontalCG.getNorm()
+      ),
+      Drivebase.MAX_ANGULAR_VELOCITY);
+    maxAngularAccel = Math.min(
       calcMaxAccel(
         horizontalCG.getAngle().plus(
           Rotation2d.fromDegrees(Math.copySign(90, (angle - currentHeading.getRadians())))
         )
       ) /
-      horizontalCG.getNorm();
+      horizontalCG.getNorm(),
+      Drivebase.MAX_ANGULAR_ACCELERATION);
+    
+    SmartDashboard.putNumber("MaxAccel", maxAngularAccel);
+    SmartDashboard.putNumber("MaxVel", maxAngularVelocity);
 
-    TrapezoidProfile.Constraints trapProfileConstraints = new TrapezoidProfile.Constraints(maxAngularVelocity, maxAngularAccel);
-    thetaController = new ProfiledPIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD, trapProfileConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    TrapezoidProfile.Constraints trapProfileConstraints = new TrapezoidProfile.Constraints(
+      maxAngularVelocity,
+      maxAngularAccel);
 
-    omega = (Math.abs(currentHeading.getRadians() - angle) > Drivebase.HEADING_TOLERANCE) ?
-      thetaController.calculate(currentHeading.getRadians(), angle) :
+    // ------------------------------------------------------------------------------------------------------------------------------------
+    // Get error which is the smallest distance between goal and measurement                                            |
+    double goalMinDistance = //                                                                                         |
+        MathUtil.inputModulus(angle - currentHeading.getRadians(), -Math.PI, Math.PI); //                               |
+    double setpointMinDistance = //                                                                                     |
+        MathUtil.inputModulus(setpoint.position - currentHeading.getRadians(), -Math.PI, Math.PI); //                   |
+    //                                                                                                                  |
+    // Recompute the profile goal with the smallest error, thus giving the shortest path. The goal      Taken from ProfiledPIDController
+    // may be outside the input range after this operation, but that's OK because the controller            Applies continuous input
+    // will still go there and report an error of zero. In other words, the setpoint only needs to                      |
+    // be offset from the measurement by the input range modulus; they don't need to be equal.                          |
+    angle = goalMinDistance + currentHeading.getRadians(); //                                                           |
+    setpoint.position = setpointMinDistance + currentHeading.getRadians(); //                                           |
+    // ------------------------------------------------------------------------------------------------------------------------------------
+
+    TrapezoidProfile profile = new TrapezoidProfile(
+      trapProfileConstraints,
+      new TrapezoidProfile.State(angle, 0),
+      setpoint);
+    setpoint = profile.calculate(Constants.RIO_LOOP_TIME);
+
+    omega = (Math.abs(currentHeading.getRadians() - angle)) >= Drivebase.HEADING_TOLERANCE ?
+      thetaController.calculate(currentHeading.getRadians(), setpoint.position) + setpoint.velocity:
       0;
-    SmartDashboard.putNumber("Robot Y Vel", omega);
+
+    SmartDashboard.putNumber("Setpoint", setpoint.position);
+    SmartDashboard.putNumber("ControlOutput", omega);
+    SmartDashboard.putNumber("TargetAngle", angle);
+
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.
     x = Math.pow(vX.getAsDouble(), 3) * Drivebase.MAX_SPEED;
@@ -232,7 +267,7 @@ public class AbsoluteDrive extends CommandBase {
 
     // Calculate the maximum achievable velocity by the next loop cycle.
     // delta V = Vf - Vi = at
-    Translation2d maxAchievableDeltaVelocity = maxAccel.times(Constants.LOOP_TIME);
+    Translation2d maxAchievableDeltaVelocity = maxAccel.times(Constants.SPARK_TOTAL_LAG_TIME);
     
     if (deltaV.getNorm() > maxAchievableDeltaVelocity.getNorm()) {
       return maxAchievableDeltaVelocity.plus(currentVelocity);
