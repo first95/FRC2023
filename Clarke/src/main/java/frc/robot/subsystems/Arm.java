@@ -15,6 +15,8 @@ import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -26,14 +28,16 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmConstants.PRESETS;
 
 public class Arm extends SubsystemBase {
-  private double setPoint = ArmConstants.PRESETS.STOWED.angle();
-  private double dt, lastTime, armStowTime;
+  private double goal = ArmConstants.PRESETS.STOWED.angle();
+  private double dt, lastTime, armStowTime, positionSetpointChangedTime;
   private boolean waitingForArmReturn = false;
 
   private CANSparkMax armMotor;
   private CANSparkMax armMotorFollow;
   private RelativeEncoder armEncoder;
   private SparkMaxPIDController armController;
+  private TrapezoidProfile.Constraints armProfileConstraints;
+  private TrapezoidProfile armProfile;
   private ArmFeedforward feedforward;
   private DigitalInput cubeSensor;
 
@@ -54,6 +58,9 @@ public class Arm extends SubsystemBase {
     armEncoder.setVelocityConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
 
     armController = armMotor.getPIDController();
+    armProfileConstraints = new TrapezoidProfile.Constraints(
+      ArmConstants.ARM_SPEED_LIMIT_RAD_PER_S,
+      ArmConstants.ARM_ACCEL_LIMIT_RAD_PER_S);
     
     armController.setP(ArmConstants.ARM_KP);
     armController.setI(ArmConstants.ARM_KI);
@@ -73,6 +80,11 @@ public class Arm extends SubsystemBase {
       ArmConstants.ARM_KG,
       ArmConstants.ARM_KV);
 
+    armProfile = new TrapezoidProfile(
+      armProfileConstraints,
+      new State(ArmConstants.ARM_LOWER_LIMIT, 0),
+      new State(armEncoder.getPosition(), armEncoder.getVelocity()));
+
     cubeSensor = new DigitalInput(ArmConstants.CUBE_SENSOR_ID);
     
     time.reset();
@@ -88,30 +100,31 @@ public class Arm extends SubsystemBase {
   }
 
   public void setPos(double angleDegree) {
-    setPoint = Math.min(angleDegree, ArmConstants.ARM_UPPER_LIMIT);
-    armController.setReference(
-      angleDegree,
-      CANSparkMax.ControlType.kPosition,
-      0,
-      feedforward.calculate(Math.toRadians(setPoint), 0));
+    goal = Math.min(angleDegree, ArmConstants.ARM_UPPER_LIMIT);
+    armProfile = new TrapezoidProfile(
+      armProfileConstraints,
+      new State(goal, 0),
+      new State(armEncoder.getPosition(),
+      armEncoder.getVelocity()));
+    positionSetpointChangedTime = time.get();
   }
 
   /**
    * Sets velocity by moving position setpoint. Be careful with this- make sure to prevent
    * the setpoint being changed overmuch due to mechanical obstruction.
-   * @param velocityDegPerSecond
+   * @param velocityRadPerSecond
    */
-  public void setVelocity(double velocityDegPerSecond) {
-    setPoint += velocityDegPerSecond * dt;
-    if (setPoint > ArmConstants.ARM_UPPER_LIMIT) {
-      setPoint = ArmConstants.ARM_UPPER_LIMIT;
-      velocityDegPerSecond = 0;
+  public void setVelocity(double velocityRadPerSecond) {
+    goal += velocityRadPerSecond * dt;
+    if (goal > ArmConstants.ARM_UPPER_LIMIT) {
+      goal = ArmConstants.ARM_UPPER_LIMIT;
+      velocityRadPerSecond = 0;
     }
     armController.setReference(
-      setPoint,
+      goal,
       ControlType.kPosition,
       0,
-      feedforward.calculate(Math.toRadians(setPoint), Math.toRadians(velocityDegPerSecond)));
+      feedforward.calculate(goal, velocityRadPerSecond));
   }
   
   public void setPreset(PRESETS preset) {
@@ -152,10 +165,12 @@ public class Arm extends SubsystemBase {
   public void periodic() {
     if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(PRESETS.STOWED.angle());
 
-    if (waitingForArmReturn && (time.get() - armStowTime >= ArmConstants.RETURN_TIME_STOWING)) {
-      setPos(ArmConstants.PRESETS.STOWED.angle());
-      waitingForArmReturn = false;
-    }
+    var setpointState = armProfile.calculate(time.get() - positionSetpointChangedTime);
+    armController.setReference(
+      setpointState.position,
+      CANSparkMax.ControlType.kPosition,
+      0,
+      feedforward.calculate(setpointState.position, setpointState.velocity));
 
     // Logging...
     SmartDashboard.putBoolean("Gripper Status", gripper.get());
@@ -163,7 +178,7 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
     SmartDashboard.putNumber("Arm Current", armMotor.getOutputCurrent());
     SmartDashboard.putNumber("Commanded Arm Voltage", armMotor.getAppliedOutput() * armMotor.getBusVoltage());
-    SmartDashboard.putNumber("Arm Setpoint", setPoint);
+    SmartDashboard.putNumber("Arm Setpoint", goal);
 
     // Report arm position
     Rotation2d currentPosition = Rotation2d.fromDegrees(getPos());
