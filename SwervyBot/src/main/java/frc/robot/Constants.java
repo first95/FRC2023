@@ -5,7 +5,6 @@
 package frc.robot;
 
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -41,7 +40,8 @@ public final class Constants {
         Units.inchesToMeters(8));
     public static final double ARM_Y_POS = 0; // centered on robot
     public static final double GRAVITY = 9.81; // m/s/s
-    public static final double LOOP_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
+    public static final double SPARK_TOTAL_LAG_TIME = 0.13; //s, 20ms + 110ms sprk max velocity lag
+    public static final double RIO_LOOP_TIME = 0.02;
 
     public static final double dummyArmX = Units.inchesToMeters(42);
     public static final double dummyArmHieght = Units.inchesToMeters(27);
@@ -117,10 +117,12 @@ public final class Constants {
         // Hold time on motor brakes when disabled
         public static final double WHEEL_LOCK_TIME = 10; // seconds
 
+        public static final double HEADING_TOLERANCE = Math.toRadians(2);
+        
         // Robot heading control gains
         public static final double HEADING_KP = 0.4;
         public static final double HEADING_KI = 0;
-        public static final double HEADING_KD = 0.01;
+        public static final double HEADING_KD = 0;
 
         // Motor and encoder inversions
         public static final boolean CANCODER_INVERT = false;
