@@ -44,7 +44,7 @@ public class ControlArm extends CommandBase {
 
   @Override
   public void execute() {
-    double velocity = manualControl.getAsDouble() * ArmConstants.ARM_SPEED_LIMIT_RAD_PER_S;
+    double velocity = manualControl.getAsDouble() * ArmConstants.ARM_SPEED_LIMIT_DEG_PER_S;
     if (velocity != 0) {
       //arm.setVelocity(velocity);
       wasVelocityControlled = true;

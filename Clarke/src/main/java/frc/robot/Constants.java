@@ -297,7 +297,8 @@ public final class Constants {
             
             private final double angle;
             PRESETS(double angle) { this.angle = angle; }
-            public double angle() { return angle; }
+            public double degrees() { return angle; }
+            public double radians() { return Math.toRadians(angle); }
         }
 
         public static final double ANGLE_TOLERANCE = 4; // degrees
@@ -309,10 +310,10 @@ public final class Constants {
 
         public static final double ARM_LENGTH = 1.1;
 
-        public static final double THEORETICAL_MAX_ARM_SPEED = (NEO_FREE_SPEED / 60) * 2 * Math.PI * ARM_GEAR_RATIO; // rad/s
-        public static final double ARM_SPEED_LIMIT_RAD_PER_S = THEORETICAL_MAX_ARM_SPEED * 0.1;
-        public static final double THEORETICAL_MAX_ARM_ACCEL = NEO_STALL_TORQUE / (ARM_GEAR_RATIO * MANIPULATOR_MASS * ARM_LENGTH * ARM_LENGTH);
-        public static final double ARM_ACCEL_LIMIT_RAD_PER_S = THEORETICAL_MAX_ARM_ACCEL * 0.05;
+        public static final double THEORETICAL_MAX_ARM_SPEED = (NEO_FREE_SPEED / 60) * ARM_DEGREES_PER_MOTOR_ROTATION; // deg/s
+        public static final double ARM_SPEED_LIMIT_DEG_PER_S = THEORETICAL_MAX_ARM_SPEED * 0.1;
+        public static final double THEORETICAL_MAX_ARM_ACCEL = (NEO_STALL_TORQUE / (ARM_GEAR_RATIO * MANIPULATOR_MASS * ARM_LENGTH * ARM_LENGTH)) * (180 / Math.PI);
+        public static final double ARM_ACCEL_LIMIT_DEG_PER_S = THEORETICAL_MAX_ARM_ACCEL * 0.001;
 
         public static final double RETURN_TIME_STOWING = 0.4; // seconds
 

@@ -78,7 +78,7 @@ public class AutoScore extends SequentialCommandGroup {
             ArmConstants.PRESETS.HIGH_SCORE
         };
         for (ArmConstants.PRESETS preset : scoreAngles) {
-            double difference = Math.abs(preset.angle() - armPos);
+            double difference = Math.abs(preset.degrees() - armPos);
             if (difference < closestAngle) {
                 nearestRow = preset;
                 closestAngle = difference;

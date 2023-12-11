@@ -28,9 +28,8 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmConstants.PRESETS;
 
 public class Arm extends SubsystemBase {
-  private double goal = ArmConstants.PRESETS.STOWED.angle();
-  private double dt, lastTime, armStowTime, positionSetpointChangedTime;
-  private boolean waitingForArmReturn = false;
+  private double goal = ArmConstants.PRESETS.STOWED.degrees();
+  private double dt, lastTime, positionSetpointChangedTime;
 
   private CANSparkMax armMotor;
   private CANSparkMax armMotorFollow;
@@ -59,8 +58,8 @@ public class Arm extends SubsystemBase {
 
     armController = armMotor.getPIDController();
     armProfileConstraints = new TrapezoidProfile.Constraints(
-      ArmConstants.ARM_SPEED_LIMIT_RAD_PER_S,
-      ArmConstants.ARM_ACCEL_LIMIT_RAD_PER_S);
+      ArmConstants.ARM_SPEED_LIMIT_DEG_PER_S,
+      ArmConstants.ARM_ACCEL_LIMIT_DEG_PER_S);
     
     armController.setP(ArmConstants.ARM_KP);
     armController.setI(ArmConstants.ARM_KI);
@@ -104,8 +103,7 @@ public class Arm extends SubsystemBase {
     armProfile = new TrapezoidProfile(
       armProfileConstraints,
       new State(goal, 0),
-      new State(armEncoder.getPosition(),
-      armEncoder.getVelocity()));
+      new State(armEncoder.getPosition(), armEncoder.getVelocity()));
     positionSetpointChangedTime = time.get();
   }
 
@@ -115,26 +113,10 @@ public class Arm extends SubsystemBase {
    * @param velocityRadPerSecond
    */
   public void setVelocity(double velocityRadPerSecond) {
-    goal += velocityRadPerSecond * dt;
-    if (goal > ArmConstants.ARM_UPPER_LIMIT) {
-      goal = ArmConstants.ARM_UPPER_LIMIT;
-      velocityRadPerSecond = 0;
-    }
-    armController.setReference(
-      goal,
-      ControlType.kPosition,
-      0,
-      feedforward.calculate(goal, velocityRadPerSecond));
   }
   
   public void setPreset(PRESETS preset) {
-    if (preset == ArmConstants.PRESETS.STOWED && getPos() > ArmConstants.RETURN_MIDPOINT) {
-      setPos(ArmConstants.RETURN_MIDPOINT);
-      waitingForArmReturn = true;
-      armStowTime = time.get();
-    } else {
-      setPos(preset.angle());
-    }
+    setPos(preset.degrees());
   }
 
   public void toggleGrip() {
@@ -163,14 +145,14 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(PRESETS.STOWED.angle());
+    if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(PRESETS.STOWED.degrees());
 
     var setpointState = armProfile.calculate(time.get() - positionSetpointChangedTime);
     armController.setReference(
       setpointState.position,
       CANSparkMax.ControlType.kPosition,
       0,
-      feedforward.calculate(setpointState.position, setpointState.velocity));
+      feedforward.calculate(Math.toRadians(setpointState.position), setpointState.velocity));
 
     // Logging...
     SmartDashboard.putBoolean("Gripper Status", gripper.get());
@@ -178,7 +160,9 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
     SmartDashboard.putNumber("Arm Current", armMotor.getOutputCurrent());
     SmartDashboard.putNumber("Commanded Arm Voltage", armMotor.getAppliedOutput() * armMotor.getBusVoltage());
-    SmartDashboard.putNumber("Arm Setpoint", goal);
+    SmartDashboard.putNumber("Arm Goal", Math.toDegrees(goal));
+    SmartDashboard.putNumber("Arm Setpoint", Math.toDegrees(setpointState.position));
+    SmartDashboard.putNumber("Arm Setpoint Velocity", Math.toDegrees(setpointState.velocity));
 
     // Report arm position
     Rotation2d currentPosition = Rotation2d.fromDegrees(getPos());
