@@ -10,7 +10,7 @@ public class ThrowCube extends SequentialCommandGroup {
         addRequirements(arm);
 
         addCommands(new InstantCommand(() -> arm.setPos(0)));
-        addCommands(new WaitUntilCommand(() -> arm.getPos() >= -60));
+        addCommands(new WaitUntilCommand(() -> arm.getPos() >= -Math.toRadians(60)));
         addCommands(new InstantCommand(() -> arm.setGrip(true)));
     }
 }

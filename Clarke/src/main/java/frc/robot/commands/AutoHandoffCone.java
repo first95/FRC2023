@@ -23,7 +23,7 @@ public class AutoHandoffCone extends SequentialCommandGroup {
             arm.setGrip(true);
             arm.setPreset(ArmConstants.PRESETS.HANDOFF);
         }));
-        addCommands(new WaitUntilCommand(() -> arm.hasReachedReference(ArmConstants.PRESETS.HANDOFF.degrees())));     
+        addCommands(new WaitUntilCommand(() -> arm.hasReachedReference(ArmConstants.PRESETS.HANDOFF.radians())));     
 
         addCommands(new InstantCommand(() -> {arm.setGrip(false);}));
         addCommands(new WaitCommand(0.2));
