@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
@@ -58,8 +57,8 @@ public class Arm extends SubsystemBase {
 
     armController = armMotor.getPIDController();
     armProfileConstraints = new TrapezoidProfile.Constraints(
-      ArmConstants.ARM_SPEED_LIMIT_DEG_PER_S,
-      ArmConstants.ARM_ACCEL_LIMIT_DEG_PER_S);
+      ArmConstants.ARM_SPEED_LIMIT_RAD_PER_S,
+      ArmConstants.ARM_ACCEL_LIMIT_RAD_PER_S);
     
     armController.setP(ArmConstants.ARM_KP);
     armController.setI(ArmConstants.ARM_KI);
@@ -81,7 +80,7 @@ public class Arm extends SubsystemBase {
 
     armProfile = new TrapezoidProfile(
       armProfileConstraints,
-      new State(ArmConstants.ARM_LOWER_LIMIT, 0),
+      new State(Math.toRadians(ArmConstants.ARM_LOWER_LIMIT), 0),
       new State(armEncoder.getPosition(), armEncoder.getVelocity()));
 
     cubeSensor = new DigitalInput(ArmConstants.CUBE_SENSOR_ID);
@@ -98,8 +97,8 @@ public class Arm extends SubsystemBase {
     return armEncoder.getPosition();
   }
 
-  public void setPos(double angleDegree) {
-    goal = Math.min(angleDegree, ArmConstants.ARM_UPPER_LIMIT);
+  public void setPos(double angleRad) {
+    goal = Math.min(angleRad, Math.toRadians(ArmConstants.ARM_UPPER_LIMIT));
     armProfile = new TrapezoidProfile(
       armProfileConstraints,
       new State(goal, 0),
@@ -116,7 +115,7 @@ public class Arm extends SubsystemBase {
   }
   
   public void setPreset(PRESETS preset) {
-    setPos(preset.degrees());
+    setPos(preset.radians());
   }
 
   public void toggleGrip() {
