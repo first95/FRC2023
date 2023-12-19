@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
+import java.util.Math;
+
 public class AutoHandoffCube extends SequentialCommandGroup {
 
     public AutoHandoffCube(Arm arm, Intake intake) {
@@ -22,8 +24,8 @@ public class AutoHandoffCube extends SequentialCommandGroup {
             intake.grabCube(0.6);
         }));
 
-        addCommands(new InstantCommand(() -> {arm.setPos(-55);}));
-        addCommands(new WaitUntilCommand(() -> arm.hasReachedReference(-60)));     
+        addCommands(new InstantCommand(() -> {arm.setPos(Math.toRadians(-55));}));
+        addCommands(new WaitUntilCommand(() -> arm.hasReachedReference(Math.toRadians(-60))));     
 
         addCommands(new InstantCommand(() -> {
             intake.grabCube(0);

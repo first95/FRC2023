@@ -146,7 +146,7 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(PRESETS.STOWED.degrees());
+    if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(PRESETS.STOWED.radians());
 
     var setpointState = armProfile.calculate(time.get() - positionSetpointChangedTime);
     /*armController.setReference(
@@ -158,12 +158,12 @@ public class Arm extends SubsystemBase {
     // Logging...
     SmartDashboard.putBoolean("Gripper Status", gripper.get());
     SmartDashboard.putBoolean("Bottom Limit Switch: ", bottomLimitSwitch.isPressed());
-    SmartDashboard.putNumber("Arm Motor Encoder: ", getPos());
+    SmartDashboard.putNumber("Arm Motor Encoder (rad): ", getPos());
     SmartDashboard.putNumber("Arm Current", armMotor.getOutputCurrent());
     SmartDashboard.putNumber("Commanded Arm Voltage", armMotor.getAppliedOutput() * armMotor.getBusVoltage());
-    SmartDashboard.putNumber("Arm Goal", Math.toDegrees(goal));
-    SmartDashboard.putNumber("Arm Setpoint", Math.toDegrees(setpointState.position));
-    SmartDashboard.putNumber("Arm Setpoint Velocity", Math.toDegrees(setpointState.velocity));
+    SmartDashboard.putNumber("Arm Goal (deg)", Math.toDegrees(goal));
+    SmartDashboard.putNumber("Arm Setpoint (deg)", Math.toDegrees(setpointState.position));
+    SmartDashboard.putNumber("Arm Setpoint Velocity (deg/s)", Math.toDegrees(setpointState.velocity));
 
     // Report arm position
     Rotation2d currentPosition = Rotation2d.fromDegrees(getPos());

@@ -70,7 +70,7 @@ public class AutoScore extends SequentialCommandGroup {
         String gamepiece = SmartDashboard.getString("LastHandoff", "CONE");
 
         ArmConstants.PRESETS nearestRow = ArmConstants.PRESETS.LOW_SCORE;
-        double closestAngle = 360; // Arm can't get this far away from any of them
+        double closestAngle = 2 * Math.PI; // Arm can't get this far away from any of them
         double armPos = arm.getPos();
         ArmConstants.PRESETS[] scoreAngles = {
             ArmConstants.PRESETS.LOW_SCORE,
@@ -78,7 +78,7 @@ public class AutoScore extends SequentialCommandGroup {
             ArmConstants.PRESETS.HIGH_SCORE
         };
         for (ArmConstants.PRESETS preset : scoreAngles) {
-            double difference = Math.abs(preset.degrees() - armPos);
+            double difference = Math.abs(preset.radians() - armPos);
             if (difference < closestAngle) {
                 nearestRow = preset;
                 closestAngle = difference;
