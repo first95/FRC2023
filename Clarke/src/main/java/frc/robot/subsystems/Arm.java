@@ -27,7 +27,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmConstants.PRESETS;
 
 public class Arm extends SubsystemBase {
-  private double goal = ArmConstants.PRESETS.STOWED.degrees();
+  private double goal = ArmConstants.PRESETS.STOWED.radians();
   private double dt, lastTime, positionSetpointChangedTime;
 
   private CANSparkMax armMotor;
@@ -52,8 +52,8 @@ public class Arm extends SubsystemBase {
     armMotor.restoreFactoryDefaults();
 
     armEncoder = armMotor.getEncoder();
-    armEncoder.setPositionConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION);
-    armEncoder.setVelocityConversionFactor(ArmConstants.ARM_DEGREES_PER_MOTOR_ROTATION / 60);
+    armEncoder.setPositionConversionFactor(ArmConstants.ARM_RADIANS_PER_MOTOR_ROTATION);
+    armEncoder.setVelocityConversionFactor(ArmConstants.ARM_RADIANS_PER_MOTOR_ROTATION / 60);
 
     armController = armMotor.getPIDController();
     armProfileConstraints = new TrapezoidProfile.Constraints(
@@ -87,6 +87,8 @@ public class Arm extends SubsystemBase {
     
     time.reset();
     time.start();
+
+    positionSetpointChangedTime = time.get();
   }
 
   public boolean getCubeSensor() {
@@ -147,11 +149,11 @@ public class Arm extends SubsystemBase {
     if (bottomLimitSwitch.isPressed()) armEncoder.setPosition(PRESETS.STOWED.degrees());
 
     var setpointState = armProfile.calculate(time.get() - positionSetpointChangedTime);
-    armController.setReference(
+    /*armController.setReference(
       setpointState.position,
       CANSparkMax.ControlType.kPosition,
       0,
-      feedforward.calculate(Math.toRadians(setpointState.position), setpointState.velocity));
+      feedforward.calculate(Math.toRadians(setpointState.position), setpointState.velocity));*/
 
     // Logging...
     SmartDashboard.putBoolean("Gripper Status", gripper.get());

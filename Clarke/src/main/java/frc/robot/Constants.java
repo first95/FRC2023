@@ -285,7 +285,7 @@ public final class Constants {
 
         // 5 to 1 | 5 to 1 | 56 to 26
         public static final double ARM_GEAR_RATIO = 0.0208;
-        public static final double ARM_DEGREES_PER_MOTOR_ROTATION = ARM_GEAR_RATIO * 360;
+        public static final double ARM_RADIANS_PER_MOTOR_ROTATION = ARM_GEAR_RATIO * 2 * Math.PI;
 
         public enum PRESETS {
             HIGH_SCORE (13),
